@@ -23,11 +23,18 @@ public class home {
 	public Response SelectRecord ()  {
 	    String message1 = "Hello";
 	    String message2 = "WORLD";
-	    URI uri = UriBuilder.fromPath("/CareSense/home.jsp")
-	            .queryParam("messageHello", message1)
-	            .queryParam("messageWorld", message2)
-	            .build();
-	    return Response.seeOther(uri).build();
+//	    URI uri = UriBuilder.fromPath("/CareSense/home.jsp")
+//	            .queryParam("messageHello", message1)
+//	            .queryParam("messageWorld", message2)
+//	            .build();
+	    JSONObject homeResponseJSON = new JSONObject();
+	    homeResponseJSON.put("msg1", message1);
+	    homeResponseJSON.put("msg2", message2);
+	    return Response
+				.status(Response.Status.OK)
+				.header("message", "Hello World")
+				.entity(homeResponseJSON.toString())
+				.build();
 	}
 
 }
