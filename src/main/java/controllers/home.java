@@ -33,6 +33,9 @@ public class home {
 	    return Response
 				.status(Response.Status.OK)
 				.header("message", "Hello World")
+				.header("Access-Control-Allow-Origin", "*") // always include this 2 header to access the JSON
+				.header("Access-Control-Allow-Headers", 
+						"Origin, X-Requested-With, Content-Type, Accept") // always include this 2 header to access the JSON
 				.entity(homeResponseJSON.toString())
 				.build();
 	}
