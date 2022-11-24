@@ -5,6 +5,7 @@ import Home from './components/HomeComponent';
 import Login from './components/LoginComponent';
 import Resident from './components/ResidentComponent';
 import Registration from './components/RegistrationComponent';
+import Admin from './components/AdminComponent';
 import { Navigation } from './components/NavigationComponent';
 
 
@@ -21,6 +22,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/registration" element={<Registration />} />
           <Route path="/resident/:ResidentID/" element={<Resident />} />
+          <Route path="/admin" element={<Admin />} />
         </Routes>
 
       </div>

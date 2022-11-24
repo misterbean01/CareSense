@@ -18,7 +18,7 @@ const Home = () => {
 
     // Get the User state from Login Component
     const userLoc = useLocation();
-    const user = userLoc.state.user;
+
 
     // HAVE A FUNCTION THAT FILTERS THE RESIDENT LIST:
     // IF THEY ARE FAMILY ONLY SHOW THEIR RESIDENT MEMBERS
@@ -40,10 +40,12 @@ const Home = () => {
             });
     }, []);
 
-
+    console.log(authenticated)
     if (!authenticated) {
         return <Navigate replace to="/login" />; // redirect to the login page if not authenticated
     } else {
+        const user = userLoc.state.user;
+
         return (
             <div>
 

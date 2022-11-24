@@ -151,12 +151,11 @@ const Registration = () => {
                         </div>
                         <div className="mb-3">
                             <label className="label">Select Account Type</label>
-                            <select onChange={(e) => setAccountType(e.target.value)} className="form-control">
-                                <option selected>Select Account Type</option>
+                            <select onChange={(e) => setAccountType(e.target.value)} defaultValue="" className="form-control">
+                                <option>Select Account Type</option>
                                 <option value="caretaker">Caretaker</option>
-                                <option value="grapefruit">Doctor</option>
+                                <option value="doctor">Doctor</option>
                                 <option value="family">Family</option>
-                                <option value="admin">Admin</option>
                             </select>
                         </div>
                         <input type="submit" className="btn btn-primary" value="Submit" />

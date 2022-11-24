@@ -29,7 +29,12 @@ const Login = () => {
             console.log("Login Successful: " + authenticated + " " + accountType);
 
             // Navigate to homepage and send the logged in user
-            navigate("/", { state: { user: { Username: "aaa", Password: "aaa" } } });
+            if (accountType !== "admin") {
+                navigate("/", { state: { user: { Username: "aaa", Password: "aaa" } } });
+            } else {
+                navigate("/admin", { state: { user: { Username: "aaa", Password: "aaa" } } });
+            }
+
         }
 
         // create if statement depending on account type (Family, Doctor, Caretaker, Admin)
@@ -64,10 +69,10 @@ const Login = () => {
                             />
                         </div>
                         <div className="mb-3">
-                            <select onChange={(e) => setAccountType(e.target.value)} className="form-control">
-                                <option selected>Select Account Type</option>
+                            <select onChange={(e) => setAccountType(e.target.value)} defaultValue="" className="form-control">
+                                <option>Select Account Type</option>
                                 <option value="caretaker">Caretaker</option>
-                                <option value="grapefruit">Doctor</option>
+                                <option value="doctor">Doctor</option>
                                 <option value="family">Family</option>
                                 <option value="admin">Admin</option>
                             </select>
