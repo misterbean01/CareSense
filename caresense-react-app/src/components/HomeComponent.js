@@ -1,12 +1,15 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Navigate } from "react-router-dom";
 import Container from 'react-bootstrap/Container';
 import Card from 'react-bootstrap/Card';
 import Row from 'react-bootstrap/Row';
+import Button from 'react-bootstrap/Button';
 import { Link } from 'react-router-dom'
 import { useLocation } from "react-router-dom";
 
 const Home = () => {
+    const navigate = useNavigate();
     const [authenticated, setAuthenticated] = useState(sessionStorage.getItem("authenticated"));
     const [messages, setMessages] = useState([]);
     const [residents, setResidents] = useState([
@@ -18,7 +21,6 @@ const Home = () => {
 
     // Get the User state from Login Component
     const userLoc = useLocation();
-
 
     // HAVE A FUNCTION THAT FILTERS THE RESIDENT LIST:
     // IF THEY ARE FAMILY ONLY SHOW THEIR RESIDENT MEMBERS
@@ -40,8 +42,14 @@ const Home = () => {
             });
     }, []);
 
+    // Add Resident Function
+    function addResident(user) {
+        console.log("Add Resident: " + user.Username + " ID: " + user.ID);
+        navigate("/registerresident", { state: { user: user } });
+    }
+
     console.log(authenticated)
-    if (!authenticated) {
+    if (!authenticated || (userLoc.state.user === null)) {
         return <Navigate replace to="/login" />; // redirect to the login page if not authenticated
     } else {
         const user = userLoc.state.user;
@@ -49,8 +57,12 @@ const Home = () => {
         return (
             <div>
 
-                <p>Welcome to Care Sense, {user.Username}</p>
+                <p>Welcome to Care Sense, {user.Username}, ID: {user.ID}</p>
                 <p>{messages.msg1} to this {messages.msg2}</p>
+
+                <Button onClick={() => addResident(user)}>
+                    Add a Resident
+                </Button>
 
                 <ResidentList residents={residents} />
 

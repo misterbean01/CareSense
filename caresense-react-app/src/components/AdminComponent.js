@@ -4,8 +4,6 @@ import Container from 'react-bootstrap/Container';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import Table from 'react-bootstrap/Table';
-import { Link } from 'react-router-dom'
-import { useLocation } from "react-router-dom";
 
 const Admin = () => {
     const [authenticated, setAuthenticated] = useState(sessionStorage.getItem("authenticated"));
@@ -42,6 +40,14 @@ const Admin = () => {
     const [fnameEdit, setFirstNameEdit] = useState("");
     const [lnameEdit, setLastNameEdit] = useState("");
     const [itemIDEdit, setItemIDEdit] = useState("");
+    const [sexEdit, setSexEdit] = useState("");
+    const [ageEdit, setAgeEdit] = useState("");
+    const [doctorIDEdit, setDoctorIDEdit] = useState("");
+    const [familyIDEdit, setFamilyIDEdit] = useState("");
+    const [sensorIDEdit, setSensorIDEdit] = useState("");
+    const [locationIDEdit, setLocationIDEdit] = useState("");
+    const [careInstructionsEdit, setCareInstructionsEdit] = useState("");
+
 
     // Add Form for User / Resident
     const [accountTypeAdd, setAccountTypeAdd] = useState("");
@@ -49,10 +55,19 @@ const Admin = () => {
     const [passwordAdd, setPasswordAdd] = useState("");
     const [fnameAdd, setFirstNameAdd] = useState("");
     const [lnameAdd, setLastNameAdd] = useState("");
+    const [sexAdd, setSexAdd] = useState("");
+    const [ageAdd, setAgeAdd] = useState("");
+    const [doctorIDAdd, setDoctorIDAdd] = useState("");
+    const [familyIDAdd, setFamilyIDAdd] = useState("");
+    const [sensorIDAdd, setSensorIDAdd] = useState("");
+    const [locationIDAdd, setLocationIDAdd] = useState("");
+    const [careInstructionsAdd, setCareInstructionsAdd] = useState("");
 
     // Modal states
     const [openAddModal, setOpenAddModal] = useState(false)
     const [openEditModal, setOpenEditModal] = useState(false)
+    const [openAddResModal, setOpenAddResModal] = useState(false)
+    const [openEditResModal, setOpenEditResModal] = useState(false)
 
     const handleSubmitEdit = (e) => {
         e.preventDefault();
@@ -77,6 +92,7 @@ const Admin = () => {
         }
 
         editData(accountTypeEdit, itemIDEdit, newData);
+        setOpenEditModal(false);
     };
 
     const handleSubmitAdd = (e) => {
@@ -94,6 +110,62 @@ const Admin = () => {
         let newData = { Fname: fnameAdd, Lname: lnameAdd, Username: usernameAdd, Password: passwordAdd };
 
         addData(accountTypeAdd, newData);
+        setOpenAddModal(false);
+    };
+
+    const handleSubmitResEdit = (e) => {
+        e.preventDefault();
+
+        console.log(itemIDEdit + " " +
+            fnameEdit + " " +
+            lnameEdit + " " +
+            sexEdit + " " +
+            ageEdit + " " +
+            familyIDEdit + " " +
+            doctorIDEdit + " " +
+            sensorIDEdit + " " +
+            locationIDEdit + " " +
+            careInstructionsEdit
+        )
+
+        // create if statement depending on Residents
+        // ADD THE ACCOUNT TO THE DATABASE
+        let newData = {
+            Fname: fnameEdit, Lname: lnameEdit, Sex: sexEdit, Age: ageEdit,
+            FamilyID: familyIDEdit, DoctorID: doctorIDEdit, SensorID: sensorIDEdit, LocationID: locationIDEdit,
+            CareInstructions: careInstructionsEdit
+        };
+
+        editData("", itemIDEdit, newData);
+        setOpenEditResModal(false);
+    };
+
+    const handleSubmitResAdd = (e) => {
+        e.preventDefault();
+
+        console.log(
+            fnameAdd + " " +
+            lnameAdd + " " +
+            sexAdd + " " +
+            ageAdd + " " +
+            familyIDAdd + " " +
+            doctorIDAdd + " " +
+            sensorIDAdd + " " +
+            locationIDAdd + " " +
+            careInstructionsAdd
+        )
+
+
+        // create if statement depending on Residents
+        // ADD THE ACCOUNT TO THE DATABASE
+        let newData = {
+            Fname: fnameAdd, Lname: lnameAdd, Sex: sexAdd, Age: ageAdd,
+            FamilyID: familyIDAdd, DoctorID: doctorIDAdd, SensorID: sensorIDAdd, LocationID: locationIDAdd,
+            CareInstructions: careInstructionsAdd
+        };
+
+        addData("resident", newData);
+        setOpenAddResModal(false);
     };
 
     // Open the Edit Model
@@ -109,6 +181,7 @@ const Admin = () => {
         setOpenEditModal(true);
     }
 
+    // Open the Add Model
     function openAddForm(account) {
         setAccountTypeAdd(account);
         setUsernameAdd("");
@@ -118,13 +191,50 @@ const Admin = () => {
         setOpenAddModal(true);
     }
 
+    // Open the Edit Model
+    function openEditResForm(id, data) {
+        console.log("resident open edit modal");
+        console.log(data);
+        setAccountTypeEdit("");
+        setItemIDEdit(id);
+        setUsernameEdit(data.Username);
+        setPasswordEdit(data.Password);
+        setFirstNameEdit(data.Fname);
+        setLastNameEdit(data.Lname);
+        setSexEdit(data.Sex);
+        setAgeEdit(data.Age);
+        setDoctorIDEdit(data.DoctorID);
+        setFamilyIDEdit(data.FamilyID);
+        setSensorIDEdit(data.SensorID);
+        setLocationIDEdit(data.LocationID);
+        setCareInstructionsEdit(data.CareInstructions);
+        setOpenEditResModal(true);
+    }
+
+    // Open the Add Model
+    function openAddResForm() {
+        setAccountTypeAdd("");
+        setUsernameAdd("");
+        setPasswordAdd("");
+        setFirstNameAdd("");
+        setLastNameAdd("");
+        setSexAdd("");
+        setAgeAdd("");
+        setDoctorIDAdd("");
+        setFamilyIDAdd("");
+        setSensorIDAdd("");
+        setLocationIDAdd("");
+        setCareInstructionsAdd("");
+        setOpenAddResModal(true);
+    }
+
     if (!authenticated && accountType !== "admin") {
         return <Navigate replace to="/login" />; // redirect to the login page if not authenticated
     } else {
         return (
             <div>
 
-                <ResidentList residents={residents} />
+                <ResidentList residents={residents} edit={openEditResForm} add={openAddResForm} />
 
                 <CaretakerList caretakers={caretakers} edit={openEditForm} add={openAddForm} />
 
@@ -235,6 +345,210 @@ const Admin = () => {
                                 </div>
                                 <div className="mb-3">
                                     <p>Account Type: {accountTypeAdd} </p>
+                                </div>
+                                <input type="submit" className="btn btn-primary" value="Submit" />
+                            </form>
+                        </div>
+                    </div>
+                </Modal>
+
+                <Modal show={openEditResModal} onHide={() => setOpenEditResModal(false)} animation={false}
+                    style={{ overlay: { backgroundColor: 'grey' } }}>
+                    <h4 className="d-flex justify-content-center">User Edit</h4>
+                    <div className="d-flex justify-content-center">
+                        <div className="mt-5 justify-content-center">
+                            <form onSubmit={handleSubmitResEdit}>
+                                <div className="mb-3">
+                                    <label className="mb-1">First Name</label>
+                                    <input
+                                        type="text"
+                                        name="FirstName"
+                                        className="form-control"
+                                        value={fnameEdit}
+                                        onChange={(e) => setFirstNameEdit(e.target.value)}
+                                    />
+                                </div>
+                                <div className="mb-3">
+                                    <label className="mb-1">Last Name</label>
+                                    <input
+                                        type="text"
+                                        name="LastName"
+                                        className="form-control"
+                                        value={lnameEdit}
+                                        onChange={(e) => setLastNameEdit(e.target.value)}
+                                    />
+                                </div>
+                                <div className="mb-3">
+                                    <label className="mb-1">Sex</label>
+                                    <input
+                                        type="text"
+                                        name="Sex"
+                                        className="form-control"
+                                        value={sexEdit}
+                                        onChange={(e) => setSexEdit(e.target.value)}
+                                    />
+                                </div>
+                                <div className="mb-3">
+                                    <label className="mb-1">Age</label>
+                                    <input
+                                        type="text"
+                                        name="Age"
+                                        className="form-control"
+                                        value={ageEdit}
+                                        onChange={(e) => setAgeEdit(e.target.value)}
+                                    />
+                                </div>
+                                <div className="mb-3">
+                                    <label className="mb-1">FamilyID</label>
+                                    <input
+                                        type="text"
+                                        name="FamilyID"
+                                        className="form-control"
+                                        value={familyIDEdit}
+                                        onChange={(e) => setFamilyIDEdit(e.target.value)}
+                                    />
+                                </div>
+                                <div className="mb-3">
+                                    <label className="mb-1">DoctorID</label>
+                                    <input
+                                        type="text"
+                                        name="DoctorID"
+                                        className="form-control"
+                                        value={doctorIDEdit}
+                                        onChange={(e) => setDoctorIDEdit(e.target.value)}
+                                    />
+                                </div>
+                                <div className="mb-3">
+                                    <label className="mb-1">SensorID</label>
+                                    <input
+                                        type="text"
+                                        name="SensorID"
+                                        className="form-control"
+                                        value={sensorIDEdit}
+                                        onChange={(e) => setSensorIDEdit(e.target.value)}
+                                    />
+                                </div>
+                                <div className="mb-3">
+                                    <label className="mb-1">LocationID</label>
+                                    <input
+                                        type="text"
+                                        name="LocationID"
+                                        className="form-control"
+                                        value={locationIDEdit}
+                                        onChange={(e) => setLocationIDEdit(e.target.value)}
+                                    />
+                                </div>
+                                <div className="mb-3">
+                                    <label className="mb-1">CareInstructions</label>
+                                    <textarea
+                                        type="textarea"
+                                        name="CareInstructions"
+                                        className="form-control"
+                                        value={careInstructionsEdit}
+                                        onChange={(e) => setCareInstructionsEdit(e.target.value)}
+                                    />
+                                </div>
+                                <input type="submit" className="btn btn-primary" value="Submit" />
+                            </form>
+                        </div>
+                    </div>
+                </Modal>
+
+                <Modal show={openAddResModal} onHide={() => setOpenAddResModal(false)} animation={false}
+                    style={{ overlay: { backgroundColor: 'grey' } }}>
+                    <h4 className="d-flex justify-content-center">User Add</h4>
+                    <div className="d-flex justify-content-center">
+                        <div className="mt-5 justify-content-center">
+                            <form onSubmit={handleSubmitResAdd}>
+                                <div className="mb-3">
+                                    <label className="mb-1">First Name</label>
+                                    <input
+                                        type="text"
+                                        name="FirstName"
+                                        className="form-control"
+                                        value={fnameAdd}
+                                        onChange={(e) => setFirstNameAdd(e.target.value)}
+                                    />
+                                </div>
+                                <div className="mb-3">
+                                    <label className="mb-1">Last Name</label>
+                                    <input
+                                        type="text"
+                                        name="LastName"
+                                        className="form-control"
+                                        value={lnameAdd}
+                                        onChange={(e) => setLastNameAdd(e.target.value)}
+                                    />
+                                </div>
+                                <div className="mb-3">
+                                    <label className="mb-1">Sex</label>
+                                    <input
+                                        type="text"
+                                        name="Sex"
+                                        className="form-control"
+                                        value={sexAdd}
+                                        onChange={(e) => setSexAdd(e.target.value)}
+                                    />
+                                </div>
+                                <div className="mb-3">
+                                    <label className="mb-1">Age</label>
+                                    <input
+                                        type="text"
+                                        name="Age"
+                                        className="form-control"
+                                        value={ageAdd}
+                                        onChange={(e) => setAgeAdd(e.target.value)}
+                                    />
+                                </div>
+                                <div className="mb-3">
+                                    <label className="mb-1">FamilyID</label>
+                                    <input
+                                        type="text"
+                                        name="FamilyID"
+                                        className="form-control"
+                                        value={familyIDAdd}
+                                        onChange={(e) => setFamilyIDAdd(e.target.value)}
+                                    />
+                                </div>
+                                <div className="mb-3">
+                                    <label className="mb-1">DoctorID</label>
+                                    <input
+                                        type="text"
+                                        name="DoctorID"
+                                        className="form-control"
+                                        value={doctorIDAdd}
+                                        onChange={(e) => setDoctorIDAdd(e.target.value)}
+                                    />
+                                </div>
+                                <div className="mb-3">
+                                    <label className="mb-1">SensorID</label>
+                                    <input
+                                        type="text"
+                                        name="SensorID"
+                                        className="form-control"
+                                        value={sensorIDAdd}
+                                        onChange={(e) => setSensorIDAdd(e.target.value)}
+                                    />
+                                </div>
+                                <div className="mb-3">
+                                    <label className="mb-1">LocationID</label>
+                                    <input
+                                        type="text"
+                                        name="LocationID"
+                                        className="form-control"
+                                        value={locationIDAdd}
+                                        onChange={(e) => setLocationIDAdd(e.target.value)}
+                                    />
+                                </div>
+                                <div className="mb-3">
+                                    <label className="mb-1">CareInstructions</label>
+                                    <textarea
+                                        type="textarea"
+                                        name="CareInstructions"
+                                        className="form-control"
+                                        value={careInstructionsAdd}
+                                        onChange={(e) => setCareInstructionsAdd(e.target.value)}
+                                    />
                                 </div>
                                 <input type="submit" className="btn btn-primary" value="Submit" />
                             </form>
@@ -379,7 +693,7 @@ function ResidentList({ residents, edit, add }) {
                 <td>{resident.LocationID}</td>
                 <td>{resident.CareInstructions}</td>
                 <td>
-                    <Button onClick={() => edit("resident", resident.ResidentID, resident)}>
+                    <Button onClick={() => edit(resident.ResidentID, resident)}>
                         Edit
                     </Button>
                     <Button onClick={() => deleteData("resident", resident.ResidentID)} className="ms-1">
@@ -413,7 +727,7 @@ function ResidentList({ residents, edit, add }) {
                         {listOfResidents}
                     </tbody>
                 </Table>
-                <Button onClick={() => add("resident")}>
+                <Button onClick={() => add()}>
                     Add Resident
                 </Button>
             </Container>

@@ -1,15 +1,22 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
-const Registration = () => {
+const RegisterResident = () => {
     const navigate = useNavigate();
-    const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
-    const [confirmPassword, setConfirmPassword] = useState("");
+    // Get the User state from Login Component
+    const userLoc = useLocation();
+
     const [fname, setFirstName] = useState("");
     const [lname, setLastName] = useState("");
     const [hasErrors, setHasErrors] = useState(true);
-    const [accountType, setAccountType] = useState("");
+    const [sex, setSex] = useState("");
+    const [age, setAge] = useState("");
+    const [doctorID, setDoctorID] = useState("");
+    const [familyID, setFamilyID] = useState(userLoc.state.user.ID);
+    const [sensorID, setSensorID] = useState("");
+    const [locationID, setLocationID] = useState("");
+    const [careInstructions, setCareInstructions] = useState("");
 
     useEffect(() => {
 
@@ -29,30 +36,6 @@ const Registration = () => {
     const handleValidation = (e) => {
         let valid = true;
 
-        if (username == null || username === "") {
-            valid = false;
-            setHasErrors(valid);
-            return false;
-        } else {
-            valid = true;
-        }
-
-        if (password == null || password === "") {
-            valid = false;
-            setHasErrors(valid);
-            return false;
-        } else {
-            valid = true;
-        }
-
-        if (password === confirmPassword) {
-            valid = false;
-            setHasErrors(valid);
-            return false;
-        } else {
-            valid = true;
-        }
-
         if (fname == null || fname === "") {
             valid = false;
             setHasErrors(valid);
@@ -69,42 +52,69 @@ const Registration = () => {
             valid = true;
         }
 
-        if (accountType == null || accountType === "") {
+        if (age == null || age === "") {
             valid = false;
             setHasErrors(valid);
             return false;
         } else {
             valid = true;
         }
+
+        if (sex == null || sex === "") {
+            valid = false;
+            setHasErrors(valid);
+            return false;
+        } else {
+            valid = true;
+        }
+
+        if (doctorID == null || doctorID === "") {
+            valid = false;
+            setHasErrors(valid);
+            return false;
+        } else {
+            valid = true;
+        }
+
+        if (sensorID == null || sensorID === "") {
+            valid = false;
+            setHasErrors(valid);
+            return false;
+        } else {
+            valid = true;
+        }
+
+        if (locationID == null || locationID === "") {
+            valid = false;
+            setHasErrors(valid);
+            return false;
+        } else {
+            valid = true;
+        }
+
         return valid;
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        // create if statement depending on account type (Family, Doctor, Caretaker, Admin)
-        // ADD THE ACCOUNT TO THE DATABASE
-        console.log(accountType + " " +
-            username + " " +
-            password + " " +
-            fname + " " +
-            lname
-        )
-
         if (handleValidation()) {
             // create if statement depending on account type (Family, Doctor, Caretaker, Admin)
             // ADD THE ACCOUNT TO THE DATABASE
-            let newData = { Fname: fname, Lname: lname, Username: username, Password: password };
+            let newData = {
+                Fname: fname, Lname: lname, Sex: sex, Age: age,
+                FamilyID: familyID, DoctorID: doctorID, SensorID: sensorID, LocationID: locationID,
+                CareInstructions: careInstructions
+            };
 
-            addData(accountType, newData);
-            navigate("/login");
+            addData(newData)
+            navigate("/", { state: { user: userLoc.state.user } });
         }
     };
 
-
     return (
         <div>
-            <p>Registration</p>
+            <p>Register a Resident</p>
 
             <div className="row d-flex justify-content-center">
                 <div className="col-md-8">
@@ -112,34 +122,6 @@ const Registration = () => {
                     <Warning check={hasErrors} />
 
                     <form onSubmit={handleSubmit}>
-                        <div className="mb-3">
-                            <label className="mb-1">Username</label>
-                            <input
-                                type="text"
-                                name="Username"
-                                className="form-control"
-                                value={username}
-                                onChange={(e) => setUsername(e.target.value)}
-                            />
-                        </div>
-                        <div className="mb-3">
-                            <label className="label">Password</label>
-                            <input
-                                type="password"
-                                name="Password"
-                                className="form-control"
-                                onChange={(e) => setPassword(e.target.value)}
-                            />
-                        </div>
-                        <div className="mb-3">
-                            <label className="label">Confirm Password</label>
-                            <input
-                                type="password"
-                                name="ConfirmPassword"
-                                className="form-control"
-                                onChange={(e) => setConfirmPassword(e.target.value)}
-                            />
-                        </div>
                         <div className="mb-3">
                             <label className="mb-1">First Name</label>
                             <input
@@ -161,13 +143,68 @@ const Registration = () => {
                             />
                         </div>
                         <div className="mb-3">
-                            <label className="label">Select Account Type</label>
-                            <select onChange={(e) => setAccountType(e.target.value)} defaultValue="" className="form-control">
-                                <option>Select Account Type</option>
-                                <option value="caretaker">Caretaker</option>
-                                <option value="doctor">Doctor</option>
-                                <option value="family">Family</option>
-                            </select>
+                            <label className="mb-1">Sex</label>
+                            <input
+                                type="text"
+                                name="Sex"
+                                className="form-control"
+                                value={sex}
+                                onChange={(e) => setSex(e.target.value)}
+                            />
+                        </div>
+                        <div className="mb-3">
+                            <label className="mb-1">Age</label>
+                            <input
+                                type="text"
+                                name="Age"
+                                className="form-control"
+                                value={age}
+                                onChange={(e) => setAge(e.target.value)}
+                            />
+                        </div>
+                        <div className="mb-3">
+                            <label className="mb-1">FamilyID</label>
+                            <span>: {familyID}</span>
+                        </div>
+                        <div className="mb-3">
+                            <label className="mb-1">DoctorID</label>
+                            <input
+                                type="text"
+                                name="DoctorID"
+                                className="form-control"
+                                value={doctorID}
+                                onChange={(e) => setDoctorID(e.target.value)}
+                            />
+                        </div>
+                        <div className="mb-3">
+                            <label className="mb-1">SensorID</label>
+                            <input
+                                type="text"
+                                name="SensorID"
+                                className="form-control"
+                                value={sensorID}
+                                onChange={(e) => setSensorID(e.target.value)}
+                            />
+                        </div>
+                        <div className="mb-3">
+                            <label className="mb-1">LocationID</label>
+                            <input
+                                type="text"
+                                name="LocationID"
+                                className="form-control"
+                                value={locationID}
+                                onChange={(e) => setLocationID(e.target.value)}
+                            />
+                        </div>
+                        <div className="mb-3">
+                            <label className="mb-1">CareInstructions</label>
+                            <textarea
+                                type="textarea"
+                                name="CareInstructions"
+                                className="form-control"
+                                value={careInstructions}
+                                onChange={(e) => setCareInstructions(e.target.value)}
+                            />
                         </div>
                         <input type="submit" className="btn btn-primary" value="Submit" />
                     </form>
@@ -182,8 +219,8 @@ const Registration = () => {
 
 // Access the API based on the button action and use POST Method
 // Requires the API name, data
-async function addData(api, data) {
-    let address = "http://localhost:8080/CareSense/api/" + api;
+async function addData(data) {
+    let address = "http://localhost:8080/CareSense/api/resident";
 
     let newData = data;
 
@@ -221,4 +258,4 @@ async function addData(api, data) {
 
 }
 
-export default Registration;
+export default RegisterResident;

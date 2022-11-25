@@ -30,7 +30,7 @@ const Login = () => {
 
             // Navigate to homepage and send the logged in user
             if (accountType !== "admin") {
-                navigate("/", { state: { user: { Username: "aaa", Password: "aaa" } } });
+                navigate("/", { state: { user: { Username: "aaa", Password: "aaa", ID: 100 } } });
             } else {
                 navigate("/admin", { state: { user: { Username: "aaa", Password: "aaa" } } });
             }

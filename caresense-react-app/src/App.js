@@ -6,6 +6,7 @@ import Login from './components/LoginComponent';
 import Resident from './components/ResidentComponent';
 import Registration from './components/RegistrationComponent';
 import Admin from './components/AdminComponent';
+import RegisterResident from './components/RegisterResidentComponent';
 import { Navigation } from './components/NavigationComponent';
 
 
@@ -19,6 +20,7 @@ function App() {
 
         <Routes>
           <Route exact path="/" element={<Home />} />
+          <Route path="/registerresident" element={<RegisterResident />} />
           <Route path="/login" element={<Login />} />
           <Route path="/registration" element={<Registration />} />
           <Route path="/resident/:ResidentID/" element={<Resident />} />
