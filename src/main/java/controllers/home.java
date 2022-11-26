@@ -2,6 +2,8 @@ package controllers;
 
 import java.net.URI;
 import java.sql.*;
+import java.util.Map;
+
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -37,6 +39,33 @@ public class home {
 				.header("Access-Control-Allow-Headers", 
 						"Origin, X-Requested-With, Content-Type, Accept") // always include this 2 header to access the JSON
 				.entity(homeResponseJSON.toString())
+				.build();
+	}
+	
+	@Path("")
+	@POST
+	public Response PostRecord(String loginUserPassJSON)  {
+	    String message1 = "Hello";
+	    String message2 = "WORLD";
+	    
+	    JSONObject loginJSON = new JSONObject(loginUserPassJSON); 
+	    System.out.println(loginJSON.getString("Username"));
+	    System.out.println(loginJSON.getString("Password"));
+	    // Access the database with the user/pass and retrieve if valid user
+	    
+	    JSONObject userResponseJSON = new JSONObject();
+	    userResponseJSON.put("Username", message1);
+	    userResponseJSON.put("Password", message2);
+	    
+	    return Response
+				.status(Response.Status.OK)
+				.header("message", "Hello World")
+				.header("Access-Control-Allow-Origin", "*") // always include this 2 header to access the JSON
+				.header("Access-Control-Allow-Headers", 
+						"Origin, X-Requested-With, Content-Type, Accept") // always include this 2 header to access the JSON
+				.header("Access-Control-Allow-Methods", 
+						"Origin, X-Requested-With, GET,POST,OPTIONS,DELETE,PUT")
+				.entity(userResponseJSON.toString())
 				.build();
 	}
 

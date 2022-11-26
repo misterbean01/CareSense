@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 
@@ -10,33 +10,60 @@ const Login = () => {
     const [accountType, setAccountType] = useState("");
     // store the login authenticated flag locally
     const [authenticated, setAuthenticated] = useState(sessionStorage.getItem(sessionStorage.getItem("authenticated") || false));
+    const [user, setUser] = useState({});
+    const [loginStatus, setLoginStatus] = useState(false);
 
-    // remove with getUser
-    const users = [{ Username: "aaa", Password: "aaa" }];
-
-    const handleSubmit = (e) => {
-        e.preventDefault()
-
-        // replace with getUser
-        const account = users.find((user) => user.Username === username);
-
-        // check of account type
-
-        if (account && account.Password === password) {
+    useEffect(() => {
+        if (loginStatus) {
             setAuthenticated(true)
             sessionStorage.setItem("authenticated", true);
             sessionStorage.setItem("accountType", accountType);
             console.log("Login Successful: " + authenticated + " " + accountType);
 
-            // Navigate to homepage and send the logged in user
             if (accountType !== "admin") {
                 navigate("/", { state: { user: { Username: "aaa", Password: "aaa", ID: 100 } } });
             } else {
                 navigate("/admin", { state: { user: { Username: "aaa", Password: "aaa" } } });
             }
-
         }
+    }, [accountType, authenticated, loginStatus, navigate]);
 
+    const handleSubmit = async (e) => {
+        e.preventDefault()
+        setUser({})
+        setLoginStatus(false);
+
+        let address = "CareSense/api/home";
+        // address should change depending on accounttype
+
+        let loginData = { Username: username, Password: password }; // contains  user and password STRING
+        try {
+            const res = await fetch(address, {
+                method: "post",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Access-Control-Request-Origin": "http://localhost:8080",
+                    "Access-Control-Request-Method": "POST",
+                    "Access-Control-Allow-Headers":
+                        "Origin, X-Requested-With, Content-Type, Accept"
+                },
+                body: JSON.stringify(loginData),
+            });
+
+            if (!res.ok) {
+                const message = `An error has occured: ${res.status} - ${res.statusText}`;
+                throw new Error(message);
+            }
+            const loggedUser = await res.json();
+            setUser(loggedUser);
+            //console.log(loggedUser);
+            if (Object.keys(loggedUser).length !== 0)
+                setLoginStatus(true);
+        } catch (err) {
+            setUser({});
+            setLoginStatus(false);
+            console.log(err.message);
+        }
         // create if statement depending on account type (Family, Doctor, Caretaker, Admin)
 
     };

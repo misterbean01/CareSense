@@ -26,16 +26,20 @@ const Resident = () => {
                         <tr>
                             <td>First Name</td>
                             <td>{resident.Fname}</td>
-                        </tr> <tr>
+                        </tr>
+                        <tr>
                             <td>Last Name</td>
                             <td>{resident.Lname}</td>
-                        </tr> <tr>
+                        </tr>
+                        <tr>
                             <td>Sex</td>
                             <td>{resident.Sex}</td>
-                        </tr> <tr>
+                        </tr>
+                        <tr>
                             <td>Age</td>
                             <td>{resident.Age}</td>
-                        </tr> <tr>
+                        </tr>
+                        <tr>
                             <td>Family</td>
                             <td>{resident.FamilyID}</td>
                         </tr>

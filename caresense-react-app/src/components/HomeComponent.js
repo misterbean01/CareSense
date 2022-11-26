@@ -28,18 +28,18 @@ const Home = () => {
     // CARETAKERS SHOULD SEE ALL RESIDENTS
 
     useEffect(() => {
-        fetch("http://localhost:8080/CareSense/api/home")
-            .then(function (response) {
-                console.log(response)
-                return response.json();
-            })
-            .then(function (homeResponseJSON) {
-                console.log(homeResponseJSON);
-                setMessages(homeResponseJSON)
-            }).catch(err => {
-                console.log(err);
-                setMessages({ msg1: "aaa", msg2: "bbb" });
-            });
+        // fetch("http://localhost:8080/CareSense/api/home")
+        //     .then(function (response) {
+        //         console.log(response)
+        //         return response.json();
+        //     })
+        //     .then(function (homeResponseJSON) {
+        //         console.log(homeResponseJSON);
+        //         setMessages(homeResponseJSON)
+        //     }).catch(err => {
+        //         console.log(err);
+        //         setMessages({ msg1: "aaa", msg2: "bbb" });
+        //     });
     }, []);
 
     // Add Resident Function
