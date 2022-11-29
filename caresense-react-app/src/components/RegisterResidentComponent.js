@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
+import Button from 'react-bootstrap/Button';
 
 const RegisterResident = () => {
     const navigate = useNavigate();
     // Get the User state from Login Component
-    const userLoc = useLocation();
+    const stateLoc = useLocation();
+    const user = stateLoc.state.user;
 
     const [fname, setFirstName] = useState("");
     const [lname, setLastName] = useState("");
@@ -13,7 +15,7 @@ const RegisterResident = () => {
     const [sex, setSex] = useState("");
     const [age, setAge] = useState("");
     const [doctorID, setDoctorID] = useState("");
-    const [familyID, setFamilyID] = useState(userLoc.state.user.ID);
+    const [familyID, setFamilyID] = useState(user.ID);
     const [sensorID, setSensorID] = useState("");
     const [locationID, setLocationID] = useState("");
     const [careInstructions, setCareInstructions] = useState("");
@@ -108,12 +110,22 @@ const RegisterResident = () => {
             };
 
             addData(newData)
-            navigate("/", { state: { user: userLoc.state.user } });
+            navigate("/", { state: { user: user } });
         }
     };
 
     return (
         <div>
+            <p>Welcome to Care Sense, {user.Username}, ID: {user.ID} <Button onClick={() => {
+                sessionStorage.setItem("authenticated", false);
+                sessionStorage.setItem("accountType", "");
+                console.log("Logout Successful");
+                navigate("/login");
+            }}>
+                Logout
+            </Button>
+            </p>
+
             <p>Register a Resident</p>
 
             <div className="row d-flex justify-content-center">
@@ -209,6 +221,14 @@ const RegisterResident = () => {
                         <input type="submit" className="btn btn-primary" value="Submit" />
                     </form>
                 </div>
+            </div>
+
+            <div>
+                <Button onClick={() => {
+                    navigate("/", { state: { user: user } });
+                }}>
+                    Back to Home
+                </Button>
             </div>
 
 

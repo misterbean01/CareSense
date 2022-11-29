@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { Navigate } from "react-router-dom";
 import Container from 'react-bootstrap/Container';
 import Modal from 'react-bootstrap/Modal';
@@ -68,6 +70,10 @@ const Admin = () => {
     const [openEditModal, setOpenEditModal] = useState(false)
     const [openAddResModal, setOpenAddResModal] = useState(false)
     const [openEditResModal, setOpenEditResModal] = useState(false)
+
+    const navigate = useNavigate();
+    const stateLoc = useLocation();
+    const user = stateLoc.state.user;
 
     const handleSubmitEdit = (e) => {
         e.preventDefault();
@@ -233,6 +239,15 @@ const Admin = () => {
     } else {
         return (
             <div>
+                <p>Welcome to Care Sense Admin, {user.Username}, ID: {user.ID} <Button onClick={() => {
+                    sessionStorage.setItem("authenticated", false);
+                    sessionStorage.setItem("accountType", "");
+                    console.log("Logout Successful");
+                    navigate("/login");
+                }}>
+                    Logout
+                </Button>
+                </p>
 
                 <ResidentList residents={residents} edit={openEditResForm} add={openAddResForm} />
 

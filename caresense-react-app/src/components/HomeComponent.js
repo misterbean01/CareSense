@@ -11,6 +11,7 @@ import { useLocation } from "react-router-dom";
 const Home = () => {
     const navigate = useNavigate();
     const [authenticated, setAuthenticated] = useState(sessionStorage.getItem("authenticated"));
+    const [accountType, setAccountType] = useState(sessionStorage.getItem("accountType"));
     const [messages, setMessages] = useState([]);
     const [residents, setResidents] = useState([
         { ResidentID: 1, Fname: "Harold", Lname: "Hide", Sex: "Male", Age: 70, FamilyID: 1, DoctorID: 1, SensorID: 1, LocationID: 1, CareInstructions: "Morning Exercises for 10 minutes." },
@@ -21,6 +22,7 @@ const Home = () => {
 
     // Get the User state from Login Component
     const userLoc = useLocation();
+
 
     // HAVE A FUNCTION THAT FILTERS THE RESIDENT LIST:
     // IF THEY ARE FAMILY ONLY SHOW THEIR RESIDENT MEMBERS
@@ -43,37 +45,59 @@ const Home = () => {
     }, []);
 
     // Add Resident Function
-    function addResident(user) {
-        console.log("Add Resident: " + user.Username + " ID: " + user.ID);
-        navigate("/registerresident", { state: { user: user } });
-    }
-
-    console.log(authenticated)
-    if (!authenticated || (userLoc.state.user === null)) {
-        return <Navigate replace to="/login" />; // redirect to the login page if not authenticated
-    } else {
-        const user = userLoc.state.user;
-
-        return (
-            <div>
-
-                <p>Welcome to Care Sense, {user.Username}, ID: {user.ID}</p>
-                <p>{messages.msg1} to this {messages.msg2}</p>
-
-                <Button onClick={() => addResident(user)}>
+    function AddResident({ user }) {
+        if (accountType === "family") {
+            return (
+                <Button onClick={() => {
+                    console.log("Add Resident: " + user.Username + " ID: " + user.ID);
+                    navigate("/registerresident", { state: { user: user } });
+                }}>
                     Add a Resident
                 </Button>
-
-                <ResidentList residents={residents} />
-
-            </div>
-        );
+            );
+        } else {
+            return null;
+        }
     }
+
+    try {
+        if (!authenticated) {
+            return <Navigate replace to="/login" />; // redirect to the login page if not authenticated
+        } else {
+            const user = userLoc.state.user;
+            //console.log(user);
+            return (
+                <div>
+
+                    <p>Welcome to Care Sense, {user.Username}, ID: {user.ID} <Button onClick={() => {
+                        sessionStorage.setItem("authenticated", false);
+                        sessionStorage.setItem("accountType", "");
+                        console.log("Logout Successful");
+                        navigate("/login");
+                    }}>
+                        Logout
+                    </Button>
+                    </p>
+
+                    <AddResident user={user} />
+
+                    <ResidentList residents={residents} user={user} />
+
+                </div>
+            );
+        }
+    } catch (error) {
+        console.log(error);
+        return <Navigate replace to="/login" />;
+    }
+
+
 };
 
 
 // Card Component inside a Map For Each Resident
-function ResidentList({ residents }) {
+function ResidentList({ residents, user }) {
+    //console.log(user);
     const listOfResidents = residents.map((resident) => {
         return (
 
@@ -84,8 +108,8 @@ function ResidentList({ residents }) {
                         {resident.CareInstructions}
                     </Card.Text>
                 </Card.Body>
-                <Link to={'../resident/' + resident.ResidentID} state={{ resident: resident }}>
-                    Focus
+                <Link to={'../resident/' + resident.ResidentID} state={{ resident: resident, user: user }}>
+                    Details
                 </Link>
             </Card>
         )

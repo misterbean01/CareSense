@@ -11,6 +11,7 @@ const Registration = () => {
     const [hasErrors, setHasErrors] = useState(true);
     const [accountType, setAccountType] = useState("");
 
+
     useEffect(() => {
 
     }, []);
@@ -32,6 +33,7 @@ const Registration = () => {
         if (username == null || username === "") {
             valid = false;
             setHasErrors(valid);
+            console.log("username error")
             return false;
         } else {
             valid = true;
@@ -40,14 +42,16 @@ const Registration = () => {
         if (password == null || password === "") {
             valid = false;
             setHasErrors(valid);
+            console.log("password error")
             return false;
         } else {
             valid = true;
         }
 
-        if (password === confirmPassword) {
+        if (password !== confirmPassword) {
             valid = false;
             setHasErrors(valid);
+            console.log("confirm password error");
             return false;
         } else {
             valid = true;
@@ -56,6 +60,7 @@ const Registration = () => {
         if (fname == null || fname === "") {
             valid = false;
             setHasErrors(valid);
+            console.log("fname error")
             return false;
         } else {
             valid = true;
@@ -64,6 +69,7 @@ const Registration = () => {
         if (lname == null || lname === "") {
             valid = false;
             setHasErrors(valid);
+            console.log("lname error")
             return false;
         } else {
             valid = true;
@@ -72,6 +78,7 @@ const Registration = () => {
         if (accountType == null || accountType === "") {
             valid = false;
             setHasErrors(valid);
+            console.log("acc type error")
             return false;
         } else {
             valid = true;
@@ -82,20 +89,12 @@ const Registration = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        // create if statement depending on account type (Family, Doctor, Caretaker, Admin)
-        // ADD THE ACCOUNT TO THE DATABASE
-        console.log(accountType + " " +
-            username + " " +
-            password + " " +
-            fname + " " +
-            lname
-        )
-
         if (handleValidation()) {
             // create if statement depending on account type (Family, Doctor, Caretaker, Admin)
             // ADD THE ACCOUNT TO THE DATABASE
             let newData = { Fname: fname, Lname: lname, Username: username, Password: password };
 
+            console.log(newData)
             addData(accountType, newData);
             navigate("/login");
         }

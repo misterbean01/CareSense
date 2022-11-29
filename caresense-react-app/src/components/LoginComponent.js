@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-
+import Button from 'react-bootstrap/Button';
 
 
 const Login = () => {
@@ -109,8 +109,15 @@ const Login = () => {
                 </div>
             </div>
 
+            <div>
+                <Button onClick={() => {
+                    navigate("/registration");
+                }}>
+                    Registration
+                </Button>
+            </div>
 
-        </div>
+        </div >
     )
 };
 
