@@ -98,9 +98,9 @@ const Login = () => {
                         <div className="mb-3">
                             <select onChange={(e) => setAccountType(e.target.value)} defaultValue="" className="form-control">
                                 <option>Select Account Type</option>
-                                <option value="caretaker">Caretaker</option>
-                                <option value="doctor">Doctor</option>
-                                <option value="family">Family</option>
+                                <option value="Caretaker">Caretaker</option>
+                                <option value="Doctor">Doctor</option>
+                                <option value="Family">Family</option>
                                 <option value="admin">Admin</option>
                             </select>
                         </div>

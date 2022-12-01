@@ -12,7 +12,7 @@ const Home = () => {
     const navigate = useNavigate();
     const [authenticated, setAuthenticated] = useState(sessionStorage.getItem("authenticated"));
     const [accountType, setAccountType] = useState(sessionStorage.getItem("accountType"));
-    const [messages, setMessages] = useState([]);
+    const [weather, setWeather] = useState([]);
     const [residents, setResidents] = useState([
         { ResidentID: 1, Fname: "Harold", Lname: "Hide", Sex: "Male", Age: 70, FamilyID: 1, DoctorID: 1, SensorID: 1, LocationID: 1, CareInstructions: "Morning Exercises for 10 minutes." },
         { ResidentID: 2, Fname: "Lisa", Lname: "Lisa", Sex: "Female", Age: 70, FamilyID: 2, DoctorID: 2, SensorID: 2, LocationID: 2, CareInstructions: "Sleep 8 hours a day." },
@@ -29,20 +29,25 @@ const Home = () => {
     // IF THEY ARE DOCTORS ONLY SHOW THEIR RESIDENT PATIENTS
     // CARETAKERS SHOULD SEE ALL RESIDENTS
 
+
     useEffect(() => {
-        // fetch("http://localhost:8080/CareSense/api/home")
-        //     .then(function (response) {
-        //         console.log(response)
-        //         return response.json();
-        //     })
-        //     .then(function (homeResponseJSON) {
-        //         console.log(homeResponseJSON);
-        //         setMessages(homeResponseJSON)
-        //     }).catch(err => {
-        //         console.log(err);
-        //         setMessages({ msg1: "aaa", msg2: "bbb" });
-        //     });
+        getWeatherToday();
     }, []);
+
+    function getWeatherToday() {
+        fetch("CareSense/api/weather")
+            .then(function (response) {
+                console.log(response)
+                return response.json();
+            })
+            .then(function (weatherJSON) {
+                console.log(weatherJSON);
+                setWeather(weatherJSON)
+            }).catch(err => {
+                console.log(err);
+                setWeather({ todayTempMin: "NA", todayTempMax: "NA", todayWeather: "Unknown" });
+            });
+    }
 
     try {
         if (!authenticated) {
@@ -62,6 +67,12 @@ const Home = () => {
                         Logout
                     </Button>
                     </p>
+
+                    <div>
+                        <p>Today's Weather: {weather.todayWeather},
+                            Max Temperature: {weather.todayTempMax} F,
+                            Min Temperature: {weather.todayTempMin} F</p>
+                    </div>
 
                     <ResidentList residents={residents} user={user} />
 
@@ -106,19 +117,3 @@ function ResidentList({ residents, user }) {
 }
 
 export default Home;
-
-    // // Add Resident Function
-    // function AddResident({ user }) {
-    //     if (accountType === "family") {
-    //         return (
-    //             <Button onClick={() => {
-    //                 console.log("Add Resident: " + user.Username + " ID: " + user.ID);
-    //                 navigate("/registerresident", { state: { user: user } });
-    //             }}>
-    //                 Add a Resident
-    //             </Button>
-    //         );
-    //     } else {
-    //         return null;
-    //     }
-    // }

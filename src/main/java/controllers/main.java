@@ -12,7 +12,11 @@ public class main extends Application{
 	@Override
 	public Set<Class<?>> getClasses() {
 		HashSet h = new HashSet<Class<?>>();
+		// 10 Web Service
 		h.add( home.class );
+		
+		// 4 External API
+		h.add( externalWeather.class );
 		return h;
 	}
 }
