@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Button from 'react-bootstrap/Button';
 
 const Registration = () => {
     const navigate = useNavigate();
@@ -170,6 +171,14 @@ const Registration = () => {
                         </div>
                         <input type="submit" className="btn btn-primary" value="Submit" />
                     </form>
+
+                    <div>
+                        <Button onClick={() => {
+                            navigate("/login");
+                        }}>
+                            Back to Home
+                        </Button>
+                    </div>
                 </div>
             </div>
 

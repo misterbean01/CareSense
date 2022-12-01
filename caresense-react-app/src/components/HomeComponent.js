@@ -44,22 +44,6 @@ const Home = () => {
         //     });
     }, []);
 
-    // Add Resident Function
-    function AddResident({ user }) {
-        if (accountType === "family") {
-            return (
-                <Button onClick={() => {
-                    console.log("Add Resident: " + user.Username + " ID: " + user.ID);
-                    navigate("/registerresident", { state: { user: user } });
-                }}>
-                    Add a Resident
-                </Button>
-            );
-        } else {
-            return null;
-        }
-    }
-
     try {
         if (!authenticated) {
             return <Navigate replace to="/login" />; // redirect to the login page if not authenticated
@@ -79,8 +63,6 @@ const Home = () => {
                     </Button>
                     </p>
 
-                    <AddResident user={user} />
-
                     <ResidentList residents={residents} user={user} />
 
                 </div>
@@ -90,8 +72,6 @@ const Home = () => {
         console.log(error);
         return <Navigate replace to="/login" />;
     }
-
-
 };
 
 
@@ -125,5 +105,20 @@ function ResidentList({ residents, user }) {
     )
 }
 
-
 export default Home;
+
+    // // Add Resident Function
+    // function AddResident({ user }) {
+    //     if (accountType === "family") {
+    //         return (
+    //             <Button onClick={() => {
+    //                 console.log("Add Resident: " + user.Username + " ID: " + user.ID);
+    //                 navigate("/registerresident", { state: { user: user } });
+    //             }}>
+    //                 Add a Resident
+    //             </Button>
+    //         );
+    //     } else {
+    //         return null;
+    //     }
+    // }
