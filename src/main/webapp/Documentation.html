@@ -7,10 +7,91 @@
 <body>
 
 <h1>Care Sense Documentation</h1>
-<h2>INSERT OUR LOGO HERE</h2>
 <p>
 A Web Service combined with RFID Technology and IoT Sensors for a better Assisted Living Care.
 </p>
+
+
+
+
+<div>
+	<h2>Non-Restful Web Service</h2>
+
+	<h3>Upload JSON File (uploadFile.java)</h3>
+	<p>This Web Service is used with the uploadJSON.jsp. It uploads and reads a JSON file containing a list of
+	 Residents and upload them to the database.</p>
+	<h4>uploadFile</h4>
+	<li>
+	<b>doPost method | http://localhost:8080/CareSense/upload </b>
+	</li>
+	<li>
+	Posts the JSON file and if the file is valid, uploads the Resident List to the database.
+	</li>
+	<li>
+	Returns an html page that confirms the file upload or if there are error in the upload.
+	</li>
+</div>
+
+<div>
+	<h2>External Web API</h2>
+	<p>These are existing free web APIs that we are able to access and get a JSON response.</p>
+	
+	<h3>World Time API (externalClock.java)</h3>
+	<p>This Web API returns an accurate date and time given the time zone (PST).</p>
+	<h4>getWorldClockAPI</h4>
+	<li>
+	<b>GET method | http://localhost:8080/CareSense/api/clock </b>
+	</li>
+	<li>
+	Gets the accurate datetime from World Time API, format it into an OffsetDateTime object, retrieve the year, 
+	month, day, hours, minutes, and seconds separate to return them as JSON Object strings.
+	</li>
+	<li>
+	Returns a JSON Object that contains the year, month, day, hours, minutes, and seconds.
+	</li>
+	
+	<h3>Fruit Vice API (externalFruit.java)</h3>
+	<p>This Web API returns the nutritional information of a given fruit.</p>
+	<h4>postFruitInfo</h4>
+	<li>
+	<b>POST method | http://localhost:8080/CareSense/api/fruit </b>
+	</li>
+	<li>
+	Posts the given fruit name of the user then feeds it to the Fruit Vice AP to retrieve the nutrional values of the fruit then return it to the user.
+	</li>
+	<li>
+	Returns a JSON Object that contains the carbohydrates, protein, fat, calories, sugar, and name of the fruit.
+	</li>
+	
+	<h3>date.nager Public Holidays API (externalHoliday.java)</h3>
+	<p>This Web API returns the public holidays of a country in a year.</p>
+	<h4>getPublicHolidays</h4>
+	<li>
+	<b>GET method | http://localhost:8080/CareSense/api/holiday </b>
+	</li>
+	<li>
+	Gets the public holidays of county in year (US 2022) and returns the list to the user.
+	</li>
+	<li>
+	Returns a JSON Array of public holiday names and their dates.
+	</li>
+	
+	<h3>Open-Meteo API (externalWeather.java)</h3>
+	<p>This Web API returns the weather information on a given latitude and longitude.</p>
+	<h4>getExternalWeatherAPI</h4>
+	<li>
+	<b>GET method | http://localhost:8080/CareSense/api/weather </b>
+	</li>
+	<li>
+	Gets the weather information on a given latitude and longitude. It only specifically gets the current day's weather code, and
+	 minimum and maximum temperatures. The weather code is then converted into a String description (ex. Clear Skies or Partly Cloudy).
+	</li>
+	<li>
+	Returns a JSON Object of the weather description, and the minimum and maximum temperature of the current day.
+	</li>
+</div>
+
+
 
 </body>
 </html>
