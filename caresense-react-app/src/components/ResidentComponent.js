@@ -50,6 +50,9 @@ const Resident = () => {
     const [openAddNutriModal, setOpenAddNutriModal] = useState(false)
     const [openEditNutriModal, setOpenEditNutriModal] = useState(false)
 
+    const [fruitName, setFruitName] = useState("");
+    const [fruitNutrition, setFruitNutrition] = useState("");
+
     useEffect(() => {
 
     }, []);
@@ -126,6 +129,54 @@ const Resident = () => {
         addData("nutrition", newData);
         setOpenAddNutriModal(false);
     };
+
+    const handleSubmitFruitName = (e) => {
+        e.preventDefault();
+        getFruitNutrition(fruitName);
+    };
+
+    async function getFruitNutrition(fruitName) {
+        let address = "/CareSense/api/fruit/";
+
+        let fruit = { name: fruitName };
+
+        try {
+            const res = await fetch(address, {
+                method: "post",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Access-Control-Request-Origin": "http://localhost:8080",
+                    "Access-Control-Request-Method": "POST",
+                    "Access-Control-Allow-Headers":
+                        "Origin, X-Requested-With, Content-Type, Accept"
+                },
+                body: JSON.stringify(fruit),
+            });
+
+            if (!res.ok) {
+                const message = `An error has occured: ${res.status} - ${res.statusText}`;
+                throw new Error(message);
+            }
+            const data = await res.json();
+            const result = {
+                status: res.status + "-" + res.statusText,
+                headers: {
+                    "Content-Type": res.headers.get("Content-Type"),
+                    "Content-Length": res.headers.get("Content-Length"),
+                },
+                data: data,
+            };
+            console.log(result.data);
+            setFruitNutrition(result.data);
+        } catch (err) {
+            console.log(err.message);
+            setFruitNutrition({ name: "NA", carbohydrates: "NA", protein: "NA", fat: "NA", calories: "NA", sugar: "NA" });
+        }
+
+        // USE A FUNCTION TO REFRESH THE LIST
+
+    }
+
     // Open the Edit Medication Modal
     function openEditMedicForm(id, data) {
         console.log("Medication open edit modal");
@@ -167,7 +218,6 @@ const Resident = () => {
         setNutriInstructionAdd("");
         setOpenAddNutriModal(true);
     }
-
 
     function MedicationList({ medications, edit, add }) {
         // RETRIVE THIS FROM DATABASE THAT IS FILTERED
@@ -499,10 +549,35 @@ const Resident = () => {
                         </div>
                     </Modal>
 
+                    <div className="m-1">
+                        <form onSubmit={handleSubmitFruitName}>
+                            <div className="mb-3">
+                                <label className="mb-1">Get Fruit Nutrition</label>
+                                <input
+                                    type="text"
+                                    name="FruitNutrition"
+                                    className="form-control"
+                                    value={fruitName}
+                                    onChange={(e) => setFruitName(e.target.value)}
+                                />
+                            </div>
+                            <input type="submit" className="btn btn-primary" value="Submit" />
+                        </form>
+                    </div>
+                    <div>
+                        Fruit Nutrition:
+                        <li>Name: {fruitNutrition.name}</li>
+                        <li>Carb: {fruitNutrition.carbohydrates}</li>
+                        <li>Calories: {fruitNutrition.calories}</li>
+                        <li>Fat: {fruitNutrition.fat}</li>
+                        <li>Protein: {fruitNutrition.protein}</li>
+                        <li>Sugar: {fruitNutrition.sugar}</li>
+                    </div>
+
                 </div>
 
                 <div>
-                    <Button onClick={() => {
+                    <Button className="m-2" onClick={() => {
                         navigate("/", { state: { user: user } });
                     }}>
                         Back to Home
@@ -518,7 +593,7 @@ const Resident = () => {
 // Access the API based on the button action and use POST Method
 // Requires the API name, data
 async function addData(api, data) {
-    let address = "CareSense/api/" + api;
+    let address = "/CareSense/api/" + api;
 
     let newData = data;
 
@@ -560,7 +635,7 @@ async function addData(api, data) {
 // Access the API based on the button action and use PUT Method
 // Requires the API name, id, data
 async function editData(api, id, data) {
-    let address = "CareSense/api/" + api + "/" + id;
+    let address = "/CareSense/api/" + api + "/" + id;
 
     let currentData = data;
 
@@ -603,7 +678,7 @@ async function editData(api, id, data) {
 // Requires the API name, id
 async function deleteData(api, id) {
     console.log(api + " delete " + id)
-    let address = "CareSense/api/" + api + "/" + id;
+    let address = "/CareSense/api/" + api + "/" + id;
 
     try {
         const res = await fetch(address, {

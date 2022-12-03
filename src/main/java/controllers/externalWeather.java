@@ -71,7 +71,7 @@ public class externalWeather {
 						
 			return Response
 					.status(Response.Status.OK)
-					.header("todayWeather", convertWeatherCode(todayWeatherCode))
+					.header("todayWeather", convertWeatherCode(todayWeatherCode)) // custom header attribute
 					.header("todayTempMax", dailyTempMax.getDouble(1))
 					.header("todayTempMin", dailyTempMin.getDouble(1))
 					.entity(weatherResponse.toString())

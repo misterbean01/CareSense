@@ -12,7 +12,9 @@ const Home = () => {
     const navigate = useNavigate();
     const [authenticated, setAuthenticated] = useState(sessionStorage.getItem("authenticated"));
     const [accountType, setAccountType] = useState(sessionStorage.getItem("accountType"));
-    const [weather, setWeather] = useState([]);
+    const [weather, setWeather] = useState({});
+    const [clock, setClock] = useState({});
+    const [holidays, setHolidays] = useState([]);
     const [residents, setResidents] = useState([
         { ResidentID: 1, Fname: "Harold", Lname: "Hide", Sex: "Male", Age: 70, FamilyID: 1, DoctorID: 1, SensorID: 1, LocationID: 1, CareInstructions: "Morning Exercises for 10 minutes." },
         { ResidentID: 2, Fname: "Lisa", Lname: "Lisa", Sex: "Female", Age: 70, FamilyID: 2, DoctorID: 2, SensorID: 2, LocationID: 2, CareInstructions: "Sleep 8 hours a day." },
@@ -32,6 +34,8 @@ const Home = () => {
 
     useEffect(() => {
         getWeatherToday();
+        getClockToday();
+        getHoliday();
     }, []);
 
     function getWeatherToday() {
@@ -41,11 +45,44 @@ const Home = () => {
                 return response.json();
             })
             .then(function (weatherJSON) {
-                console.log(weatherJSON);
+                //console.log(weatherJSON);
                 setWeather(weatherJSON)
             }).catch(err => {
-                console.log(err);
+                //console.log(err);
                 setWeather({ todayTempMin: "NA", todayTempMax: "NA", todayWeather: "Unknown" });
+            });
+    }
+
+    function getClockToday() {
+        fetch("CareSense/api/clock")
+            .then(function (response) {
+                //console.log(response)
+                return response.json();
+            })
+            .then(function (clockJSON) {
+                //console.log(clockJSON);
+                setClock(clockJSON)
+            }).catch(err => {
+                console.log(err);
+                setClock({
+                    datetime: "NA", Month: "NA", Day: "NA", Year: "NA",
+                    Hours: "NA", Minutes: "NA", Seconds: "NA",
+                });
+            });
+    }
+
+    function getHoliday() {
+        fetch("CareSense/api/holiday")
+            .then(function (response) {
+                //console.log(response)
+                return response.json();
+            })
+            .then(function (holidayJSON) {
+                console.log(holidayJSON);
+                setHolidays(holidayJSON)
+            }).catch(err => {
+                console.log(err);
+                setHolidays([{}]);
             });
     }
 
@@ -69,6 +106,11 @@ const Home = () => {
                     </p>
 
                     <div>
+                        <p>Date: {clock.Month}/{clock.Day}/{clock.Year} </p>
+                        <p>Time: {clock.Hours}:{clock.Minutes}</p>
+                    </div>
+
+                    <div>
                         <p>Today's Weather: {weather.todayWeather},
                             Max Temperature: {weather.todayTempMax} F,
                             Min Temperature: {weather.todayTempMin} F</p>
@@ -76,6 +118,7 @@ const Home = () => {
 
                     <ResidentList residents={residents} user={user} />
 
+                    <HolidayList holidays={holidays} />
                 </div>
             );
         }
@@ -111,6 +154,27 @@ function ResidentList({ residents, user }) {
                 <Row>
                     {listOfResidents}
                 </Row>
+            </Container>
+        </div>
+    )
+}
+
+// Card Component inside a Map For Each Resident
+function HolidayList({ holidays }) {
+    //console.log(user);
+    const listofHolidays = holidays.map((holiday) => {
+        return (
+
+            <li>{holiday.name} on {holiday.date}</li>
+        )
+    });
+    return (
+        <div>
+            <Container className='p-4'>
+                Current holidays this Year:
+
+                {listofHolidays}
+
             </Container>
         </div>
     )
