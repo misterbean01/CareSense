@@ -22,29 +22,23 @@ public class resident {
 	caresense_app careSense = new caresense_app();
 	String connectStr = careSense.serverConnect();
 	
-	// get resident via userID
+	// get resident data via userID
 	@Path("/{userID}")
 	@GET
-	public Response getResident (@PathParam("userID") String userID) throws Exception {
+	public Response getResident(@PathParam("userID") String userID) throws Exception {
 		
-		JSONObject newRecord = new JSONObject ();
+		JSONObject viewRecord = new JSONObject ();
 		
 		Class.forName("com.mysql.cj.jdbc.Driver");
     	Connection connection = DriverManager.getConnection(connectStr); 
 		Statement sqlStatement = connection.createStatement();
-		String query = "SELECT userID, userType, username, password, firstName, lastName, birthday, gender, phoneNumber FROM user WHERE userID = \"" + userID +"\"";
+		String query = "SELECT userID, locationID, sensorID FROM resident WHERE userID = \"" + userID + "\"";
 		ResultSet rs = sqlStatement.executeQuery(query);
 		while (rs.next())
 		{
-			newRecord.put("userID", userID);
-			newRecord.put("userType", rs.getString("userType"));
-			newRecord.put("username", rs.getString("username"));
-			newRecord.put("password", rs.getString("password"));
-			newRecord.put("firstName", rs.getString("firstName"));
-			newRecord.put("lastName", rs.getString("lastName"));
-			newRecord.put("birthday", rs.getString("birthday"));
-			newRecord.put("gender", rs.getString("gender"));
-			newRecord.put("phoneNumber", rs.getString("phoneNumber"));
+			viewRecord.put("userID", userID);
+			viewRecord.put("locationID", rs.getString("locationID"));
+			viewRecord.put("sensorID", rs.getString("sensorID"));
 		}
 		
 		return Response
@@ -54,7 +48,7 @@ public class resident {
 					"Origin, X-Requested-With, Content-Type, Accept")
       	    .header("Access-Control-Allow-Methods",
 					"Origin, X-Requested-With, GET,POST,OPTIONS,DELETE,PUT")
-      	    .entity(newRecord.toString())
+      	    .entity(viewRecord.toString())
       	    .build();
 	}
 	
@@ -67,9 +61,7 @@ public class resident {
     	Connection connection = DriverManager.getConnection(connectStr); 
 		Statement sqlStatement = connection.createStatement();	 
 
-		sqlStatement.executeUpdate("DELETE FROM user WHERE userID = \"" + userID + "\"");
-		
-		
+		sqlStatement.executeUpdate("DELETE FROM resident WHERE userID = \"" + userID + "\"");
         connection.close();
         
         return Response
@@ -90,52 +82,34 @@ public class resident {
 		JSONObject userJSON = new JSONObject (userInfo);
 		JSONObject newRecord = new JSONObject ();
 					
-		String userID = userJSON.getString("userID");
-		String userType = userJSON.getString("userType");
-		String username = userJSON.getString("username");
-		String password = userJSON.getString("password");
-		String firstName = userJSON.getString("firstName");
-		String lastName = userJSON.getString("lastName");
-		String birthday = userJSON.getString("birthday");
-		String gender = userJSON.getString("gender");
-		String phoneNumber = userJSON.getString("phoneNumber");
-			
-		newRecord.put("userID", userID);
-		newRecord.put("userType", userType);
-		newRecord.put("username", username);
-		newRecord.put("password", password);
-		newRecord.put("firstName", firstName);
-		newRecord.put("lastName", lastName);
-		newRecord.put("birthday", birthday);
-		newRecord.put("gender", gender);
-		newRecord.put("phoneNumber", phoneNumber);
-					
-        String SQL = "INSERT INTO user VALUES ("
-        		+ "\"" + userID 	+ "\","
-        		+ "\"" + userType 	+ "\","
-        		+ "\"" + username 	+ "\"," 
-        		+ "\"" + password	+ "\","
-        		+ "\"" + firstName	+ "\","
-        		+ "\"" + lastName	+ "\","
-        		+ "\"" + birthday	+ "\","
-        		+ "\"" + gender		+ "\","
-        		+ "\"" + phoneNumber + "\")";
-	        
+		String useriD = userJSON.getString("useriD");
+		String locationID = userJSON.getString("locationID");
+		String sensorID = userJSON.getString("sensorID");
+		
+		newRecord.put("useriD", useriD);
+		newRecord.put("locationID", locationID);
+		newRecord.put("sensorID", sensorID);
+		
+        String SQL = "INSERT INTO resident VALUES ("
+        		+ "\"" + useriD 	+ "\","
+        		+ "\"" + locationID 	+ "\","
+        		+ "\"" + sensorID 		+ "\")";
+        
         Class.forName("com.mysql.cj.jdbc.Driver");
     	Connection connection = DriverManager.getConnection(connectStr); 
 		Statement sqlStatement = connection.createStatement();	 
 		sqlStatement.executeUpdate(SQL);
-		connection.close();	
-			
-	return Response
-			.status(Response.Status.OK)
-			.header("Access-Control-Allow-Origin", "*")
-			.header("Access-Control-Allow-Headers",
-					"Origin, X-Requested-With, Content-Type, Accept")
-			.header("Access-Control-Allow-Methods",
-					"Origin, X-Requested-With, GET,POST,OPTIONS,DELETE,PUT")
-			.entity(newRecord.toString())
-			.build();
+		connection.close(); 
+
+		return Response
+				.status(Response.Status.OK)
+				.header("Access-Control-Allow-Origin", "*")
+				.header("Access-Control-Allow-Headers",
+						"Origin, X-Requested-With, Content-Type, Accept")
+				.header("Access-Control-Allow-Methods",
+						"Origin, X-Requested-With, GET,POST,OPTIONS,DELETE,PUT")
+				.entity(newRecord.toString())
+				.build();
 	}	
 	
 	// update resident
@@ -146,36 +120,18 @@ public class resident {
 		JSONObject userJSON = new JSONObject (userInfo);
 		JSONObject newRecord = new JSONObject ();
 					
-		String userID = "userID = \"" 		+ userJSON.getString("userID") 		+ "\"";
-		String userType = "userType = \"" 	+ userJSON.getString("userType") 	+ "\"";
-		String username = "username = \"" 	+ userJSON.getString("username") 	+ "\"";
-		String password = "password = \"" 	+ userJSON.getString("password") 	+ "\"";
-		String firstName = "firstName = \"" + userJSON.getString("firstName") 	+ "\"";
-		String lastName = "lastName = \"" 	+ userJSON.getString("lastName") 	+ "\"";
-		String birthday = "birthday = \"" 	+ userJSON.getString("birthday") 	+ "\"";
-		String gender = "gender = \"" 		+ userJSON.getString("gender") 		+ "\"";
-		String phoneNumber = "phoneNumber = \"" + userJSON.getString("phoneNumber") + "\"";
+		String userID = "userID = \"" 	+ userJSON.getString("userID") 	+ "\"";
+		String locationID = "locationID = \"" 		+ userJSON.getString("locationID") 	+ "\"";
+		String sensorID = "temperature = \"" 	+ userJSON.getString("sensorID") 	+ "\"";
 			
-		newRecord.put("userID", 	userJSON.getString("userID"));
-		newRecord.put("userType", 	userJSON.getString("userType"));
-		newRecord.put("username", 	userJSON.getString("username"));
-		newRecord.put("password", 	userJSON.getString("password"));
-		newRecord.put("firstName", 	userJSON.getString("firstName"));
-		newRecord.put("lastName", 	userJSON.getString("lastName"));
-		newRecord.put("birthday", 	userJSON.getString("birthday"));
-		newRecord.put("gender", 	userJSON.getString("gender"));
-		newRecord.put("phoneNumber", userJSON.getString("phoneNumber"));
+		newRecord.put("userID", userJSON.getString("userID"));
+		newRecord.put("locationID", 	userJSON.getString("locationID"));
+		newRecord.put("sensorID", 	userJSON.getString("sensorID"));
 					
-        String SQL = "UPDATE user SET " 
-        		+ userID 		+ ", " 
-        		+ userType 		+ ", " 
-        		+ username		+ ", " 
-        		+ password		+ ", " 
-        		+ firstName		+ ", " 
-        		+ lastName		+ ", " 
-        		+ birthday		+ ", " 
-        		+ gender		+ ", " 
-        		+ phoneNumber   
+        String SQL = "UPDATE resident SET " 
+        		+ userID 	+ ", " 
+        		+ locationID 		+ ", " 
+        		+ sensorID   
         		+ " WHERE userID = \"" + userJSON.getString("userID") + "\"";
 	        
         Class.forName("com.mysql.cj.jdbc.Driver");
