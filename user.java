@@ -25,7 +25,7 @@ public class user {
 	// get user via userID
 	@Path("/{userID}")
 	@GET
-	public Response getResident (@PathParam("userID") String userID) throws Exception {
+	public Response getUser (@PathParam("userID") String userID) throws Exception {
 		
 		JSONObject newRecord = new JSONObject ();
 		
@@ -61,7 +61,7 @@ public class user {
 	// Delete a user
 	@Path("/{userID}")
 	@DELETE
-	public Response deleteResident (@PathParam("userID") String userID) throws SQLException, Exception  {
+	public Response deleteUser (@PathParam("userID") String userID) throws SQLException, Exception  {
 		
 	   	Class.forName("com.mysql.cj.jdbc.Driver");
     	Connection connection = DriverManager.getConnection(connectStr); 
@@ -85,7 +85,7 @@ public class user {
 	// add user
 	@Path("/{userInfo}")
 	@POST
-	public Response addResident (@PathParam("userInfo") String userInfo) throws Exception {
+	public Response addUser (@PathParam("userInfo") String userInfo) throws Exception {
 		
 		JSONObject userJSON = new JSONObject (userInfo);
 		JSONObject newRecord = new JSONObject ();
@@ -141,7 +141,7 @@ public class user {
 	// update user
 	@Path("/{userInfo}")
 	@PUT
-	public Response updateResident (@PathParam("userInfo") String userInfo) throws Exception {
+	public Response updateUser (@PathParam("userInfo") String userInfo) throws Exception {
 		
 		JSONObject userJSON = new JSONObject (userInfo);
 		JSONObject newRecord = new JSONObject ();
