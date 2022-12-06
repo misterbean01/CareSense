@@ -43,8 +43,8 @@ public class externalWeather {
 			
 			int responseCode = con1.getResponseCode();
 			
-			System.out.println("\nSending 'GET' request to URL : " + url1);
-			System.out.println("Response Code : " + responseCode);
+			//System.out.println("\nSending 'GET' request to URL : " + url1);
+			//System.out.println("Response Code : " + responseCode);
 			
 			BufferedReader in = new BufferedReader(
 					new InputStreamReader(con1.getInputStream()));

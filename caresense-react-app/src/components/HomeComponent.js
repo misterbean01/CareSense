@@ -91,7 +91,7 @@ const Home = () => {
     function getWeatherToday() {
         fetch("CareSense/api/weather")
             .then(function (response) {
-                console.log(response)
+                //console.log(response)
                 return response.json();
             })
             .then(function (weatherJSON) {
@@ -128,7 +128,7 @@ const Home = () => {
                 return response.json();
             })
             .then(function (holidayJSON) {
-                console.log(holidayJSON);
+                //console.log(holidayJSON);
                 setHolidays(holidayJSON)
             }).catch(err => {
                 console.log(err);

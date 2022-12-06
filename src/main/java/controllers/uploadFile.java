@@ -1,31 +1,19 @@
 package controllers;
 
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Response;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
@@ -44,6 +32,10 @@ public class uploadFile extends HttpServlet {
 	private String fileName = "";
 	private Integer options = 0;
     private ServletFileUpload uploader = null;
+    
+	// connect to database
+	main careSense = new main();
+	String connectStr = careSense.serverConnect();
     
 	@Override
 	public void init() throws ServletException{
@@ -100,40 +92,50 @@ public class uploadFile extends HttpServlet {
 				JSONObject fileJSON = new JSONObject(content);
 
 				// Parse Rice JSON Object
-				JSONArray jsonArray = fileJSON.getJSONArray("residents");  
-				// System.out.println(jsonArray);
+				JSONArray jsonArray = fileJSON.getJSONArray("users");  
+				//System.out.println(jsonArray);
 			
 				try {
 					// Parse JSON Array and add them to the DB
-					String SQL = "INSERT INTO RESIDENTS (Fname, Lname, Sex, Age, SensorID, LocationID, CareInstructions) VALUES ";
+					String SQL = "INSERT INTO user VALUES  ";
 					int countInit = 0;
 					for (Object item : jsonArray) {
+						//System.out.println(item);
 						if (countInit > 0) 
 							SQL += ", ";
-
-						JSONObject resident = (JSONObject) item;
-						String fname = resident.getString("fname");
-						String lname = resident.getString("lname");
-						String sex = resident.getString("sex");
-						Integer age = resident.getInt("age");
-						Integer sensorID = resident.getInt("sensorID");
-						Integer locationID = resident.getInt("locationID");
-						String care = resident.getString("care");
-						String insertSQL = "(\"" + fname + "\", \"" +  lname + "\", ";
-						insertSQL += "\"" + sex + "\", " +  age + ", ";
-						insertSQL +=  sensorID + ", " +  locationID + ", \"";
-						insertSQL += care + "\")";  
+						JSONObject user = (JSONObject) item;
+						//System.out.println(user);
+						String firstName = user.getString("firstName");
+						String lastName = user.getString("lastName");
+						String gender = user.getString("gender");
+						String birthday = user.getString("birthday");
+						String username = user.getString("username");
+						String password = user.getString("password");
+						String userType = user.getString("userType");
+						String userID = user.getString("userID");
+						String phoneNumber = user.getString("phoneNumber");
+						
+						String insertSQL =  "(\"" + userID 	+ "\","
+				        		+ "\"" + userType 	+ "\","
+				        		+ "\"" + username 	+ "\"," 
+				        		+ "\"" + password	+ "\","
+				        		+ "\"" + firstName	+ "\","
+				        		+ "\"" + lastName	+ "\","
+				        		+ "\"" + birthday	+ "\","
+				        		+ "\"" + gender		+ "\","
+				        		+ "\"" + phoneNumber + "\")";
+						
 						SQL += insertSQL;
 						countInit++;
 					}
 					SQL += ";";
 					System.out.println(SQL);
 
-//					Class.forName("com.mysql.cj.jdbc.Driver");
-//					Connection connection = DriverManager.getConnection(connectStr); 
-//					Statement sqlStatement = connection.createStatement();	 
-//					sqlStatement.executeUpdate(SQL);
-//					connection.close();
+			        Class.forName("com.mysql.cj.jdbc.Driver");
+			    	Connection connection = DriverManager.getConnection(connectStr); 
+					Statement sqlStatement = connection.createStatement();	 
+					sqlStatement.executeUpdate(SQL);
+					connection.close();
 
 				} catch(Exception e) {
 					System.out.println(e);

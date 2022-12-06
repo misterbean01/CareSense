@@ -17,28 +17,18 @@ const Login = () => {
         if (loginStatus) {
             setAuthenticated(true)
             sessionStorage.setItem("authenticated", true);
-            sessionStorage.setItem("userType", userType);
+            sessionStorage.setItem("userType", loggedUser.userType);
+            setUserType(loggedUser.userType);
             console.log("Login Successful: " + authenticated + " " + userType);
 
-            // console.log(loggedUser)
-            // if (userType === "admin") {
-            //     navigate("/admin", { state: { user: loggedUser } });
-            // } else if (userType === "Resident") {
-            //     navigate("/myresident", { state: { user: loggedUser } });
-            // } else {
-            //     navigate("/", { state: { user: loggedUser } });
-            // }
-
-            //delete this
-            const fakeuser = { userID: 1, userType: "resident", username: "aaa", password: "aaa", firstName: "Harold", lastName: "Hide", birthday: "01-01-1991", gender: "Male", phoneNumber: "253-111-1111" }
             const fakeresident = { userID: 1, locationID: 1, sensorID: 1 }
             console.log(loggedUser)
             if (userType === "admin") {
-                navigate("/admin", { state: { user: fakeuser } });
-            } else if (userType === "Resident") {
-                navigate("/myresident", { state: { user: fakeuser, resident: fakeresident } });
+                navigate("/admin", { state: { user: loggedUser } });
+            } else if (userType === "resident") {
+                navigate("/myresident", { state: { user: loggedUser, resident: fakeresident } });
             } else {
-                navigate("/", { state: { user: fakeuser } });
+                navigate("/", { state: { user: loggedUser } });
             }
         }
     }, [userType, authenticated, loginStatus, loggedUser, navigate]);
@@ -48,39 +38,73 @@ const Login = () => {
         setLoggedUser({})
         setLoginStatus(false);
 
-        let address = "CareSense/api/home";
-        // address should change depending on accounttype
+        let address = "CareSense/api/login";
+        // address should change depending on userType  
 
-        let loginData = { Username: username, Password: password }; // contains  user and password STRING
+        //let loginData = { Username: username, Password: password }; // contains  user and password STRING
+
+        const xmlBody = "<?xml version='1.0'?><query>" +
+            "<username>" + username + "</username>" +
+            "<password>" + password + "</password>" +
+            "</query>";
+        console.log(xmlBody);
+
         try {
             const res = await fetch(address, {
                 method: "post",
                 headers: {
-                    "Content-Type": "application/json",
+                    "Content-Type": "text/xml",
                     "Access-Control-Request-Origin": "http://localhost:8080",
                     "Access-Control-Request-Method": "POST",
                     "Access-Control-Allow-Headers":
                         "Origin, X-Requested-With, Content-Type, Accept"
                 },
-                body: JSON.stringify(loginData),
+                body: xmlBody
             });
 
             if (!res.ok) {
                 const message = `An error has occured: ${res.status} - ${res.statusText}`;
+                setUsername("");
+                setPassword("")
                 throw new Error(message);
+            } else {
+                const xmlBody = await res.text();
+                console.log(xmlBody);
+
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(xmlBody, "application/xml");
+                // print the name of the root element or error message
+                const errorNode = doc.querySelector("parsererror");
+                if (errorNode) {
+                    console.log("error while parsing");
+                } else {
+                    const newUser = {
+                        userID: doc.getElementsByTagName("userID")[0].childNodes[0].textContent,
+                        userType: doc.getElementsByTagName("userType")[0].childNodes[0].textContent,
+                        username: username,
+                        password: password,
+                        firstName: doc.getElementsByTagName("firstName")[0].childNodes[0].textContent,
+                        lastName: doc.getElementsByTagName("lastName")[0].childNodes[0].textContent,
+                        gender: doc.getElementsByTagName("gender")[0].childNodes[0].textContent,
+                        birthday: doc.getElementsByTagName("birthday")[0].childNodes[0].textContent,
+                        phoneNumber: doc.getElementsByTagName("phoneNumber")[0].childNodes[0].textContent
+                    }
+                    //console.log(newUser);
+
+                    setLoggedUser(newUser);
+                    if (Object.keys(newUser).length !== 0)
+                        setLoginStatus(true);
+                }
+
+
             }
-            const loggedUser = await res.json();
-            setLoggedUser(loggedUser);
-            console.log(loggedUser);
-            if (Object.keys(loggedUser).length !== 0)
-                setLoginStatus(true);
+
         } catch (err) {
             setLoggedUser({});
             setLoginStatus(false);
             console.log(err.message);
         }
         // create if statement depending on account type (Family, Doctor, Caretaker, Admin)
-
     };
 
     return (
@@ -107,18 +131,9 @@ const Login = () => {
                                 type="password"
                                 name="Password"
                                 className="form-control"
+                                value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                             />
-                        </div>
-                        <div className="mb-3">
-                            <select onChange={(e) => setUserType(e.target.value)} defaultValue="" className="form-control">
-                                <option>Select Account Type</option>
-                                <option value="caretaker">Caretaker</option>
-                                <option value="doctor">Doctor</option>
-                                <option value="familyMember">Family</option>
-                                <option value="resident">Resident</option>
-                                <option value="admin">Admin</option>
-                            </select>
                         </div>
                         <input type="submit" value="Submit" />
                     </form>
