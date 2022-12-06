@@ -11,15 +11,63 @@ import { useLocation } from "react-router-dom";
 const Home = () => {
     const navigate = useNavigate();
     const [authenticated, setAuthenticated] = useState(sessionStorage.getItem("authenticated"));
-    const [accountType, setAccountType] = useState(sessionStorage.getItem("accountType"));
+    const [userType, setUserType] = useState(sessionStorage.getItem("userType"));
     const [weather, setWeather] = useState({});
     const [clock, setClock] = useState({});
     const [holidays, setHolidays] = useState([]);
     const [residents, setResidents] = useState([
-        { ResidentID: 1, Fname: "Harold", Lname: "Hide", Sex: "Male", Age: 70, FamilyID: 1, DoctorID: 1, SensorID: 1, LocationID: 1, CareInstructions: "Morning Exercises for 10 minutes." },
-        { ResidentID: 2, Fname: "Lisa", Lname: "Lisa", Sex: "Female", Age: 70, FamilyID: 2, DoctorID: 2, SensorID: 2, LocationID: 2, CareInstructions: "Sleep 8 hours a day." },
-        { ResidentID: 3, Fname: "Rodger", Lname: "Hide", Sex: "Male", Age: 72, FamilyID: 1, DoctorID: 3, SensorID: 3, LocationID: 1, CareInstructions: "Drink Water every 4 hours." },
-        { ResidentID: 4, Fname: "Ann", Lname: "Tony", Sex: "Female", Age: 71, FamilyID: 3, DoctorID: 2, SensorID: 4, LocationID: 2, CareInstructions: "Massages before walking." }
+        {
+            userID: 1,
+            userType: "Resident",
+            username: "aaa",
+            password: "aaa",
+            firstName: "Harold",
+            lastName: "Hide",
+            birthday: "01-01-1951",
+            gender: "Male",
+            phoneNumber: "253-111-1111",
+            sensorID: 1,
+            locationID: 1
+        },
+        {
+            userID: 2,
+            userType: "Resident",
+            username: "aaa",
+            password: "aaa",
+            firstName: "Nice",
+            lastName: "Lee",
+            birthday: "01-01-1951",
+            gender: "Male",
+            phoneNumber: "253-111-1111",
+            sensorID: 2,
+            locationID: 2
+        },
+        {
+            userID: 3,
+            userType: "Resident",
+            username: "aaa",
+            password: "aaa",
+            firstName: "Bob",
+            lastName: "Read",
+            birthday: "01-01-1951",
+            gender: "Male",
+            phoneNumber: "253-111-1111",
+            sensorID: 1,
+            locationID: 1
+        },
+        {
+            userID: 4,
+            userType: "Resident",
+            username: "aaa",
+            password: "aaa",
+            firstName: "Lisa",
+            lastName: "Bint",
+            birthday: "01-01-1951",
+            gender: "Female",
+            phoneNumber: "253-111-1111",
+            sensorID: 1,
+            locationID: 1
+        }
     ]);
 
     // Get the User state from Login Component
@@ -37,6 +85,8 @@ const Home = () => {
         getClockToday();
         getHoliday();
     }, []);
+
+    // ONLY SHOW ITEMS THAT ID EXISTS ON THE DATABSE
 
     function getWeatherToday() {
         fetch("CareSense/api/weather")
@@ -95,9 +145,9 @@ const Home = () => {
             return (
                 <div>
 
-                    <p>Welcome to Care Sense, {user.Username}, ID: {user.ID} <Button onClick={() => {
+                    <p>Welcome to Care Sense, {user.username}, ID: {user.userID} <Button onClick={() => {
                         sessionStorage.setItem("authenticated", false);
-                        sessionStorage.setItem("accountType", "");
+                        sessionStorage.setItem("userType", "");
                         console.log("Logout Successful");
                         navigate("/login");
                     }}>
@@ -135,14 +185,17 @@ function ResidentList({ residents, user }) {
     const listOfResidents = residents.map((resident) => {
         return (
 
-            <Card style={{ width: '18rem', margin: '2px' }} key={resident.ResidentID} >
+            <Card style={{ width: '18rem', margin: '2px' }} key={resident.userID} >
                 <Card.Body>
-                    <Card.Title>{resident.Fname} {resident.Lname}, {resident.Sex}, {resident.Age}</Card.Title>
+                    <Card.Title>{resident.firstName} {resident.lastName}, {resident.gender}</Card.Title>
                     <Card.Text>
-                        {resident.CareInstructions}
+                        Birthday: {resident.birthday}
+                    </Card.Text>
+                    <Card.Text>
+                        Contact: {resident.phoneNumber}
                     </Card.Text>
                 </Card.Body>
-                <Link to={'../resident/' + resident.ResidentID} state={{ resident: resident, user: user }}>
+                <Link to={'../resident/' + resident.userID} state={{ resident: resident, user: user }}>
                     Details
                 </Link>
             </Card>
@@ -162,10 +215,12 @@ function ResidentList({ residents, user }) {
 // Card Component inside a Map For Each Resident
 function HolidayList({ holidays }) {
     //console.log(user);
+    let holidayCount = 0;
     const listofHolidays = holidays.map((holiday) => {
+        holidayCount++;
         return (
 
-            <li>{holiday.name} on {holiday.date}</li>
+            <li key={holidayCount}>{holiday.name} on {holiday.date}</li>
         )
     });
     return (

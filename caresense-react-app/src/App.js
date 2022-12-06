@@ -6,8 +6,8 @@ import Login from './components/LoginComponent';
 import Resident from './components/ResidentComponent';
 import Registration from './components/RegistrationComponent';
 import Admin from './components/AdminComponent';
-import RegisterResident from './components/RegisterResidentComponent';
-import { Navigation } from './components/NavigationComponent';
+import MyResident from './components/MyResidentComponent';
+
 
 
 function App() {
@@ -20,10 +20,10 @@ function App() {
 
         <Routes>
           <Route exact path="/" element={<Home />} />
-          <Route path="/registerresident" element={<RegisterResident />} />
           <Route path="/login" element={<Login />} />
           <Route path="/registration" element={<Registration />} />
           <Route path="/resident/:ResidentID/" element={<Resident />} />
+          <Route path="/myresident/" element={<MyResident />} />
           <Route path="/admin" element={<Admin />} />
         </Routes>
 
@@ -35,6 +35,9 @@ function App() {
 export default App;
 
 /**
+ * <Route path="/registerresident" element={<RegisterResident />} />
+ * 
+ * 
     <Router>
       <div className="container">
         <h4 className="m-3 d-flex justify-content-center">

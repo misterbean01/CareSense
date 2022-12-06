@@ -7,30 +7,45 @@ const Login = () => {
     const navigate = useNavigate();
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
-    const [accountType, setAccountType] = useState("");
+    const [userType, setUserType] = useState("");
     // store the login authenticated flag locally
     const [authenticated, setAuthenticated] = useState(sessionStorage.getItem(sessionStorage.getItem("authenticated") || false));
-    const [user, setUser] = useState({});
+    const [loggedUser, setLoggedUser] = useState({});
     const [loginStatus, setLoginStatus] = useState(false);
 
     useEffect(() => {
         if (loginStatus) {
             setAuthenticated(true)
             sessionStorage.setItem("authenticated", true);
-            sessionStorage.setItem("accountType", accountType);
-            console.log("Login Successful: " + authenticated + " " + accountType);
+            sessionStorage.setItem("userType", userType);
+            console.log("Login Successful: " + authenticated + " " + userType);
 
-            if (accountType !== "admin") {
-                navigate("/", { state: { user: { Username: "aaa", Password: "aaa", ID: 100 } } });
+            // console.log(loggedUser)
+            // if (userType === "admin") {
+            //     navigate("/admin", { state: { user: loggedUser } });
+            // } else if (userType === "Resident") {
+            //     navigate("/myresident", { state: { user: loggedUser } });
+            // } else {
+            //     navigate("/", { state: { user: loggedUser } });
+            // }
+
+            //delete this
+            const fakeuser = { userID: 1, userType: "resident", username: "aaa", password: "aaa", firstName: "Harold", lastName: "Hide", birthday: "01-01-1991", gender: "Male", phoneNumber: "253-111-1111" }
+            const fakeresident = { userID: 1, locationID: 1, sensorID: 1 }
+            console.log(loggedUser)
+            if (userType === "admin") {
+                navigate("/admin", { state: { user: fakeuser } });
+            } else if (userType === "Resident") {
+                navigate("/myresident", { state: { user: fakeuser, resident: fakeresident } });
             } else {
-                navigate("/admin", { state: { user: { Username: "aaa", Password: "aaa" } } });
+                navigate("/", { state: { user: fakeuser } });
             }
         }
-    }, [accountType, authenticated, loginStatus, navigate]);
+    }, [userType, authenticated, loginStatus, loggedUser, navigate]);
 
     const handleSubmit = async (e) => {
         e.preventDefault()
-        setUser({})
+        setLoggedUser({})
         setLoginStatus(false);
 
         let address = "CareSense/api/home";
@@ -55,12 +70,12 @@ const Login = () => {
                 throw new Error(message);
             }
             const loggedUser = await res.json();
-            setUser(loggedUser);
-            //console.log(loggedUser);
+            setLoggedUser(loggedUser);
+            console.log(loggedUser);
             if (Object.keys(loggedUser).length !== 0)
                 setLoginStatus(true);
         } catch (err) {
-            setUser({});
+            setLoggedUser({});
             setLoginStatus(false);
             console.log(err.message);
         }
@@ -96,11 +111,12 @@ const Login = () => {
                             />
                         </div>
                         <div className="mb-3">
-                            <select onChange={(e) => setAccountType(e.target.value)} defaultValue="" className="form-control">
+                            <select onChange={(e) => setUserType(e.target.value)} defaultValue="" className="form-control">
                                 <option>Select Account Type</option>
-                                <option value="Caretaker">Caretaker</option>
-                                <option value="Doctor">Doctor</option>
-                                <option value="Family">Family</option>
+                                <option value="caretaker">Caretaker</option>
+                                <option value="doctor">Doctor</option>
+                                <option value="familyMember">Family</option>
+                                <option value="resident">Resident</option>
                                 <option value="admin">Admin</option>
                             </select>
                         </div>

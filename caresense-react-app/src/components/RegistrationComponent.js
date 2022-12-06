@@ -167,6 +167,7 @@ const Registration = () => {
                                 <option value="caretaker">Caretaker</option>
                                 <option value="doctor">Doctor</option>
                                 <option value="family">Family</option>
+                                <option value="resident">Resident</option>
                             </select>
                         </div>
                         <input type="submit" className="btn btn-primary" value="Submit" />

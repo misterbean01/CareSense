@@ -6,67 +6,114 @@ import Container from 'react-bootstrap/Container';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import Table from 'react-bootstrap/Table';
+import Row from 'react-bootstrap/Row';
 
 const Admin = () => {
     const [authenticated, setAuthenticated] = useState(sessionStorage.getItem("authenticated"));
-    const [accountType, setAccountType] = useState(sessionStorage.getItem("accountType"));
-    const [residents, setResidents] = useState([
-        { ResidentID: 1, Fname: "Harold", Lname: "Hide", Sex: "Male", Age: 70, SensorID: 1, LocationID: 1, CareInstructions: "Morning Exercises for 10 minutes." },
-        { ResidentID: 2, Fname: "Lisa", Lname: "Lisa", Sex: "Female", Age: 70, SensorID: 2, LocationID: 2, CareInstructions: "Sleep 8 hours a day." },
-        { ResidentID: 3, Fname: "Rodger", Lname: "Hide", Sex: "Male", Age: 72, SensorID: 3, LocationID: 1, CareInstructions: "Drink Water every 4 hours." },
-        { ResidentID: 4, Fname: "Ann", Lname: "Tony", Sex: "Female", Age: 71, SensorID: 4, LocationID: 2, CareInstructions: "Massages before walking." }
+    const [userType, setUserType] = useState(sessionStorage.getItem("userType"));
+    const [users, setUsers] = useState([
+        {
+            userID: 1,
+            userType: "Resident",
+            username: "aaa",
+            password: "aaa",
+            firstName: "Harold",
+            lastName: "Hide",
+            birthday: "01-01-1951",
+            gender: "Male",
+            phoneNumber: "253-111-1111",
+            sensorID: 1,
+            locationID: 1
+        },
+        {
+            userID: 2,
+            userType: "Family",
+            username: "aaa",
+            password: "aaa",
+            firstName: "Nice",
+            lastName: "Lee",
+            birthday: "01-01-1951",
+            gender: "Male",
+            phoneNumber: "253-111-1111",
+            sensorID: 2,
+            locationID: 2
+        },
+        {
+            userID: 3,
+            userType: "Caretaker",
+            username: "aaa",
+            password: "aaa",
+            firstName: "Bob",
+            lastName: "Read",
+            birthday: "01-01-1951",
+            gender: "Male",
+            phoneNumber: "253-111-1111",
+            sensorID: 1,
+            locationID: 1
+        },
+        {
+            userID: 4,
+            userType: "Doctor",
+            username: "aaa",
+            password: "aaa",
+            firstName: "Lisa",
+            lastName: "Bint",
+            birthday: "01-01-1951",
+            gender: "Female",
+            phoneNumber: "253-111-1111",
+            sensorID: 1,
+            locationID: 1
+        }
     ]);
-    const [userAccounts, setUserAccounts] = useState([
-        { UserID: 1, Fname: "James", Lname: "Bond", Username: "aaa", Password: "aaa", AccountType: "Family" },
-        { UserID: 2, Fname: "Nemo", Lname: "Lisa", Username: "aaa", Password: "aaa", AccountType: "Family" },
-        { UserID: 3, Fname: "Ali", Lname: "Hide", Username: "aaa", Password: "aaa", AccountType: "Caretaker" },
-        { UserID: 4, Fname: "Tenu", Lname: "Tony", Username: "aaa", Password: "aaa", AccountType: "Doctor" },
-        { UserID: 5, Fname: "Reqa", Lname: "Rest", Username: "aaa", Password: "aaa", AccountType: "Family" }
+    const [associatedResidents, setAssociatedResidents] = useState([
+        { userID: 1, associatedUserID: 2 },
+        { userID: 1, associatedUserID: 4 },
+        { userID: 1, associatedUserID: 3 }
     ]);
-    const [associateds, setAssociateds] = useState([
-        { AssociatedID: 1, ResidentID: 1, UserID: 1 },
-        { AssociatedID: 2, ResidentID: 1, UserID: 3 },
-        { AssociatedID: 3, ResidentID: 1, UserID: 4 },
-        { AssociatedID: 4, ResidentID: 2, UserID: 2 },
-        { AssociatedID: 5, ResidentID: 3, UserID: 2 }
+    const [residentUsers, setResidentUsers] = useState([
+        { userID: 1, locationID: 1, sensorID: 1 },
+        { userID: 5, locationID: 2, sensorID: 2 }
     ]);
-    const [medications, setMedications] = useState([
-        { MedicationID: 1, ResidentID: 1, MedicationName: "Drug A", Dosage: 100, Instruction: "Once per day." },
-        { MedicationID: 4, ResidentID: 2, MedicationName: "Drub B", Dosage: 150, Instruction: "Once per day." },
-        { MedicationID: 2, ResidentID: 3, MedicationName: "Drug C", Dosage: 20, Instruction: "Once per day." },
-        { MedicationID: 3, ResidentID: 1, MedicationName: "Drug D", Dosage: 160, Instruction: "Twice per day." }
+    const [prescriptions, setPrescriptions] = useState([
+        { prescriptionID: 4, userID: 1, medicationName: "Drug A", dose: 100, frequency: "Once per day.", intendedUse: "Heart Burn", instructions: "After Meal." },
+        { prescriptionID: 5, userID: 1, medicationName: "Drub B", dose: 150, frequency: "Once per day.", intendedUse: "Lower Blood Pressure", instructions: "Before Meal." },
     ]);
-    const [nutritions, setNutritions] = useState([
-        { NutritionID: 1, ResidentID: 1, Instruction: "Green Leafy." },
-        { NutritionID: 4, ResidentID: 2, Instruction: "Liver cooking." },
-        { NutritionID: 2, ResidentID: 3, Instruction: "Low carbohydrate diet." },
-        { NutritionID: 3, ResidentID: 1, Instruction: "A Gallon of water a day." }
+    const [sensors, setSensors] = useState([
+        { sensorID: 1, bloodPressure: "120/80", temperature: 98, heartrate: 75, glucose: 100, spO2: 95, timestamp: "12-5-2022 12:00" },
+        { sensorID: 2, bloodPressure: "120/80", temperature: 98, heartrate: 75, glucose: 100, spO2: 95, timestamp: "12-5-2022 12:00" },
+        { sensorID: 3, bloodPressure: "120/80", temperature: 98, heartrate: 75, glucose: 100, spO2: 95, timestamp: "12-5-2022 12:00" }
     ]);
+    const [locations, setLocations] = useState([
+        { locationID: 1, latitude: 55.555555, longitude: 75.5422111, timestamp: "12-5-2022 12:00" },
+        { locationID: 2, latitude: 55.555555, longitude: 75.5422111, timestamp: "12-5-2022 12:00" },
+        { locationID: 3, latitude: 55.555555, longitude: 75.5422111, timestamp: "12-5-2022 12:00" }
+    ]);
+
+    const [itemIDEdit, setItemIDEdit] = useState("");
 
     // Edit Form for User / Resident
-    const [accountTypeEdit, setAccountTypeEdit] = useState("");
+    const [userTypeEdit, setUserTypeEdit] = useState("");
     const [usernameEdit, setUsernameEdit] = useState("");
     const [passwordEdit, setPasswordEdit] = useState("");
-    const [fnameEdit, setFirstNameEdit] = useState("");
-    const [lnameEdit, setLastNameEdit] = useState("");
-    const [itemIDEdit, setItemIDEdit] = useState("");
-    const [sexEdit, setSexEdit] = useState("");
-    const [ageEdit, setAgeEdit] = useState("");
+    const [firstNameEdit, setFirstNameEdit] = useState("");
+    const [lastNameEdit, setLastNameEdit] = useState("");
+    const [genderEdit, setGenderEdit] = useState("");
+    const [birthdayEdit, setBirthdayEdit] = useState("");
+    const [phoneNumberEdit, setPhoneNumberEdit] = useState("");
     const [sensorIDEdit, setSensorIDEdit] = useState("");
     const [locationIDEdit, setLocationIDEdit] = useState("");
-    const [careInstructionsEdit, setCareInstructionsEdit] = useState("");
 
     // Add Form for User / Resident
-    const [accountTypeAdd, setAccountTypeAdd] = useState("");
+    const [userTypeAdd, setUserTypeAdd] = useState("");
     const [usernameAdd, setUsernameAdd] = useState("");
     const [passwordAdd, setPasswordAdd] = useState("");
-    const [fnameAdd, setFirstNameAdd] = useState("");
-    const [lnameAdd, setLastNameAdd] = useState("");
-    const [sexAdd, setSexAdd] = useState("");
-    const [ageAdd, setAgeAdd] = useState("");
+    const [firstNameAdd, setFirstNameAdd] = useState("");
+    const [lastNameAdd, setLastNameAdd] = useState("");
+    const [genderAdd, setGenderAdd] = useState("");
+    const [birthdayAdd, setBirthdayAdd] = useState("");
+    const [phoneNumberAdd, setPhoneNumberAdd] = useState("");
     const [sensorIDAdd, setSensorIDAdd] = useState("");
     const [locationIDAdd, setLocationIDAdd] = useState("");
-    const [careInstructionsAdd, setCareInstructionsAdd] = useState("");
 
     // Add / Edit Form for Associated
     const [associatedResidentIDAdd, setAssociatedResidentIDAdd] = useState("");
@@ -74,25 +121,41 @@ const Admin = () => {
     const [associatedResidentIDEdit, setAssociatedResidentIDEdit] = useState("");
     const [associatedUserIDEdit, setAssociatedUserIDEdit] = useState("");
 
-    // Add / Edit Form for Medication
-    const [medicResidentIDAdd, setMedicResidentIDAdd] = useState("");
-    const [medicNameAdd, setMedicNameAdd] = useState("");
-    const [medicDosageAdd, setMedicDosageAdd] = useState("");
-    const [medicInstructionAdd, setMedicInstructionAdd] = useState("");
-    const [medicResidentIDEdit, setMedicResidentIDEdit] = useState("");
-    const [medicNameEdit, setMedicNameEdit] = useState("");
-    const [medicDosageEdit, setMedicDosageEdit] = useState("");
-    const [medicInstructionEdit, setMedicInstructionEdit] = useState("");
+    // Add / Edit Form for Location
+    const [locLatitudeEdit, setLocLatitudeEdit] = useState("");
+    const [locLongitudeEdit, setLocLongitudeEdit] = useState("");
+    const [locTimestampEdit, seTLocTimestampEdit] = useState("");
+    const [locLatitudeAdd, setLocLatitudeAdd] = useState("");
+    const [locLongitudeAdd, setLocLongitudeAdd] = useState("");
+    const [locTimestampAdd, seTLocTimestampAdd] = useState("");
 
-    // Add / Edit Form for Nutrition
-    const [nutriResidentIDAdd, setNutriResidentIDAdd] = useState("");
-    const [nutriNameAdd, setNutriNameAdd] = useState("");
-    const [nutriDosageAdd, setNutriDosageAdd] = useState("");
-    const [nutriInstructionAdd, setNutriInstructionAdd] = useState("");
-    const [nutriResidentIDEdit, setNutriResidentIDEdit] = useState("");
-    const [nutriNameEdit, setNutriNameEdit] = useState("");
-    const [nutriDosageEdit, setNutriDosageEdit] = useState("");
-    const [nutriInstructionEdit, setNutriInstructionEdit] = useState("");
+    // Add / Edit Form for Sensor
+    const [bloodPressureEdit, setBloodPressureEdit] = useState("");
+    const [temperatureEdit, setTemperatureEdit] = useState("");
+    const [heartrateEdit, setHeartrateEdit] = useState("");
+    const [glucoseEdit, setGlucoseEdit] = useState("");
+    const [spO2Edit, setSpO2Edit] = useState("");
+    const [sensorTimestampEdit, setSensorTimestampEdit] = useState("");
+    const [bloodPressureAdd, setBloodPressureAdd] = useState("");
+    const [temperatureAdd, setTemperatureAdd] = useState("");
+    const [heartrateAdd, setHeartrateAdd] = useState("");
+    const [glucoseAdd, setGlucoseAdd] = useState("");
+    const [spO2Add, setSpO2Add] = useState("");
+    const [sensorTimestampAdd, setSensorTimestampAdd] = useState("");
+
+    // Add / Edit Form for Prescription
+    const [prescPrescriptionIDEdit, setPrescPrescriptionIDEdit] = useState("");
+    const [prescMedicationNameEdit, setPrescMedicationNameEdit] = useState("");
+    const [prescDoseEdit, setPrescDoseEdit] = useState("");
+    const [prescFrequencyEdit, setPrescFrequencyEdit] = useState("");
+    const [prescIntendedUseEdit, setPrescIntendedUseEdit] = useState("");
+    const [prescInstructionsEdit, setPrescInstructionsEdit] = useState("");
+    const [prescMedicationNameAdd, setPrescMedicationNameAdd] = useState("");
+    const [prescDoseAdd, setPrescDoseAdd] = useState("");
+    const [prescFrequencyAdd, setPrescFrequencyAdd] = useState("");
+    const [prescIntendedUseAdd, setPrescIntendedUseAdd] = useState("");
+    const [prescInstructionsAdd, setPrescInstructionsAdd] = useState("");
+
 
     // Modal states
     const [openAddModal, setOpenAddModal] = useState(false)
@@ -101,10 +164,12 @@ const Admin = () => {
     const [openEditResModal, setOpenEditResModal] = useState(false)
     const [openAddAssociatedModal, setOpenAddAssociatedModal] = useState(false)
     const [openEditAssociatedModal, setOpenEditAssociatedModal] = useState(false)
-    const [openAddMedicModal, setOpenAddMedicModal] = useState(false)
-    const [openEditMedicModal, setOpenEditMedicModal] = useState(false)
-    const [openAddNutriModal, setOpenAddNutriModal] = useState(false)
-    const [openEditNutriModal, setOpenEditNutriModal] = useState(false)
+    const [openAddPrescModal, setOpenAddPrescModal] = useState(false)
+    const [openEditPrescModal, setOpenEditPrescModal] = useState(false)
+    const [openAddLocModal, setOpenAddLocModal] = useState(false)
+    const [openEditLocModal, setOpenEditLocModal] = useState(false)
+    const [openAddSensorModal, setOpenAddSensorModal] = useState(false)
+    const [openEditSensorModal, setOpenEditSensorModal] = useState(false)
 
     const navigate = useNavigate();
     const stateLoc = useLocation();
@@ -113,67 +178,42 @@ const Admin = () => {
     const handleSubmitEdit = (e) => {
         e.preventDefault();
 
-        console.log(itemIDEdit + " " +
-            accountTypeEdit + " " +
-            usernameEdit + " " +
-            passwordEdit + " " +
-            fnameEdit + " " +
-            lnameEdit
-        )
-
         // create if statement depending on account type (Family, Doctor, Caretaker, Admin)
         // ADD THE ACCOUNT TO THE DATABASE
         let newData;
         newData = {
-            UserID: itemIDEdit, Fname: fnameEdit, Lname: lnameEdit,
-            Username: usernameEdit, Password: passwordEdit, AccountType: accountTypeEdit
+            userID: itemIDEdit, firstName: firstNameEdit, lastName: lastNameEdit,
+            username: usernameEdit, password: passwordEdit, userType: userTypeEdit,
+            gender: genderEdit, birthday: birthdayEdit, phoneNumber: phoneNumberEdit
         };
 
-        editData(accountTypeEdit.toLowerCase(), itemIDEdit, newData);
+        editData(userTypeEdit.toLowerCase(), itemIDEdit, newData);
         setOpenEditModal(false);
     };
 
     const handleSubmitAdd = (e) => {
         e.preventDefault();
 
-        console.log(accountTypeAdd + " " +
-            usernameAdd + " " +
-            passwordAdd + " " +
-            fnameAdd + " " +
-            lnameAdd
-        )
-
         // create if statement depending on account type (Family, Doctor, Caretaker, Admin)
         // ADD THE ACCOUNT TO THE DATABASE
         let newData = {
-            Fname: fnameAdd, Lname: lnameAdd,
-            Username: usernameAdd, Password: passwordAdd, AccountType: accountTypeAdd
+            firstName: firstNameAdd, lastName: lastNameAdd,
+            username: usernameAdd, password: passwordAdd, userType: userTypeAdd,
+            gender: genderAdd, birthday: birthdayAdd, phoneNumber: phoneNumberAdd
         };
 
 
-        addData(accountTypeAdd.toLowerCase(), newData);
+        addData(userTypeAdd.toLowerCase(), newData);
         setOpenAddModal(false);
     };
 
     const handleSubmitResEdit = (e) => {
         e.preventDefault();
 
-        console.log(itemIDEdit + " " +
-            fnameEdit + " " +
-            lnameEdit + " " +
-            sexEdit + " " +
-            ageEdit + " " +
-            sensorIDEdit + " " +
-            locationIDEdit + " " +
-            careInstructionsEdit
-        )
-
         // create if statement depending on Residents
         // ADD THE ACCOUNT TO THE DATABASE
         let newData = {
-            Fname: fnameEdit, Lname: lnameEdit, Sex: sexEdit, Age: ageEdit,
-            SensorID: sensorIDEdit, LocationID: locationIDEdit,
-            CareInstructions: careInstructionsEdit
+            sensorID: sensorIDEdit, locationID: sensorIDAdd, userID: itemIDEdit
         };
 
         editData("", itemIDEdit, newData);
@@ -183,189 +223,206 @@ const Admin = () => {
     const handleSubmitResAdd = (e) => {
         e.preventDefault();
 
-        console.log(
-            fnameAdd + " " +
-            lnameAdd + " " +
-            sexAdd + " " +
-            ageAdd + " " +
-            sensorIDAdd + " " +
-            locationIDAdd + " " +
-            careInstructionsAdd
-        )
-
-
         // create if statement depending on Residents
         // ADD THE ACCOUNT TO THE DATABASE
         let newData = {
-            Fname: fnameAdd, Lname: lnameAdd, Sex: sexAdd, Age: ageAdd,
-            SensorID: sensorIDAdd, LocationID: locationIDAdd,
-            CareInstructions: careInstructionsAdd
+            sensorID: sensorIDAdd, locationID: locationIDAdd
         };
 
         addData("resident", newData);
         setOpenAddResModal(false);
     };
 
+    const handleSubmitLocEdit = (e) => {
+        e.preventDefault();
+
+        // ADD THE ACCOUNT TO THE DATABASE
+        let newData = {
+            locationID: itemIDEdit, longitude: locLatitudeEdit, latitude: locLatitudeEdit,
+            timestamp: locTimestampEdit
+        };
+
+        editData("", itemIDEdit, newData);
+        setOpenEditLocModal(false);
+    };
+
+    const handleSubmitLocAdd = (e) => {
+        e.preventDefault();
+
+        // ADD THE ACCOUNT TO THE DATABASE
+        let newData = {
+            longitude: locLatitudeAdd, latitude: locLatitudeAdd,
+            timestamp: locTimestampAdd
+        };
+
+        addData("location", newData);
+        setOpenAddLocModal(false);
+    };
+
+    const handleSubmitSensorEdit = (e) => {
+        e.preventDefault();
+
+        // ADD THE ACCOUNT TO THE DATABASE
+        let newData = {
+            sensorID: itemIDEdit, bloodPressure: bloodPressureEdit, temperature: temperatureEdit,
+            heartrate: heartrateEdit, glucose: glucoseEdit, spO2: spO2Edit, timestamp: sensorTimestampEdit
+        };
+
+        editData("", itemIDEdit, newData);
+        setOpenEditSensorModal(false);
+    };
+
+    const handleSubmitSensorAdd = (e) => {
+        e.preventDefault();
+
+        // ADD THE ACCOUNT TO THE DATABASE
+        let newData = {
+            bloodPressure: bloodPressureAdd, temperature: temperatureAdd,
+            heartrate: heartrateAdd, glucose: glucoseAdd, spO2: spO2Add, timestamp: sensorTimestampAdd
+        };
+
+        addData("location", newData);
+        setOpenAddSensorModal(false);
+    };
+
     const handleSubmitAssociatedEdit = (e) => {
         e.preventDefault();
 
-        console.log(associatedResidentIDEdit + " " +
-            associatedUserIDEdit + " "
-        );
-
         let newData;
         newData = {
-            AssociatedID: itemIDEdit, ResidentID: associatedResidentIDEdit, UserID: associatedUserIDEdit,
+            associatedUserID: associatedUserIDEdit, userId: associatedResidentIDEdit,
         };
 
-        editData("associated", itemIDEdit, newData);
+        editData("associated", associatedUserIDEdit, newData);
         setOpenEditAssociatedModal(false);
     };
 
     const handleSubmitAssociatedAdd = (e) => {
         e.preventDefault();
 
-        console.log(associatedResidentIDAdd + " " +
-            associatedUserIDAdd + " "
-        );
-
         let newData = {
-            ResidentID: associatedResidentIDAdd, UserID: associatedUserIDAdd,
+            associatedUserID: associatedUserIDAdd, userId: associatedResidentIDAdd,
         };
-
 
         addData("associated", newData);
         setOpenAddAssociatedModal(false);
     };
 
-    const handleSubmitMedicEdit = (e) => {
+    const handleSubmitPrescEdit = (e) => {
         e.preventDefault();
-
-        console.log(itemIDEdit + " " +
-            medicResidentIDEdit + " " +
-            medicNameEdit + " " +
-            medicDosageEdit + " " +
-            medicInstructionEdit + " "
-        );
 
         let newData;
         newData = {
-            MedicationID: itemIDEdit, ResidentID: medicResidentIDEdit, Name: medicNameEdit,
-            Dosage: medicDosageEdit, Instruction: medicInstructionEdit
+            userID: itemIDEdit, prescriptionID: prescPrescriptionIDEdit, medicationName: prescMedicationNameEdit,
+            dose: prescDoseEdit, frequency: prescFrequencyEdit, intendedUse: prescIntendedUseEdit, instructions: prescInstructionsEdit
         };
 
-        editData("medication", itemIDEdit, newData);
-        setOpenEditMedicModal(false);
+        editData("prescription", prescPrescriptionIDEdit, newData);
+        setOpenEditPrescModal(false);
     };
 
-    const handleSubmitMedicAdd = (e) => {
+    const handleSubmitPrescAdd = (e) => {
         e.preventDefault();
-
-        console.log(medicResidentIDAdd + " " +
-            medicNameAdd + " " +
-            medicDosageAdd + " " +
-            medicInstructionAdd + " "
-        );
 
         let newData;
         newData = {
-            ResidentID: medicResidentIDAdd, Name: medicNameAdd,
-            Dosage: medicDosageAdd, Instruction: medicInstructionAdd
+            userID: itemIDEdit, medicationName: prescMedicationNameAdd,
+            dose: prescDoseAdd, frequency: prescFrequencyAdd, intendedUse: prescIntendedUseAdd, instructions: prescInstructionsAdd
         };
 
-        addData("medication", newData);
-        setOpenAddMedicModal(false);
-    };
-
-    const handleSubmitNutriEdit = (e) => {
-        e.preventDefault();
-
-        console.log(itemIDEdit + " " +
-            nutriResidentIDEdit + " " +
-            nutriInstructionEdit + " "
-        );
-
-        let newData;
-        newData = {
-            NutritionID: itemIDEdit, ResidentID: nutriResidentIDEdit,
-            Instruction: nutriInstructionEdit
-        };
-
-        editData("nutrition", itemIDEdit, newData);
-        setOpenEditNutriModal(false);
-    };
-
-    const handleSubmitNutriAdd = (e) => {
-        e.preventDefault();
-
-        console.log(nutriResidentIDAdd + " " +
-            nutriInstructionAdd + " "
-        );
-
-        let newData;
-        newData = {
-            ResidentID: nutriResidentIDAdd, Instruction: nutriInstructionAdd
-        };
-
-        addData("nutrition", newData);
-        setOpenAddNutriModal(false);
+        addData("prescription", newData);
+        setOpenAddPrescModal(false);
     };
 
 
-    // Open the Edit Model
+    // Open the Edit Model for User
     function openEditForm(data) {
-        console.log(data.AccountType + " open edit modal");
+        console.log(data.userType + " open edit modal");
         console.log(data);
-        setItemIDEdit(data.UserID);
-        setUsernameEdit(data.Username);
-        setPasswordEdit(data.Password);
-        setAccountTypeEdit(data.AccountType);
-        setFirstNameEdit(data.Fname)
-        setLastNameEdit(data.Lname)
+        setItemIDEdit(data.userID);
+        setUsernameEdit(data.username);
+        setPasswordEdit(data.password);
+        setUserTypeEdit(data.userType);
+        setFirstNameEdit(data.firstName);
+        setLastNameEdit(data.lastName);
+        setBirthdayEdit(data.birthday);
+        setPhoneNumberEdit(data.phoneNumber);
+        setGenderEdit(data.gender);
         setOpenEditModal(true);
     }
 
-    // Open the Add Model
+    // Open the Add Model for User
     function openAddForm() {
-        setAccountTypeAdd("");
+        setUserTypeAdd("");
         setUsernameAdd("");
         setPasswordAdd("");
         setFirstNameAdd("")
         setLastNameAdd("")
+        setBirthdayAdd("");
+        setPhoneNumberAdd("");
+        setGenderAdd("");
         setOpenAddModal(true);
     }
 
-    // Open the Edit Model
+    // Open the Edit Model for Resident
     function openEditResForm(id, data) {
-        console.log("resident open edit modal");
+        console.log(id + " open edit modal");
         console.log(data);
-        setAccountTypeEdit("");
         setItemIDEdit(id);
-        setUsernameEdit(data.Username);
-        setPasswordEdit(data.Password);
-        setFirstNameEdit(data.Fname);
-        setLastNameEdit(data.Lname);
-        setSexEdit(data.Sex);
-        setAgeEdit(data.Age);
-        setSensorIDEdit(data.SensorID);
-        setLocationIDEdit(data.LocationID);
-        setCareInstructionsEdit(data.CareInstructions);
+        setLocationIDEdit(data.locationID);
+        setSensorIDEdit(data.sensorID);
         setOpenEditResModal(true);
     }
 
-    // Open the Add Model
+    // Open the Add Model for Resident
     function openAddResForm() {
-        setAccountTypeAdd("");
-        setUsernameAdd("");
-        setPasswordAdd("");
-        setFirstNameAdd("");
-        setLastNameAdd("");
-        setSexAdd("");
-        setAgeAdd("");
-        setSensorIDAdd("");
         setLocationIDAdd("");
-        setCareInstructionsAdd("");
+        setSensorIDAdd("");
         setOpenAddResModal(true);
+    }
+
+    // Open the Edit Model for Location
+    function openEditLocForm(id, data) {
+        console.log(id + " open edit modal");
+        console.log(data);
+        setItemIDEdit(id);
+        setLocLatitudeEdit(data.latitude);
+        setLocLongitudeEdit(data.longitude);
+        seTLocTimestampEdit(data.timestamp);
+        setOpenEditLocModal(true);
+    }
+
+    // Open the Add Model for Resident
+    function openAddLocForm() {
+        setLocLatitudeAdd("");
+        setLocLongitudeAdd("");
+        seTLocTimestampAdd("");
+        setOpenAddLocModal(true);
+    }
+
+    // Open the Edit Model for Location
+    function openEditSensorForm(id, data) {
+        console.log(id + " open edit modal");
+        console.log(data);
+        setItemIDEdit(id);
+        setBloodPressureEdit(data.bloodPressure);
+        setTemperatureEdit(data.temperature);
+        setHeartrateEdit(data.heartrate);
+        setGlucoseEdit(data.glucose);
+        setSpO2Edit(data.spO2);
+        setSensorTimestampEdit(data.timestamp);
+        setOpenEditSensorModal(true);
+    }
+
+    // Open the Add Model for Resident
+    function openAddSensorForm() {
+        setBloodPressureAdd("");
+        setTemperatureAdd("");
+        setHeartrateAdd("");
+        setGlucoseAdd("");
+        setSpO2Add("");
+        setSensorTimestampAdd("");
+        setOpenAddSensorModal(true);
     }
 
     // Open the Edit Associated Modal
@@ -373,8 +430,8 @@ const Admin = () => {
         console.log("assoicated open edit modal");
         console.log(data);
         setItemIDEdit(id);
-        setAssociatedResidentIDEdit(data.ResidentID);
-        setAssociatedUserIDEdit(data.UserID);
+        setAssociatedResidentIDEdit(data.userID);
+        setAssociatedUserIDEdit(data.associatedUserID);
         setOpenEditAssociatedModal(true);
     }
 
@@ -387,60 +444,40 @@ const Admin = () => {
         setOpenAddAssociatedModal(true);
     }
 
-    // Open the Edit Medication Modal
-    function openEditMedicForm(id, data) {
-        console.log("Medication open edit modal");
+    // Open the Edit Prescription Modal
+    function openEditPrescForm(id, data) {
+        console.log("Prescription open edit modal");
         console.log(data);
         setItemIDEdit(id);
-        setMedicResidentIDEdit(data.ResidentID);
-        setMedicNameEdit(data.MedicationName);
-        setMedicDosageEdit(data.Dosage);
-        setMedicInstructionEdit(data.Instruction);
-        setOpenEditMedicModal(true);
+        setPrescPrescriptionIDEdit(data.prescriptionID);
+        setPrescMedicationNameEdit(data.medicationName);
+        setPrescDoseEdit(data.dose);
+        setPrescFrequencyEdit(data.frequency);
+        setPrescIntendedUseEdit(data.intendedUse);
+        setPrescInstructionsEdit(data.instructions);
+        setOpenEditPrescModal(true);
     }
 
     // Open the Add Associated Modal
-    function openAddMedicForm(data) {
-        console.log("Medication open add modal");
+    function openAddPrescForm(data) {
+        console.log("Prescription open add modal");
         console.log(data);
-        setMedicResidentIDAdd("");
-        setMedicNameAdd("");
-        setMedicDosageAdd("");
-        setMedicInstructionAdd("");
-        setOpenAddMedicModal(true);
+        setPrescMedicationNameAdd("");
+        setPrescDoseAdd("");
+        setPrescFrequencyAdd("");
+        setPrescIntendedUseAdd("");
+        setPrescInstructionsAdd("");
+        setOpenAddPrescModal(true);
     }
 
-    // Open the Edit Nutrition Modal
-    function openEditNutriForm(id, data) {
-        console.log("Nutrition open edit modal");
-        console.log(data);
-        setItemIDEdit(id);
-        setNutriResidentIDEdit(data.ResidentID);
-        setNutriNameEdit(data.Name);
-        setNutriDosageEdit(data.Dosage);
-        setNutriInstructionEdit(data.Instruction);
-        setOpenEditNutriModal(true);
-    }
-
-    // Open the Add Nutrition Modal
-    function openAddNutriForm(data) {
-        console.log("Nutrition open add modal");
-        console.log(data);
-        setNutriResidentIDAdd("");
-        setNutriNameAdd("");
-        setNutriDosageAdd("");
-        setNutriInstructionAdd("");
-        setOpenAddNutriModal(true);
-    }
-
-    if (!authenticated && accountType !== "admin") {
+    if (!authenticated && userType !== "admin") {
         return <Navigate replace to="/login" />; // redirect to the login page if not authenticated
     } else {
         return (
             <div>
-                <p>Welcome to Care Sense Admin, {user.Username}, ID: {user.ID} <Button onClick={() => {
+                <p>Welcome to Care Sense Admin, {user.username}, ID: {user.userID} <Button onClick={() => {
                     sessionStorage.setItem("authenticated", false);
-                    sessionStorage.setItem("accountType", "");
+                    sessionStorage.setItem("userType", "");
                     console.log("Logout Successful");
                     navigate("/login");
                 }}>
@@ -448,15 +485,17 @@ const Admin = () => {
                 </Button>
                 </p>
 
-                <ResidentList residents={residents} edit={openEditResForm} add={openAddResForm} />
+                <UserList users={users} edit={openEditForm} add={openAddForm} />
 
-                <UserList users={userAccounts} edit={openEditForm} add={openAddForm} />
+                <AssociatedResidentList associatedResidents={associatedResidents} edit={openEditAssociatedForm} add={openAddAssociatedForm} />
 
-                <AssociatedList associateds={associateds} edit={openEditAssociatedForm} add={openAddAssociatedForm} />
+                <ResidentList residentUsers={residentUsers} edit={openEditResForm} add={openAddResForm} />
 
-                <MedicationList medications={medications} edit={openEditMedicForm} add={openAddMedicForm} />
+                <LocationList locations={locations} edit={openEditLocForm} add={openAddLocForm} />
 
-                <NutritionList nutritions={nutritions} edit={openEditNutriForm} add={openAddNutriForm} />
+                <SensorList sensors={sensors} edit={openEditSensorForm} add={openAddSensorForm} />
+
+                <PrescriptionList prescriptions={prescriptions} edit={openEditPrescForm} add={openAddPrescForm} />
 
                 <Modal show={openEditModal} onHide={() => setOpenEditModal(false)} animation={false}
                     style={{ overlay: { backgroundColor: 'grey' } }}>
@@ -490,7 +529,7 @@ const Admin = () => {
                                         type="text"
                                         name="FirstName"
                                         className="form-control"
-                                        value={fnameEdit}
+                                        value={firstNameEdit}
                                         onChange={(e) => setFirstNameEdit(e.target.value)}
                                     />
                                 </div>
@@ -500,12 +539,42 @@ const Admin = () => {
                                         type="text"
                                         name="LastName"
                                         className="form-control"
-                                        value={lnameEdit}
+                                        value={lastNameEdit}
                                         onChange={(e) => setLastNameEdit(e.target.value)}
                                     />
                                 </div>
                                 <div className="mb-3">
-                                    <p>Account Type: {accountTypeEdit} </p>
+                                    <label className="mb-1">Birthday</label>
+                                    <input
+                                        type="text"
+                                        name="Birthday"
+                                        className="form-control"
+                                        value={birthdayEdit}
+                                        onChange={(e) => setBirthdayEdit(e.target.value)}
+                                    />
+                                </div>
+                                <div className="mb-3">
+                                    <label className="mb-1">Gender</label>
+                                    <input
+                                        type="text"
+                                        name="Gender"
+                                        className="form-control"
+                                        value={genderEdit}
+                                        onChange={(e) => setPhoneNumberEdit(e.target.value)}
+                                    />
+                                </div>
+                                <div className="mb-3">
+                                    <label className="mb-1">Phone Number</label>
+                                    <input
+                                        type="text"
+                                        name="PhoneNumber"
+                                        className="form-control"
+                                        value={phoneNumberEdit}
+                                        onChange={(e) => setPhoneNumberEdit(e.target.value)}
+                                    />
+                                </div>
+                                <div className="mb-3">
+                                    <p>User Type: {userTypeEdit} </p>
                                 </div>
                                 <input type="submit" className="btn btn-primary" value="Submit" />
                             </form>
@@ -545,7 +614,7 @@ const Admin = () => {
                                         type="text"
                                         name="FirstName"
                                         className="form-control"
-                                        value={fnameAdd}
+                                        value={firstNameAdd}
                                         onChange={(e) => setFirstNameAdd(e.target.value)}
                                     />
                                 </div>
@@ -555,14 +624,44 @@ const Admin = () => {
                                         type="text"
                                         name="LastName"
                                         className="form-control"
-                                        value={lnameAdd}
+                                        value={lastNameAdd}
                                         onChange={(e) => setLastNameAdd(e.target.value)}
                                     />
                                 </div>
                                 <div className="mb-3">
+                                    <label className="mb-1">Birthday</label>
+                                    <input
+                                        type="text"
+                                        name="Birthday"
+                                        className="form-control"
+                                        value={birthdayAdd}
+                                        onChange={(e) => setBirthdayAdd(e.target.value)}
+                                    />
+                                </div>
+                                <div className="mb-3">
+                                    <label className="mb-1">Gender</label>
+                                    <input
+                                        type="text"
+                                        name="Gender"
+                                        className="form-control"
+                                        value={genderAdd}
+                                        onChange={(e) => setPhoneNumberAdd(e.target.value)}
+                                    />
+                                </div>
+                                <div className="mb-3">
+                                    <label className="mb-1">Phone Number</label>
+                                    <input
+                                        type="text"
+                                        name="PhoneNumber"
+                                        className="form-control"
+                                        value={phoneNumberAdd}
+                                        onChange={(e) => setPhoneNumberAdd(e.target.value)}
+                                    />
+                                </div>
+                                <div className="mb-3">
                                     <label className="label">Select Account Type</label>
-                                    <select onChange={(e) => setAccountTypeAdd(e.target.value)} defaultValue="" className="form-control">
-                                        <option>Select Account Type</option>
+                                    <select onChange={(e) => setUserTypeAdd(e.target.value)} defaultValue="" className="form-control">
+                                        <option>Select User Type</option>
                                         <option value="Caretaker">Caretaker</option>
                                         <option value="Doctor">Doctor</option>
                                         <option value="Family">Family</option>
@@ -581,47 +680,7 @@ const Admin = () => {
                         <div className="mt-5 justify-content-center">
                             <form onSubmit={handleSubmitResEdit}>
                                 <div className="mb-3">
-                                    <label className="mb-1">First Name</label>
-                                    <input
-                                        type="text"
-                                        name="FirstName"
-                                        className="form-control"
-                                        value={fnameEdit}
-                                        onChange={(e) => setFirstNameEdit(e.target.value)}
-                                    />
-                                </div>
-                                <div className="mb-3">
-                                    <label className="mb-1">Last Name</label>
-                                    <input
-                                        type="text"
-                                        name="LastName"
-                                        className="form-control"
-                                        value={lnameEdit}
-                                        onChange={(e) => setLastNameEdit(e.target.value)}
-                                    />
-                                </div>
-                                <div className="mb-3">
-                                    <label className="mb-1">Sex</label>
-                                    <input
-                                        type="text"
-                                        name="Sex"
-                                        className="form-control"
-                                        value={sexEdit}
-                                        onChange={(e) => setSexEdit(e.target.value)}
-                                    />
-                                </div>
-                                <div className="mb-3">
-                                    <label className="mb-1">Age</label>
-                                    <input
-                                        type="text"
-                                        name="Age"
-                                        className="form-control"
-                                        value={ageEdit}
-                                        onChange={(e) => setAgeEdit(e.target.value)}
-                                    />
-                                </div>
-                                <div className="mb-3">
-                                    <label className="mb-1">SensorID</label>
+                                    <label className="mb-1">Sensor ID</label>
                                     <input
                                         type="text"
                                         name="SensorID"
@@ -631,23 +690,13 @@ const Admin = () => {
                                     />
                                 </div>
                                 <div className="mb-3">
-                                    <label className="mb-1">LocationID</label>
+                                    <label className="mb-1">Location ID</label>
                                     <input
                                         type="text"
                                         name="LocationID"
                                         className="form-control"
                                         value={locationIDEdit}
                                         onChange={(e) => setLocationIDEdit(e.target.value)}
-                                    />
-                                </div>
-                                <div className="mb-3">
-                                    <label className="mb-1">CareInstructions</label>
-                                    <textarea
-                                        type="textarea"
-                                        name="CareInstructions"
-                                        className="form-control"
-                                        value={careInstructionsEdit}
-                                        onChange={(e) => setCareInstructionsEdit(e.target.value)}
                                     />
                                 </div>
                                 <input type="submit" className="btn btn-primary" value="Submit" />
@@ -663,47 +712,7 @@ const Admin = () => {
                         <div className="mt-5 justify-content-center">
                             <form onSubmit={handleSubmitResAdd}>
                                 <div className="mb-3">
-                                    <label className="mb-1">First Name</label>
-                                    <input
-                                        type="text"
-                                        name="FirstName"
-                                        className="form-control"
-                                        value={fnameAdd}
-                                        onChange={(e) => setFirstNameAdd(e.target.value)}
-                                    />
-                                </div>
-                                <div className="mb-3">
-                                    <label className="mb-1">Last Name</label>
-                                    <input
-                                        type="text"
-                                        name="LastName"
-                                        className="form-control"
-                                        value={lnameAdd}
-                                        onChange={(e) => setLastNameAdd(e.target.value)}
-                                    />
-                                </div>
-                                <div className="mb-3">
-                                    <label className="mb-1">Sex</label>
-                                    <input
-                                        type="text"
-                                        name="Sex"
-                                        className="form-control"
-                                        value={sexAdd}
-                                        onChange={(e) => setSexAdd(e.target.value)}
-                                    />
-                                </div>
-                                <div className="mb-3">
-                                    <label className="mb-1">Age</label>
-                                    <input
-                                        type="text"
-                                        name="Age"
-                                        className="form-control"
-                                        value={ageAdd}
-                                        onChange={(e) => setAgeAdd(e.target.value)}
-                                    />
-                                </div>
-                                <div className="mb-3">
-                                    <label className="mb-1">SensorID</label>
+                                    <label className="mb-1">Sensor ID</label>
                                     <input
                                         type="text"
                                         name="SensorID"
@@ -713,7 +722,7 @@ const Admin = () => {
                                     />
                                 </div>
                                 <div className="mb-3">
-                                    <label className="mb-1">LocationID</label>
+                                    <label className="mb-1">Location ID</label>
                                     <input
                                         type="text"
                                         name="LocationID"
@@ -722,14 +731,232 @@ const Admin = () => {
                                         onChange={(e) => setLocationIDAdd(e.target.value)}
                                     />
                                 </div>
+                                <input type="submit" className="btn btn-primary" value="Submit" />
+                            </form>
+                        </div>
+                    </div>
+                </Modal>
+
+                <Modal show={openEditLocModal} onHide={() => setOpenEditLocModal(false)} animation={false}
+                    style={{ overlay: { backgroundColor: 'grey' } }}>
+                    <h4 className="d-flex justify-content-center">Location Edit</h4>
+                    <div className="d-flex justify-content-center">
+                        <div className="mt-5 justify-content-center">
+                            <form onSubmit={handleSubmitLocEdit}>
                                 <div className="mb-3">
-                                    <label className="mb-1">CareInstructions</label>
-                                    <textarea
-                                        type="textarea"
-                                        name="CareInstructions"
+                                    <label className="mb-1">Latitude</label>
+                                    <input
+                                        type="text"
+                                        name="Latitude"
                                         className="form-control"
-                                        value={careInstructionsAdd}
-                                        onChange={(e) => setCareInstructionsAdd(e.target.value)}
+                                        value={locLatitudeEdit}
+                                        onChange={(e) => setLocLatitudeEdit(e.target.value)}
+                                    />
+                                </div>
+                                <div className="mb-3">
+                                    <label className="mb-1">Longitude</label>
+                                    <input
+                                        type="text"
+                                        name="Longitude"
+                                        className="form-control"
+                                        value={locLongitudeEdit}
+                                        onChange={(e) => setLocLongitudeEdit(e.target.value)}
+                                    />
+                                </div>
+                                <div className="mb-3">
+                                    <label className="mb-1">Timestamp</label>
+                                    <input
+                                        type="text"
+                                        name="Timestamp"
+                                        className="form-control"
+                                        value={locTimestampEdit}
+                                        onChange={(e) => seTLocTimestampEdit(e.target.value)}
+                                    />
+                                </div>
+                                <input type="submit" className="btn btn-primary" value="Submit" />
+                            </form>
+                        </div>
+                    </div>
+                </Modal>
+
+                <Modal show={openAddLocModal} onHide={() => setOpenAddLocModal(false)} animation={false}
+                    style={{ overlay: { backgroundColor: 'grey' } }}>
+                    <h4 className="d-flex justify-content-center">Location Add</h4>
+                    <div className="d-flex justify-content-center">
+                        <div className="mt-5 justify-content-center">
+                            <form onSubmit={handleSubmitLocAdd}>
+                                <div className="mb-3">
+                                    <label className="mb-1">Latitude</label>
+                                    <input
+                                        type="text"
+                                        name="Latitude"
+                                        className="form-control"
+                                        value={locLatitudeAdd}
+                                        onChange={(e) => setLocLatitudeAdd(e.target.value)}
+                                    />
+                                </div>
+                                <div className="mb-3">
+                                    <label className="mb-1">Longitude</label>
+                                    <input
+                                        type="text"
+                                        name="Longitude"
+                                        className="form-control"
+                                        value={locLongitudeAdd}
+                                        onChange={(e) => setLocLongitudeAdd(e.target.value)}
+                                    />
+                                </div>
+                                <div className="mb-3">
+                                    <label className="mb-1">Timestamp</label>
+                                    <input
+                                        type="text"
+                                        name="Timestamp"
+                                        className="form-control"
+                                        value={locTimestampAdd}
+                                        onChange={(e) => seTLocTimestampAdd(e.target.value)}
+                                    />
+                                </div>
+                                <input type="submit" className="btn btn-primary" value="Submit" />
+                            </form>
+                        </div>
+                    </div>
+                </Modal>
+
+                <Modal show={openEditSensorModal} onHide={() => setOpenEditSensorModal(false)} animation={false}
+                    style={{ overlay: { backgroundColor: 'grey' } }}>
+                    <h4 className="d-flex justify-content-center">Sensor Edit</h4>
+                    <div className="d-flex justify-content-center">
+                        <div className="mt-5 justify-content-center">
+                            <form onSubmit={handleSubmitSensorEdit}>
+                                <div className="mb-3">
+                                    <label className="mb-1">Blood Pressure</label>
+                                    <input
+                                        type="text"
+                                        name="bloodPressure"
+                                        className="form-control"
+                                        value={bloodPressureEdit}
+                                        onChange={(e) => setBloodPressureEdit(e.target.value)}
+                                    />
+                                </div>
+                                <div className="mb-3">
+                                    <label className="mb-1">Temperature</label>
+                                    <input
+                                        type="text"
+                                        name="temperature"
+                                        className="form-control"
+                                        value={temperatureEdit}
+                                        onChange={(e) => setTemperatureEdit(e.target.value)}
+                                    />
+                                </div>
+                                <div className="mb-3">
+                                    <label className="mb-1">Heart Rate</label>
+                                    <input
+                                        type="text"
+                                        name="heartrate"
+                                        className="form-control"
+                                        value={heartrateEdit}
+                                        onChange={(e) => setHeartrateEdit(e.target.value)}
+                                    />
+                                </div>
+                                <div className="mb-3">
+                                    <label className="mb-1">Glucose</label>
+                                    <input
+                                        type="text"
+                                        name="Glucose"
+                                        className="form-control"
+                                        value={glucoseEdit}
+                                        onChange={(e) => setGlucoseEdit(e.target.value)}
+                                    />
+                                </div>
+                                <div className="mb-3">
+                                    <label className="mb-1">Oxygen Level</label>
+                                    <input
+                                        type="text"
+                                        name="spO2"
+                                        className="form-control"
+                                        value={spO2Edit}
+                                        onChange={(e) => setSpO2Edit(e.target.value)}
+                                    />
+                                </div>
+                                <div className="mb-3">
+                                    <label className="mb-1">Timestamp</label>
+                                    <input
+                                        type="text"
+                                        name="Timestamp"
+                                        className="form-control"
+                                        value={sensorTimestampEdit}
+                                        onChange={(e) => setSensorTimestampEdit(e.target.value)}
+                                    />
+                                </div>
+                                <input type="submit" className="btn btn-primary" value="Submit" />
+                            </form>
+                        </div>
+                    </div>
+                </Modal>
+
+                <Modal show={openAddSensorModal} onHide={() => setOpenAddSensorModal(false)} animation={false}
+                    style={{ overlay: { backgroundColor: 'grey' } }}>
+                    <h4 className="d-flex justify-content-center">Sensor Add</h4>
+                    <div className="d-flex justify-content-center">
+                        <div className="mt-5 justify-content-center">
+                            <form onSubmit={handleSubmitSensorAdd}>
+                                <div className="mb-3">
+                                    <label className="mb-1">Blood Pressure</label>
+                                    <input
+                                        type="text"
+                                        name="bloodPressure"
+                                        className="form-control"
+                                        value={bloodPressureAdd}
+                                        onChange={(e) => setBloodPressureAdd(e.target.value)}
+                                    />
+                                </div>
+                                <div className="mb-3">
+                                    <label className="mb-1">Temperature</label>
+                                    <input
+                                        type="text"
+                                        name="temperature"
+                                        className="form-control"
+                                        value={temperatureAdd}
+                                        onChange={(e) => setTemperatureAdd(e.target.value)}
+                                    />
+                                </div>
+                                <div className="mb-3">
+                                    <label className="mb-1">Heart Rate</label>
+                                    <input
+                                        type="text"
+                                        name="heartrate"
+                                        className="form-control"
+                                        value={heartrateAdd}
+                                        onChange={(e) => setHeartrateAdd(e.target.value)}
+                                    />
+                                </div>
+                                <div className="mb-3">
+                                    <label className="mb-1">Glucose</label>
+                                    <input
+                                        type="text"
+                                        name="Glucose"
+                                        className="form-control"
+                                        value={glucoseAdd}
+                                        onChange={(e) => setGlucoseAdd(e.target.value)}
+                                    />
+                                </div>
+                                <div className="mb-3">
+                                    <label className="mb-1">Oxygen Level</label>
+                                    <input
+                                        type="text"
+                                        name="spO2"
+                                        className="form-control"
+                                        value={spO2Add}
+                                        onChange={(e) => setSpO2Add(e.target.value)}
+                                    />
+                                </div>
+                                <div className="mb-3">
+                                    <label className="mb-1">Timestamp</label>
+                                    <input
+                                        type="text"
+                                        name="Timestamp"
+                                        className="form-control"
+                                        value={sensorTimestampAdd}
+                                        onChange={(e) => setSensorTimestampAdd(e.target.value)}
                                     />
                                 </div>
                                 <input type="submit" className="btn btn-primary" value="Submit" />
@@ -745,13 +972,14 @@ const Admin = () => {
                         <div className="mt-5 justify-content-center">
                             <form onSubmit={handleSubmitAssociatedEdit}>
                                 <div className="mb-3">
-                                    <label className="mb-1">ResidentID</label>
+                                    <label className="mb-1">Resident ID</label>
                                     <input
                                         type="text"
                                         name="ResidentID"
                                         className="form-control"
                                         value={associatedResidentIDEdit}
                                         onChange={(e) => setAssociatedResidentIDEdit(e.target.value)}
+                                        disabled
                                     />
                                 </div>
                                 <div className="mb-3">
@@ -777,7 +1005,7 @@ const Admin = () => {
                         <div className="mt-5 justify-content-center">
                             <form onSubmit={handleSubmitAssociatedAdd}>
                                 <div className="mb-3">
-                                    <label className="mb-1">ResidentID</label>
+                                    <label className="mb-1">Resident ID</label>
                                     <input
                                         type="text"
                                         name="ResidentID"
@@ -787,7 +1015,7 @@ const Admin = () => {
                                     />
                                 </div>
                                 <div className="mb-3">
-                                    <label className="mb-1">UserID</label>
+                                    <label className="mb-1">User ID</label>
                                     <input
                                         type="text"
                                         name="UserID"
@@ -802,30 +1030,31 @@ const Admin = () => {
                     </div>
                 </Modal>
 
-                <Modal show={openEditMedicModal} onHide={() => setOpenEditMedicModal(false)} animation={false}
+                <Modal show={openEditPrescModal} onHide={() => setOpenEditPrescModal(false)} animation={false}
                     style={{ overlay: { backgroundColor: 'grey' } }}>
-                    <h4 className="d-flex justify-content-center">User Edit</h4>
                     <div className="d-flex justify-content-center">
-                        <div className="mt-5 justify-content-center">
-                            <form onSubmit={handleSubmitMedicEdit}>
+                        <div className="m-5 justify-content-center">
+                            <h4 className="mb-3 d-flex justify-content-center">Edit Prescription</h4>
+                            <form onSubmit={handleSubmitPrescEdit}>
                                 <div className="mb-3">
-                                    <label className="mb-1">ResidentID</label>
+                                    <label className="mb-1">Prescription ID</label>
                                     <input
                                         type="text"
-                                        name="ResidentID"
+                                        name="prescriptionID"
                                         className="form-control"
-                                        value={medicResidentIDEdit}
-                                        onChange={(e) => setMedicResidentIDEdit(e.target.value)}
+                                        value={prescPrescriptionIDEdit}
+                                        onChange={(e) => setPrescPrescriptionIDEdit(e.target.value)}
+                                        disabled
                                     />
                                 </div>
                                 <div className="mb-3">
-                                    <label className="mb-1">Medication Name</label>
+                                    <label className="mb-1">Prescription Name</label>
                                     <input
                                         type="text"
                                         name="Name"
                                         className="form-control"
-                                        value={medicNameEdit}
-                                        onChange={(e) => setMedicNameEdit(e.target.value)}
+                                        value={prescMedicationNameEdit}
+                                        onChange={(e) => setPrescMedicationNameEdit(e.target.value)}
                                     />
                                 </div>
                                 <div className="mb-3">
@@ -834,18 +1063,38 @@ const Admin = () => {
                                         type="text"
                                         name="Dosage"
                                         className="form-control"
-                                        value={medicDosageEdit}
-                                        onChange={(e) => setMedicDosageEdit(e.target.value)}
+                                        value={prescDoseEdit}
+                                        onChange={(e) => setPrescDoseEdit(e.target.value)}
                                     />
                                 </div>
                                 <div className="mb-3">
-                                    <label className="mb-1">Instruction</label>
+                                    <label className="mb-1">Frequency</label>
                                     <input
                                         type="text"
-                                        name="Instruction"
+                                        name="Frequency"
                                         className="form-control"
-                                        value={medicInstructionEdit}
-                                        onChange={(e) => setMedicInstructionEdit(e.target.value)}
+                                        value={prescFrequencyEdit}
+                                        onChange={(e) => setPrescFrequencyEdit(e.target.value)}
+                                    />
+                                </div>
+                                <div className="mb-3">
+                                    <label className="mb-1">Intended Use</label>
+                                    <input
+                                        type="text"
+                                        name="intendedUse"
+                                        className="form-control"
+                                        value={prescIntendedUseEdit}
+                                        onChange={(e) => setPrescIntendedUseEdit(e.target.value)}
+                                    />
+                                </div>
+                                <div className="mb-3">
+                                    <label className="mb-1">Instructions</label>
+                                    <input
+                                        type="text"
+                                        name="Instructions"
+                                        className="form-control"
+                                        value={prescInstructionsEdit}
+                                        onChange={(e) => setPrescInstructionsEdit(e.target.value)}
                                     />
                                 </div>
                                 <input type="submit" className="btn btn-primary" value="Submit" />
@@ -854,30 +1103,20 @@ const Admin = () => {
                     </div>
                 </Modal>
 
-                <Modal show={openAddMedicModal} onHide={() => setOpenAddMedicModal(false)} animation={false}
+                <Modal show={openAddPrescModal} onHide={() => setOpenAddPrescModal(false)} animation={false}
                     style={{ overlay: { backgroundColor: 'grey' } }}>
-                    <h4 className="d-flex justify-content-center">User Add</h4>
                     <div className="d-flex justify-content-center">
-                        <div className="mt-5 justify-content-center">
-                            <form onSubmit={handleSubmitMedicAdd}>
+                        <div className="m-5 justify-content-center">
+                            <h4 className="mb-3 d-flex justify-content-center">Add Prescription</h4>
+                            <form onSubmit={handleSubmitPrescAdd}>
                                 <div className="mb-3">
-                                    <label className="mb-1">ResidentID</label>
-                                    <input
-                                        type="text"
-                                        name="ResidentID"
-                                        className="form-control"
-                                        value={medicResidentIDAdd}
-                                        onChange={(e) => setMedicResidentIDAdd(e.target.value)}
-                                    />
-                                </div>
-                                <div className="mb-3">
-                                    <label className="mb-1">Medication Name</label>
+                                    <label className="mb-1">Prescription Name</label>
                                     <input
                                         type="text"
                                         name="Name"
                                         className="form-control"
-                                        value={medicNameAdd}
-                                        onChange={(e) => setMedicNameAdd(e.target.value)}
+                                        value={prescMedicationNameAdd}
+                                        onChange={(e) => setPrescMedicationNameAdd(e.target.value)}
                                     />
                                 </div>
                                 <div className="mb-3">
@@ -886,83 +1125,38 @@ const Admin = () => {
                                         type="text"
                                         name="Dosage"
                                         className="form-control"
-                                        value={medicDosageAdd}
-                                        onChange={(e) => setMedicDosageAdd(e.target.value)}
+                                        value={prescDoseAdd}
+                                        onChange={(e) => setPrescDoseAdd(e.target.value)}
                                     />
                                 </div>
                                 <div className="mb-3">
-                                    <label className="mb-1">Instruction</label>
+                                    <label className="mb-1">Frequency</label>
                                     <input
                                         type="text"
-                                        name="Instruction"
+                                        name="Frequency"
                                         className="form-control"
-                                        value={medicInstructionAdd}
-                                        onChange={(e) => setMedicInstructionAdd(e.target.value)}
-                                    />
-                                </div>
-                                <input type="submit" className="btn btn-primary" value="Submit" />
-                            </form>
-                        </div>
-                    </div>
-                </Modal>
-
-
-                <Modal show={openEditNutriModal} onHide={() => setOpenEditNutriModal(false)} animation={false}
-                    style={{ overlay: { backgroundColor: 'grey' } }}>
-                    <h4 className="d-flex justify-content-center">User Edit</h4>
-                    <div className="d-flex justify-content-center">
-                        <div className="mt-5 justify-content-center">
-                            <form onSubmit={handleSubmitNutriEdit}>
-                                <div className="mb-3">
-                                    <label className="mb-1">ResidentID</label>
-                                    <input
-                                        type="text"
-                                        name="ResidentID"
-                                        className="form-control"
-                                        value={nutriResidentIDEdit}
-                                        onChange={(e) => setNutriResidentIDEdit(e.target.value)}
+                                        value={prescFrequencyAdd}
+                                        onChange={(e) => setPrescFrequencyAdd(e.target.value)}
                                     />
                                 </div>
                                 <div className="mb-3">
-                                    <label className="mb-1">Instruction</label>
+                                    <label className="mb-1">intendedUse</label>
                                     <input
                                         type="text"
-                                        name="Instruction"
+                                        name="intendedUse"
                                         className="form-control"
-                                        value={nutriInstructionEdit}
-                                        onChange={(e) => setNutriInstructionEdit(e.target.value)}
-                                    />
-                                </div>
-                                <input type="submit" className="btn btn-primary" value="Submit" />
-                            </form>
-                        </div>
-                    </div>
-                </Modal>
-
-                <Modal show={openAddNutriModal} onHide={() => setOpenAddNutriModal(false)} animation={false}
-                    style={{ overlay: { backgroundColor: 'grey' } }}>
-                    <h4 className="d-flex justify-content-center">User Add</h4>
-                    <div className="d-flex justify-content-center">
-                        <div className="mt-5 justify-content-center">
-                            <form onSubmit={handleSubmitNutriAdd}>
-                                <div className="mb-3">
-                                    <label className="mb-1">ResidentID</label>
-                                    <input
-                                        type="text"
-                                        name="ResidentID"
-                                        className="form-control"
-                                        value={nutriResidentIDAdd}
-                                        onChange={(e) => setNutriResidentIDAdd(e.target.value)}
+                                        value={prescIntendedUseAdd}
+                                        onChange={(e) => setPrescIntendedUseAdd(e.target.value)}
                                     />
                                 </div>
                                 <div className="mb-3">
-                                    <label className="mb-1">Instruction</label>
+                                    <label className="mb-1">Instructions</label>
                                     <input
                                         type="text"
-                                        name="Instruction"
+                                        name="Instructions"
                                         className="form-control"
-                                        value={nutriInstructionAdd}
-                                        onChange={(e) => setNutriInstructionAdd(e.target.value)}
+                                        value={prescInstructionsAdd}
+                                        onChange={(e) => setPrescInstructionsAdd(e.target.value)}
                                     />
                                 </div>
                                 <input type="submit" className="btn btn-primary" value="Submit" />
@@ -1104,27 +1298,64 @@ async function deleteData(api, id) {
 
 }
 
+// Access the API based on the button action and use DELETE Method
+// Requires the API name, id
+async function deleteDataAssociated(api, residentID, associatedUserID) {
+    console.log(api + " delete " + residentID + " " + associatedUserID)
+    let address = "CareSense/api/" + api + "/" + residentID + "/" + associatedUserID;
+
+    try {
+        const res = await fetch(address, {
+            method: "delete",
+            headers: {
+                "Content-Type": "application/json",
+                "Access-Control-Request-Origin": "http://localhost:8080",
+                "Access-Control-Request-Method": "DELETE",
+                "Access-Control-Allow-Headers":
+                    "Origin, X-Requested-With, Content-Type, Accept"
+            }
+        });
+
+        if (!res.ok) {
+            const message = `An error has occured: ${res.status} - ${res.statusText}`;
+            throw new Error(message);
+        }
+        const data = await res.json();
+        const result = {
+            status: res.status + "-" + res.statusText,
+            headers: {
+                "Content-Length": res.headers.get("Content-Length"),
+                "Content-Type": "application/json",
+                "Access-Control-Request-Origin": "http://localhost:8080",
+                "Access-Control-Request-Method": "DELETE",
+                "Access-Control-Allow-Headers":
+                    "Origin, X-Requested-With, Content-Type, Accept"
+            },
+            data: data,
+        };
+        console.log(result);
+    } catch (err) {
+        console.log(err.message);
+    }
+
+    // USE A FUNCTION TO REFRESH THE LIST
+
+}
+
 // Table Component inside a Map For Each Resident
-function ResidentList({ residents, edit, add }) {
-    const listOfResidents = residents.map((resident) => {
+function ResidentList({ residentUsers, edit, add }) {
+    const listOfResidents = residentUsers.map((resident) => {
         return (
 
-            <tr key={resident.ResidentID}>
-                <td>{resident.ResidentID}</td>
-                <td>{resident.Fname}</td>
-                <td>{resident.Lname}</td>
-                <td>{resident.Sex}</td>
-                <td>{resident.Age}</td>
-                <td>{resident.FamilyID}</td>
-                <td>{resident.DoctorID}</td>
-                <td>{resident.SensorID}</td>
-                <td>{resident.LocationID}</td>
-                <td>{resident.CareInstructions}</td>
+            <tr key={resident.userID}>
+                <td>{resident.userID}</td>
+                <td>{resident.sensorID}</td>
+                <td>{resident.locationID}</td>
                 <td>
-                    <Button onClick={() => edit(resident.ResidentID, resident)}>
+                    <Button onClick={() => edit(resident.userID, resident)}>
                         Edit
                     </Button>
-                    <Button onClick={() => deleteData("resident", resident.ResidentID)} className="ms-1">
+                    <Button onClick={() => deleteData("resident", resident.userID)} className="ms-1">
                         Delete
                     </Button>
                 </td>
@@ -1138,16 +1369,9 @@ function ResidentList({ residents, edit, add }) {
                 <Table striped>
                     <thead>
                         <tr>
-                            <th>ResidentID</th>
-                            <th>Fname</th>
-                            <th>Lname</th>
-                            <th>Sex</th>
-                            <th>Age</th>
-                            <th>FamilyID</th>
-                            <th>DoctorID</th>
-                            <th>SensorID</th>
-                            <th>LocationID</th>
-                            <th>CareInstructions</th>
+                            <th>User ID</th>
+                            <th>Sensor ID</th>
+                            <th>Location ID</th>
                             <th>OPTIONS</th>
                         </tr>
                     </thead>
@@ -1168,18 +1392,21 @@ function UserList({ users, edit, add }) {
     const listOfUsers = users.map((user) => {
         return (
 
-            <tr key={user.UserID}>
-                <td>{user.UserID}</td>
-                <td>{user.Fname}</td>
-                <td>{user.Lname}</td>
-                <td>{user.Username}</td>
-                <td>{user.Password}</td>
-                <td>{user.AccountType}</td>
+            <tr key={user.userID}>
+                <td>{user.userID}</td>
+                <td>{user.userType}</td>
+                <td>{user.firstName}</td>
+                <td>{user.lastName}</td>
+                <td>{user.username}</td>
+                <td>{user.password}</td>
+                <td>{user.birthday}</td>
+                <td>{user.gender}</td>
+                <td>{user.phoneNumber}</td>
                 <td>
                     <Button onClick={() => edit(user)}>
                         Edit
                     </Button>
-                    <Button onClick={() => deleteData(user.AccountType.toLowerCase(), user.UserID)} className="ms-1">
+                    <Button onClick={() => deleteData(user.userType.toLowerCase(), user.UserID)} className="ms-1">
                         Delete
                     </Button>
                 </td>
@@ -1193,12 +1420,15 @@ function UserList({ users, edit, add }) {
                 <Table striped>
                     <thead>
                         <tr>
-                            <th>UserID</th>
-                            <th>Fname</th>
-                            <th>Lname</th>
+                            <th>User ID</th>
+                            <th>User Type</th>
+                            <th>First Name</th>
+                            <th>Last name</th>
                             <th>Username</th>
                             <th>Password</th>
-                            <th>AccountType</th>
+                            <th>Birthday</th>
+                            <th>Gender</th>
+                            <th>Phone Number</th>
                             <th>OPTIONS</th>
                         </tr>
                     </thead>
@@ -1215,19 +1445,19 @@ function UserList({ users, edit, add }) {
 }
 
 // Table Component inside a Map For Each Association
-function AssociatedList({ associateds, edit, add }) {
-    const listOfAssociateds = associateds.map((associated) => {
+function AssociatedResidentList({ associatedResidents, edit, add }) {
+    let listCount = 0;
+    const listOfAssociatedResidents = associatedResidents.map((associated) => {
+        listCount++;
         return (
-
-            <tr key={associated.AssociatedID}>
-                <td>{associated.AssociatedID}</td>
-                <td>{associated.ResidentID}</td>
-                <td>{associated.UserID}</td>
+            <tr key={listCount}>
+                <td>{associated.userID}</td>
+                <td>{associated.associatedUserID}</td>
                 <td>
-                    <Button onClick={() => edit(associated.AssociatedID, associated)}>
+                    <Button onClick={() => edit(associated.associatedUserID, associated)}>
                         Edit
                     </Button>
-                    <Button onClick={() => deleteData("associated", associated.AssociatedID)} className="ms-1">
+                    <Button onClick={() => deleteDataAssociated("associated", associated.userID, associated.associatedUserID)} className="ms-1">
                         Delete
                     </Button>
                 </td>
@@ -1241,40 +1471,37 @@ function AssociatedList({ associateds, edit, add }) {
                 <Table striped>
                     <thead>
                         <tr>
-                            <th>AssociatedID</th>
-                            <th>ResidentID</th>
-                            <th>UserID</th>
+                            <th>Resident ID</th>
+                            <th>User ID</th>
                             <th>OPTIONS</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {listOfAssociateds}
+                        {listOfAssociatedResidents}
                     </tbody>
                 </Table>
                 <Button onClick={() => add()}>
-                    Add User
+                    Add Associated Residents
                 </Button>
             </Container>
         </div >
     )
 }
 
-// Table Component inside a Map For Each Medication
-function MedicationList({ medications, edit, add }) {
-    const listOfMedication = medications.map((medication) => {
+// Table Component inside a Map For Each Location
+function LocationList({ locations, edit, add }) {
+    const listOfLocation = locations.map((location) => {
         return (
-
-            <tr key={medication.MedicationID}>
-                <td>{medication.MedicationID}</td>
-                <td>{medication.ResidentID}</td>
-                <td>{medication.MedicationName}</td>
-                <td>{medication.Dosage}</td>
-                <td>{medication.Instruction}</td>
+            <tr key={location.locationID}>
+                <td>{location.locationID}</td>
+                <td>{location.latitude}</td>
+                <td>{location.longitude}</td>
+                <td>{location.timestamp}</td>
                 <td>
-                    <Button onClick={() => edit(medication.MedicationID, medication)}>
+                    <Button onClick={() => edit(location.locationID, location)}>
                         Edit
                     </Button>
-                    <Button onClick={() => deleteData("medication", medication.MedicationID)} className="ms-1">
+                    <Button onClick={() => deleteDataAssociated("location", location.locationID)} className="ms-1">
                         Delete
                     </Button>
                 </td>
@@ -1284,45 +1511,46 @@ function MedicationList({ medications, edit, add }) {
     return (
         <div>
             <Container className='p-4'>
-                <p>Medication List</p>
+                <p>Location List</p>
                 <Table striped>
                     <thead>
                         <tr>
-                            <th>MedicationID</th>
-                            <th>ResidentID</th>
-                            <th>Name</th>
-                            <th>Dosage</th>
-                            <th>Instruction</th>
+                            <th>Location ID</th>
+                            <th>Latitude</th>
+                            <th>Longitude</th>
+                            <th>Timestamp</th>
                             <th>OPTIONS</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {listOfMedication}
+                        {listOfLocation}
                     </tbody>
                 </Table>
                 <Button onClick={() => add()}>
-                    Add Medication
+                    Add Location
                 </Button>
             </Container>
         </div >
     )
 }
 
-
-// Table Component inside a Map For Each Medication
-function NutritionList({ nutritions, edit, add }) {
-    const listOfNutrition = nutritions.map((nutrition) => {
+// Table Component inside a Map For Each Sensors
+function SensorList({ sensors, edit, add }) {
+    const listOfSensors = sensors.map((sensor) => {
         return (
-
-            <tr key={nutrition.NutritionID}>
-                <td>{nutrition.NutritionID}</td>
-                <td>{nutrition.ResidentID}</td>
-                <td>{nutrition.Instruction}</td>
+            <tr key={sensor.sensorID}>
+                <td>{sensor.sensorID}</td>
+                <td>{sensor.bloodPressure}</td>
+                <td>{sensor.temperature}</td>
+                <td>{sensor.heartrate}</td>
+                <td>{sensor.glucose}</td>
+                <td>{sensor.spO2}</td>
+                <td>{sensor.timestamp}</td>
                 <td>
-                    <Button onClick={() => edit(nutrition.NutritionID, nutrition)}>
+                    <Button onClick={() => edit(sensor.sensorID, sensor)}>
                         Edit
                     </Button>
-                    <Button onClick={() => deleteData("nutrition", nutrition.NutritionID)} className="ms-1">
+                    <Button onClick={() => deleteDataAssociated("location", sensor.sensorID)} className="ms-1">
                         Delete
                     </Button>
                 </td>
@@ -1332,27 +1560,83 @@ function NutritionList({ nutritions, edit, add }) {
     return (
         <div>
             <Container className='p-4'>
-                <p>Medication List</p>
+                <p>Sensor List</p>
                 <Table striped>
                     <thead>
                         <tr>
-                            <th>NutritionID</th>
-                            <th>ResidentID</th>
-                            <th>Instruction</th>
+                            <th>Sensor ID</th>
+                            <th>Blood Pressure</th>
+                            <th>Temperature</th>
+                            <th>Heart rate</th>
+                            <th>Glucose</th>
+                            <th>Oxygen Level</th>
+                            <th>Timestamp</th>
                             <th>OPTIONS</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {listOfNutrition}
+                        {listOfSensors}
                     </tbody>
                 </Table>
                 <Button onClick={() => add()}>
-                    Add Nutrition
+                    Add Sensor
                 </Button>
             </Container>
         </div >
     )
 }
 
+function PrescriptionList({ prescriptions, edit, add }) {
+    // RETRIVE THIS FROM DATABASE THAT IS FILTERED
+    let listCount = 0;
+    const listOfPrescription = prescriptions.map((prescription) => {
+        listCount++;
+        return (
+
+            <tr key={listCount}>
+                <td>{prescription.prescriptionID}</td>
+                <td>{prescription.medicationName}</td>
+                <td>{prescription.dose}</td>
+                <td>{prescription.frequency}</td>
+                <td>{prescription.intendedUse}</td>
+                <td>{prescription.instructions}</td>
+                <td>
+                    <Button onClick={() => edit(prescription.prescriptionID, prescription)}>
+                        Edit
+                    </Button>
+                    <Button onClick={() => deleteData("prescription", prescription.prescriptionID)} className="ms-1">
+                        Delete
+                    </Button>
+                </td>
+            </tr>
+        )
+    });
+    return (
+        <div>
+            <Container className='p-4'>
+                <p>Prescription List</p>
+                <Table striped>
+                    <thead>
+                        <tr>
+                            <th>Prescription ID</th>
+                            <th>Prescription Name</th>
+                            <th>Dose</th>
+                            <th>Frequency</th>
+                            <th>Intended Use</th>
+                            <th>Instructions</th>
+                            <th>OPTIONS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {listOfPrescription}
+                    </tbody>
+                </Table>
+                <Button onClick={() => add()}>
+                    Add Prescription
+                </Button>
+            </Container>
+        </div >
+    )
+}
 
 export default Admin;
