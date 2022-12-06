@@ -153,7 +153,7 @@ public class sensor {
 		newRecord.put("spO2", 			userJSON.getString("spO2"));
 		newRecord.put("timestamp",  	userJSON.getString("timestamp"));
 					
-        String SQL = "UPDATE user SET " 
+        String SQL = "UPDATE sensor SET " 
         		+ sensorID 			+ ", " 
         		+ bloodPressure 	+ ", " 
         		+ temperature		+ ", " 

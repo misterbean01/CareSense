@@ -16,30 +16,29 @@ import javax.ws.rs.core.Response;
 
 import org.json.JSONObject;
 
-@Path("/location")
-public class location {
+@Path("/associated")
+public class associated {
 	// connect to database
 	caresense_app careSense = new caresense_app();
 	String connectStr = careSense.serverConnect();
 	
-	// get location data via locationID
-	@Path("/{locationID}")
+	// get residentAssociations
+	@Path("/{uniqueID}")
 	@GET
-	public Response getLocation(@PathParam("locationID") String locationID) throws Exception {
+	public Response getAssociation (@PathParam("uniqueID") String uniqueID) throws Exception {
 		
 		JSONObject viewRecord = new JSONObject ();
 		
 		Class.forName("com.mysql.cj.jdbc.Driver");
     	Connection connection = DriverManager.getConnection(connectStr); 
 		Statement sqlStatement = connection.createStatement();
-		String query = "SELECT locationID, latitude, longitude, timestamp FROM location WHERE locationID = \"" + locationID + "\"";
+		String query = "SELECT uniqueID, userID, associatedUserID FROM associatedResident WHERE uniqueID = \"" + uniqueID + "\"";
 		ResultSet rs = sqlStatement.executeQuery(query);
 		while (rs.next())
 		{
-			viewRecord.put("locationID", locationID);
-			viewRecord.put("latitude", rs.getString("latitude"));
-			viewRecord.put("longitude", rs.getString("longitude"));
-			viewRecord.put("timestamp", rs.getString("timestamp"));
+			viewRecord.put("uniqueID", uniqueID);
+			viewRecord.put("userID", rs.getString("userID"));
+			viewRecord.put("associatedUserID", rs.getString("associatedUserID"));
 		}
 		
 		return Response
@@ -53,16 +52,16 @@ public class location {
       	    .build();
 	}
 	
-	// Delete a location
-	@Path("/{locationID}")
+	// Delete an association
+	@Path("/{uniqueID}")
 	@DELETE
-	public Response deleteLocation (@PathParam("locationID") String locationID) throws SQLException, Exception  {
+	public Response deleteAssociation (@PathParam("uniqueID") String uniqueID) throws SQLException, Exception  {
 		
 	   	Class.forName("com.mysql.cj.jdbc.Driver");
     	Connection connection = DriverManager.getConnection(connectStr); 
 		Statement sqlStatement = connection.createStatement();	 
 
-		sqlStatement.executeUpdate("DELETE FROM location WHERE locationID = \"" + locationID + "\"");
+		sqlStatement.executeUpdate("DELETE FROM associatedResident WHERE uniqueID = \"" + uniqueID + "\"");
         connection.close();
         
         return Response
@@ -75,7 +74,7 @@ public class location {
 				.build();
 	}
 	
-	// add location
+	// add association
 	@Path("/{userInfo}")
 	@POST
 	public Response addLocation (@PathParam("userInfo") String userInfo) throws Exception {
@@ -83,21 +82,18 @@ public class location {
 		JSONObject userJSON = new JSONObject (userInfo);
 		JSONObject newRecord = new JSONObject ();
 					
-		String locationID = userJSON.getString("locationID");
-		String latitude = userJSON.getString("latitude");
-		String longitude = userJSON.getString("longitude");
-		String timestamp = userJSON.getString("timestamp");
+		String uniqueID = userJSON.getString("uniqueID");
+		String userID = userJSON.getString("userID");
+		String associatedUserID = userJSON.getString("associatedUserID");
+
+		newRecord.put("uniqueID", uniqueID);
+		newRecord.put("userID", userID);
+		newRecord.put("associatedUserID", associatedUserID);
 		
-		newRecord.put("locationID", locationID);
-		newRecord.put("latitude", latitude);
-		newRecord.put("longitude", longitude);
-		newRecord.put("timestamp", timestamp);
-		
-        String SQL = "INSERT INTO location VALUES ("
-        		+ "\"" + locationID 	+ "\","
-        		+ "\"" + latitude 	+ "\","
-        		+ "\"" + longitude 	+ "\","
-        		+ "\"" + timestamp 		+ "\")";
+        String SQL = "INSERT INTO associatedResident VALUES ("
+        		+ "\"" + uniqueID 			+ "\","
+        		+ "\"" + userID 			+ "\","
+        		+ "\"" + associatedUserID 	+ "\")";
         
         Class.forName("com.mysql.cj.jdbc.Driver");
     	Connection connection = DriverManager.getConnection(connectStr); 
@@ -116,30 +112,27 @@ public class location {
 				.build();
 	}	
 	
-	// update location
+	// update association
 	@Path("/{userInfo}")
 	@PUT
-	public Response updateLocation (@PathParam("userInfo") String userInfo) throws Exception {
+	public Response updateAssociation (@PathParam("userInfo") String userInfo) throws Exception {
 		
 		JSONObject userJSON = new JSONObject (userInfo);
 		JSONObject newRecord = new JSONObject ();
 					
-		String locationID = "locationID = \"" 	+ userJSON.getString("locationID") 	+ "\"";
-		String latitude = "latitude = \"" 		+ userJSON.getString("latitude") 	+ "\"";
-		String longitude = "temperature = \"" 	+ userJSON.getString("longitude") 	+ "\"";
-		String timestamp = "timestamp = \"" 	+ userJSON.getString("timestamp") 	+ "\"";
+		String uniqueID = "uniqueID = \"" 					+ userJSON.getString("uniqueID") 			+ "\"";
+		String userID = "userID = \"" 						+ userJSON.getString("userID") 				+ "\"";
+		String associatedUserID = "associatedUserID = \"" 	+ userJSON.getString("associatedUserID") 	+ "\"";
 			
-		newRecord.put("locationID", userJSON.getString("locationID"));
-		newRecord.put("latitude", 	userJSON.getString("latitude"));
-		newRecord.put("longitude", 	userJSON.getString("longitude"));
-		newRecord.put("timestamp", 	userJSON.getString("timestamp"));
+		newRecord.put("uniqueID", 			userJSON.getString("uniqueID"));
+		newRecord.put("userID", 			userJSON.getString("userID"));
+		newRecord.put("associatedUserID", 	userJSON.getString("associatedUserID"));
 					
-        String SQL = "UPDATE location SET " 
-        		+ locationID 	+ ", " 
-        		+ latitude 		+ ", " 
-        		+ longitude		+ ", " 
-        		+ timestamp   
-        		+ " WHERE locationID = \"" + userJSON.getString("locationID") + "\"";
+        String SQL = "UPDATE associatedResident SET " 
+        		+ uniqueID 					+ ", " 
+        		+ userID 					+ ", " 
+        		+ associatedUserID   
+        		+ " WHERE uniqueID = \"" 	+ userJSON.getString("uniqueID") + "\"";
 	        
         Class.forName("com.mysql.cj.jdbc.Driver");
     	Connection connection = DriverManager.getConnection(connectStr); 

@@ -34,7 +34,7 @@ public class caresense_app extends Application{
 		//add classes that you wish to be supported by application
 		resources.add( build.class ); 
 		resources.add( crud.class) ; 
-		resources.add( resident.class );
+		resources.add( user.class );
 		resources.add( sensor.class );
 		resources.add( location.class );
 		resources.add( prescription.class );
