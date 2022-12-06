@@ -352,24 +352,24 @@ public class crud {
 	public Response residentViewprescription (@PathParam("recordInfo") String recordInfo) throws Exception {
 		
 		JSONObject userJSON = new JSONObject (recordInfo);
-		String userID = userJSON.getString("userID");
+		String prescriptionID = userJSON.getString("prescriptionID");
 		JSONObject viewRecord = new JSONObject ();
 		
 		Class.forName("com.mysql.cj.jdbc.Driver");
     	Connection connection = DriverManager.getConnection(connectStr); 
 		Statement sqlStatement = connection.createStatement();
 		String query = "SELECT prescriptionID, userID, medicationName, dose, frequency, "
-				+ "intendedUse, instructions FROM prescription WHERE userID = " + userID;
+				+ "intendedUse, instructions FROM prescription WHERE prescriptionID = " + prescriptionID;
 		ResultSet rs = sqlStatement.executeQuery(query);
 		while (rs.next())
 		{
-			viewRecord.put("sensorID", rs.getString("sensorID"));
-			viewRecord.put("bloodPressure", rs.getString("bloodPressure"));
-			viewRecord.put("temperature", rs.getString("temperature"));
-			viewRecord.put("heartrate", rs.getString("heartrate"));
-			viewRecord.put("glucose", rs.getString("glucose"));
-			viewRecord.put("spO2", rs.getString("spO2"));
-			viewRecord.put("timestamp",  rs.getString("timestamp"));
+			viewRecord.put("prescriptionID", rs.getString("prescriptionID"));
+			viewRecord.put("userID", rs.getString("userID"));
+			viewRecord.put("medicationName", rs.getString("medicationName"));
+			viewRecord.put("dose", rs.getString("dose"));
+			viewRecord.put("frequency", rs.getString("frequency"));
+			viewRecord.put("intendedUse", rs.getString("intendedUse"));
+			viewRecord.put("instructions",  rs.getString("instructions"));
 		}
 		
 		return Response
