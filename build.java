@@ -63,8 +63,7 @@ public class build {
 	    		+ "locationID VARCHAR(20) NOT NULL,"
 	    		+ "latitude VARCHAR(20),"
 	    		+ "longitude VARCHAR(20),"
-	    		+ "timestamp VARCHAR(20),"
-	    		+ "PRIMARY KEY (locationID))";
+	    		+ "timestamp VARCHAR(20))";
  	   
  	   String sensor = "CREATE TABLE sensor ("
 	    		+ "sensorID VARCHAR(20) NOT NULL,"
@@ -73,8 +72,7 @@ public class build {
 	    		+ "heartrate VARCHAR(20),"
 	    		+ "glucose VARCHAR(20),"
 	    		+ "spO2 VARCHAR(20),"
-	    		+ "timestamp VARCHAR(20),"
-	    		+ "PRIMARY KEY (sensorID))";
+	    		+ "timestamp VARCHAR(20))";
  	   
  	    String prescription = "CREATE TABLE prescription ("
  	    		+ "prescriptionID VARCHAR(20) NOT NULL,"

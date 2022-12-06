@@ -35,6 +35,9 @@ public class caresense_app extends Application{
 		resources.add( build.class ); 
 		resources.add( crud.class) ; 
 		resources.add( resident.class );
+		resources.add( sensor.class );
+		resources.add( location.class );
+		resources.add( prescription.class );
 		return resources;
 	}
 	public String serverConnect() {

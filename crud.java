@@ -173,7 +173,7 @@ public class crud {
 			newRecord.put("longitude", longitude);
 			newRecord.put("timestamp", timestamp);
 			
-	        String SQL = "INSERT INTO locationInfo VALUES ("
+	        String SQL = "INSERT INTO location VALUES ("
 	        		+ "\"" + locationID 	+ "\","
 	        		+ "\"" + latitude 	+ "\","
 	        		+ "\"" + longitude 	+ "\","
@@ -322,7 +322,7 @@ public class crud {
     	Connection connection = DriverManager.getConnection(connectStr); 
 		Statement sqlStatement = connection.createStatement();
 		String query = "SELECT sensorID, bloodPressure, temperature, heartrate, "
-				+ "glucose, spO2 FROM sensor WHERE sensorID = " + sensorID;
+				+ "glucose, spO2, timestamp FROM sensor WHERE sensorID = " + sensorID;
 		ResultSet rs = sqlStatement.executeQuery(query);
 		while (rs.next())
 		{

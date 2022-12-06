@@ -23,18 +23,16 @@ public class resident {
 	String connectStr = careSense.serverConnect();
 	
 	// get resident via userID
-	@Path("resident/{userInfo}")
+	@Path("/{userID}")
 	@GET
-	public Response getResident (@PathParam("userInfo") String userInfo) throws Exception {
+	public Response getResident (@PathParam("userID") String userID) throws Exception {
 		
-		JSONObject userJSON = new JSONObject (userInfo);
-		String userID = userJSON.getString("userID");
 		JSONObject newRecord = new JSONObject ();
 		
 		Class.forName("com.mysql.cj.jdbc.Driver");
     	Connection connection = DriverManager.getConnection(connectStr); 
 		Statement sqlStatement = connection.createStatement();
-		String query = "SELECT userID, userType, username, password, firstName, lastName, birthday, gender, phoneNumber FROM user WHERE userID = " + userID;
+		String query = "SELECT userID, userType, username, password, firstName, lastName, birthday, gender, phoneNumber FROM user WHERE userID = \"" + userID +"\"";
 		ResultSet rs = sqlStatement.executeQuery(query);
 		while (rs.next())
 		{
@@ -61,18 +59,15 @@ public class resident {
 	}
 	
 	// Delete a resident
-	@Path("resident/{userInfo}")
+	@Path("/{userID}")
 	@DELETE
-	public Response deleteResident (@PathParam("userInfo") String userInfo) throws SQLException, Exception  {
-		
-		JSONObject userJSON = new JSONObject (userInfo);
-		String userID = userJSON.getString("userID");
+	public Response deleteResident (@PathParam("userID") String userID) throws SQLException, Exception  {
 		
 	   	Class.forName("com.mysql.cj.jdbc.Driver");
     	Connection connection = DriverManager.getConnection(connectStr); 
 		Statement sqlStatement = connection.createStatement();	 
 
-		sqlStatement.executeUpdate("DELETE FROM user WHERE userID = " + userID);
+		sqlStatement.executeUpdate("DELETE FROM user WHERE userID = \"" + userID + "\"");
 		
 		
         connection.close();
@@ -88,7 +83,7 @@ public class resident {
 	}
 	
 	// add resident
-	@Path("resident/{userInfo}")
+	@Path("/{userInfo}")
 	@POST
 	public Response addResident (@PathParam("userInfo") String userInfo) throws Exception {
 		
@@ -144,7 +139,7 @@ public class resident {
 	}	
 	
 	// update resident
-	@Path("resident/{userInfo}")
+	@Path("/{userInfo}")
 	@PUT
 	public Response updateResident (@PathParam("userInfo") String userInfo) throws Exception {
 		
@@ -161,15 +156,15 @@ public class resident {
 		String gender = "gender = \"" 		+ userJSON.getString("gender") 		+ "\"";
 		String phoneNumber = "phoneNumber = \"" + userJSON.getString("phoneNumber") + "\"";
 			
-		newRecord.put("userID", userID);
-		newRecord.put("userType", userType);
-		newRecord.put("username", username);
-		newRecord.put("password", password);
-		newRecord.put("firstName", firstName);
-		newRecord.put("lastName", lastName);
-		newRecord.put("birthday", birthday);
-		newRecord.put("gender", gender);
-		newRecord.put("phoneNumber", phoneNumber);
+		newRecord.put("userID", 	userJSON.getString("userID"));
+		newRecord.put("userType", 	userJSON.getString("userType"));
+		newRecord.put("username", 	userJSON.getString("username"));
+		newRecord.put("password", 	userJSON.getString("password"));
+		newRecord.put("firstName", 	userJSON.getString("firstName"));
+		newRecord.put("lastName", 	userJSON.getString("lastName"));
+		newRecord.put("birthday", 	userJSON.getString("birthday"));
+		newRecord.put("gender", 	userJSON.getString("gender"));
+		newRecord.put("phoneNumber", userJSON.getString("phoneNumber"));
 					
         String SQL = "UPDATE user SET " 
         		+ userID 		+ ", " 
@@ -181,7 +176,7 @@ public class resident {
         		+ birthday		+ ", " 
         		+ gender		+ ", " 
         		+ phoneNumber   
-        		+ "WHERE userID = " + userID;
+        		+ " WHERE userID = \"" + userJSON.getString("userID") + "\"";
 	        
         Class.forName("com.mysql.cj.jdbc.Driver");
     	Connection connection = DriverManager.getConnection(connectStr); 
