@@ -16,7 +16,7 @@ import javax.ws.rs.core.Response;
 
 import org.json.JSONObject;
 
-@Path("/")
+@Path("/resident")
 public class resident {
 	// connect to database
 	caresense_app careSense = new caresense_app();
