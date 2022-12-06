@@ -120,9 +120,9 @@ public class resident {
 		JSONObject userJSON = new JSONObject (userInfo);
 		JSONObject newRecord = new JSONObject ();
 					
-		String userID = "userID = \"" 	+ userJSON.getString("userID") 	+ "\"";
+		String userID = "userID = \"" 				+ userJSON.getString("userID") 	+ "\"";
 		String locationID = "locationID = \"" 		+ userJSON.getString("locationID") 	+ "\"";
-		String sensorID = "temperature = \"" 	+ userJSON.getString("sensorID") 	+ "\"";
+		String sensorID = "sensorID = \"" 		+ userJSON.getString("sensorID") 	+ "\"";
 			
 		newRecord.put("userID", userJSON.getString("userID"));
 		newRecord.put("locationID", 	userJSON.getString("locationID"));
