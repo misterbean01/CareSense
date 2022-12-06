@@ -10,6 +10,7 @@ import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 
 import org.json.JSONObject;
@@ -22,9 +23,9 @@ public class crud {
 	
 	// method to add a complete record into any of the 11 tables
 	// JSON must contain 'tableName'
-	@Path("newRecord")
+	@Path("newRecord/{recordInfo}")
 	@POST
-	public Response newRecord (String recordInfo) throws Exception {
+	public Response newRecord (@PathParam("recordInfo") String recordInfo) throws Exception {
 		
 		JSONObject userJSON = new JSONObject (recordInfo);
 		String tableName = userJSON.getString("tableName");
@@ -230,9 +231,9 @@ public class crud {
 	}
 	
 	// Delete a record from any table; references tableName and first key in table
-	@Path("deleteRecord")
+	@Path("deleteRecord/{recordInfo}")
 	@DELETE
-	public Response deleteRecord (String recordInfo) throws SQLException, Exception  {
+	public Response deleteRecord (@PathParam("recordInfo") String recordInfo) throws SQLException, Exception  {
 		
 		JSONObject userJSON = new JSONObject (recordInfo);
 		String tableName = userJSON.getString("tableName");
@@ -243,25 +244,25 @@ public class crud {
 		Statement sqlStatement = connection.createStatement();	 
 		
 		if (tableName == "admin") {
-			sqlStatement.executeUpdate("DELETE FROM " + tableName + " WHERE userID = \"" + primaryKey + "\"" );
+			sqlStatement.executeUpdate("DELETE FROM " + tableName + " WHERE userID = " + primaryKey );
 		}
 		if (tableName == "user") {
-			sqlStatement.executeUpdate("DELETE FROM " + tableName + " WHERE userID = \"" + primaryKey + "\"" );
+			sqlStatement.executeUpdate("DELETE FROM " + tableName + " WHERE userID = " + primaryKey );
 		}
 		if (tableName == "resident") {
-			sqlStatement.executeUpdate("DELETE FROM " + tableName + " WHERE userID = \"" + primaryKey + "\"" );
+			sqlStatement.executeUpdate("DELETE FROM " + tableName + " WHERE userID = " + primaryKey);
 		}
 		if (tableName == "associatedResident") {
-			sqlStatement.executeUpdate("DELETE FROM " + tableName + " WHERE uniqueID = \"" + primaryKey + "\"" );
+			sqlStatement.executeUpdate("DELETE FROM " + tableName + " WHERE uniqueID = " + primaryKey );
 		}
 		if (tableName == "sensor") {
-			sqlStatement.executeUpdate("DELETE FROM " + tableName + " WHERE sensorID = \"" + primaryKey + "\"" );
+			sqlStatement.executeUpdate("DELETE FROM " + tableName + " WHERE sensorID = " + primaryKey );
 		}
 		if (tableName == "location") {
-			sqlStatement.executeUpdate("DELETE FROM " + tableName + " WHERE locationID = \"" + primaryKey + "\"" );
+			sqlStatement.executeUpdate("DELETE FROM " + tableName + " WHERE locationID = " + primaryKey );
 		}
 		if (tableName == "prescription") {
-			sqlStatement.executeUpdate("DELETE FROM " + tableName + " WHERE prescriptionID = \"" + primaryKey + "\"" );
+			sqlStatement.executeUpdate("DELETE FROM " + tableName + " WHERE prescriptionID = " + primaryKey);
 		}
 		
         connection.close();
@@ -277,9 +278,9 @@ public class crud {
 	}
 	
 	// resident view: resident table
-	@Path("residentViewResident")
+	@Path("residentViewResident/{recordInfo}")
 	@GET
-	public Response residentViewResident (String recordInfo) throws Exception {
+	public Response residentViewResident (@PathParam("recordInfo") String recordInfo) throws Exception {
 		
 		JSONObject userJSON = new JSONObject (recordInfo);
 		String userID = userJSON.getString("userID");
@@ -309,9 +310,9 @@ public class crud {
 	}
 
 	// resident view: sensor table
-	@Path("residentViewSensor")
+	@Path("residentViewSensor/{recordInfo}")
 	@GET
-	public Response residentViewSensor (String recordInfo) throws Exception {
+	public Response residentViewSensor (@PathParam("recordInfo") String recordInfo) throws Exception {
 		
 		JSONObject userJSON = new JSONObject (recordInfo);
 		String sensorID = userJSON.getString("sensorID");
@@ -346,9 +347,9 @@ public class crud {
 	}
 	
 	// resident view: prescription table
-	@Path("residentViewprescription")
+	@Path("residentViewprescription/{recordInfo}")
 	@GET
-	public Response residentViewprescription (String recordInfo) throws Exception {
+	public Response residentViewprescription (@PathParam("recordInfo") String recordInfo) throws Exception {
 		
 		JSONObject userJSON = new JSONObject (recordInfo);
 		String userID = userJSON.getString("userID");
@@ -383,9 +384,9 @@ public class crud {
 	}
 
 	// resident view: location table
-	@Path("residentViewLocation")
+	@Path("residentViewLocation/{recordInfo}")
 	@GET
-	public Response residentViewLocation (String recordInfo) throws Exception {
+	public Response residentViewLocation (@PathParam("recordInfo") String recordInfo) throws Exception {
 		
 		JSONObject userJSON = new JSONObject (recordInfo);
 		String locationID = userJSON.getString("locationID");

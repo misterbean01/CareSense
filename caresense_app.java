@@ -34,11 +34,12 @@ public class caresense_app extends Application{
 		//add classes that you wish to be supported by application
 		resources.add( build.class ); 
 		resources.add( crud.class) ; 
+		resources.add( resident.class );
 		return resources;
 	}
 	public String serverConnect() {
-		String mysql_ip = "34.173.51.210";
-		String username = "jas";
+		String mysql_ip = "XX.173.51.210";
+		String username = "admin";
 		String password = "admin1";
 	    String connectStr ="jdbc:mysql://" + mysql_ip + ":3306/database?user=" + username + "&password=" + password ;
 
