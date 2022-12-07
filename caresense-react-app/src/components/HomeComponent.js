@@ -15,60 +15,7 @@ const Home = () => {
     const [weather, setWeather] = useState({});
     const [clock, setClock] = useState({});
     const [holidays, setHolidays] = useState([]);
-    const [residents, setResidents] = useState([
-        {
-            userID: 1,
-            userType: "Resident",
-            username: "aaa",
-            password: "aaa",
-            firstName: "Harold",
-            lastName: "Hide",
-            birthday: "01-01-1951",
-            gender: "Male",
-            phoneNumber: "253-111-1111",
-            sensorID: 1,
-            locationID: 1
-        },
-        {
-            userID: 2,
-            userType: "Resident",
-            username: "aaa",
-            password: "aaa",
-            firstName: "Nice",
-            lastName: "Lee",
-            birthday: "01-01-1951",
-            gender: "Male",
-            phoneNumber: "253-111-1111",
-            sensorID: 2,
-            locationID: 2
-        },
-        {
-            userID: 3,
-            userType: "Resident",
-            username: "aaa",
-            password: "aaa",
-            firstName: "Bob",
-            lastName: "Read",
-            birthday: "01-01-1951",
-            gender: "Male",
-            phoneNumber: "253-111-1111",
-            sensorID: 1,
-            locationID: 1
-        },
-        {
-            userID: 4,
-            userType: "Resident",
-            username: "aaa",
-            password: "aaa",
-            firstName: "Lisa",
-            lastName: "Bint",
-            birthday: "01-01-1951",
-            gender: "Female",
-            phoneNumber: "253-111-1111",
-            sensorID: 1,
-            locationID: 1
-        }
-    ]);
+    const [residents, setResidents] = useState([]);
 
     // Get the User state from Login Component
     const userLoc = useLocation();
@@ -81,12 +28,26 @@ const Home = () => {
 
 
     useEffect(() => {
+        getAllResident();
         getWeatherToday();
         getClockToday();
         getHoliday();
     }, []);
 
-    // ONLY SHOW ITEMS THAT ID EXISTS ON THE DATABSE
+    function getAllResident() {
+        fetch("/CareSense/api/resident/all")
+            .then(function (response) {
+                //console.log(response)
+                return response.json();
+            })
+            .then(function (residentList) {
+                //console.log(clockJSON);
+                setResidents(residentList);
+            }).catch(err => {
+                console.log(err);
+                setResidents([]);
+            });
+    }
 
     function getWeatherToday() {
         fetch("CareSense/api/weather")

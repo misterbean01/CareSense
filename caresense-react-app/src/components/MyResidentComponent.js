@@ -4,7 +4,6 @@ import { Navigate } from "react-router-dom";
 import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
-import Modal from 'react-bootstrap/Modal';
 import { useLocation } from "react-router-dom";
 
 const MyResident = () => {
@@ -12,33 +11,54 @@ const MyResident = () => {
     const [authenticated, setAuthenticated] = useState(sessionStorage.getItem("authenticated"));
     const [userType, setUserType] = useState(sessionStorage.getItem("userType"));
     const stateLoc = useLocation();
-    const resident = stateLoc.state.resident;
     const user = stateLoc.state.user;
-    const [prescriptions, setPrescriptions] = useState([
-        { prescriptionID: 4, userID: 1, medicationName: "Drug A", dose: 100, frequency: "Once per day.", intendedUse: "Heart Burn", instructions: "After Meal." },
-        { prescriptionID: 5, userID: 1, medicationName: "Drub B", dose: 150, frequency: "Once per day.", intendedUse: "Lower Blood Pressure", instructions: "Before Meal." },
-    ]);
-    const [fakefamily,] = useState([
-        { userID: 2, userType: "Family", username: "aaa", password: "aaa", firstName: "Harold", lastName: "Hide", birthday: "01-01-1991", gender: "Male", phoneNumber: "253-111-1111" },
-        { userID: 3, userType: "Family", username: "aaa", password: "aaa", firstName: "Harold", lastName: "Hide", birthday: "01-01-1991", gender: "Male", phoneNumber: "253-111-1111" },
-    ]);
-    const [fakedoctor,] = useState([
-        { userID: 4, userType: "Doctor", username: "aaa", password: "aaa", firstName: "Harold", lastName: "Hide", birthday: "01-01-1991", gender: "Male", phoneNumber: "253-111-1111" },
-        { userID: 5, userType: "Doctor", username: "aaa", password: "aaa", firstName: "Harold", lastName: "Hide", birthday: "01-01-1991", gender: "Male", phoneNumber: "253-111-1111" },
-    ]);
-    const [sensor, setSensor] = useState(
-        { sensorID: 1, bloodPressure: "120/80", temperature: 98, heartrate: 75, glucose: 100, spO2: 95, timestamp: "12-5-2022 12:00" }
-    );
-    const [location, setLocation] = useState(
-        { locationID: 1, latitude: 55.555555, longitude: 75.5422111, timestamp: "12-5-2022 12:00" }
-    );
+    const [prescriptions, setPrescriptions] = useState([]);
+    const [family, setFamily] = useState([]);
+    const [doctor, setDoctor] = useState([]);
+    const [caretaker, setCaretaker] = useState([]);
+    const [sensor, setSensor] = useState({});
+    const [location, setLocation] = useState({});
 
     const [fruitName, setFruitName] = useState("");
     const [fruitNutrition, setFruitNutrition] = useState("");
 
     useEffect(() => {
-
+        getResidentDetails(user.userID);
     }, []);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    async function getResidentDetails(id) {
+        let address = "/CareSense/api/resident/details/" + id;
+
+        try {
+            const res = await fetch(address, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Access-Control-Request-Origin": "http://localhost:8080",
+                    "Access-Control-Request-Method": "GET",
+                    "Access-Control-Allow-Headers":
+                        "Origin, X-Requested-With, Content-Type, Accept"
+                }
+            });
+
+            if (!res.ok) {
+                const message = `An error has occured: ${res.status} - ${res.statusText}`;
+                throw new Error(message);
+            }
+            const data = await res.json();
+            //console.log(data);
+            setLocation(data.location);
+            setSensor(data.sensor);
+            setFamily(data.familyMember);
+            setDoctor(data.doctor);
+            setCaretaker(data.caretaker)
+            setPrescriptions(data.prescription);
+        } catch (err) {
+            console.log(err.message);
+        }
+    }
+
 
     const handleSubmitFruitName = (e) => {
         e.preventDefault();
@@ -108,7 +128,7 @@ const MyResident = () => {
         });
         return (
             <div>
-                <Container className='p-4'>
+                <Container className='my-1'>
                     <Table striped>
                         <thead>
                             <tr>
@@ -129,61 +149,34 @@ const MyResident = () => {
         )
     }
 
-    function FamilyList({ families }) {
-        const listOfFamily = families.map((family) => {
+    function UserList({ usersAssociated }) {
+        const listOfUsers = usersAssociated.map((user) => {
             return (
 
-                <tr key={family.userID}>
-                    <td>{family.userID}</td>
-                    <td>{family.firstName}</td>
-                    <td>{family.lastName}</td>
+                <tr key={user.userID}>
+                    <td>{user.userID}</td>
+                    <td>{user.firstName}</td>
+                    <td>{user.lastName}</td>
+                    <td>{user.gender}</td>
+                    <td>{user.phoneNumber}</td>
                 </tr>
             )
         });
         return (
             <div>
-                <Container className='p-4'>
+                <Container className='my-1'>
                     <Table striped>
                         <thead>
                             <tr>
-                                <th>Family's User ID</th>
+                                <th>User ID</th>
                                 <th>First Name</th>
                                 <th>Last Name</th>
+                                <th>Gender</th>
+                                <th>Phone Number</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {listOfFamily}
-                        </tbody>
-                    </Table>
-                </Container>
-            </div >
-        )
-    }
-
-    function DoctorList({ doctors }) {
-        const listOfDoctors = doctors.map((doctor) => {
-            return (
-
-                <tr key={doctor.userID}>
-                    <td>{doctor.userID}</td>
-                    <td>{doctor.firstName}</td>
-                    <td>{doctor.lastName}</td>
-                </tr>
-            )
-        });
-        return (
-            <div>
-                <Container className='p-4'>
-                    <Table striped>
-                        <thead>
-                            <tr>
-                                <th>Doctor's User ID</th>
-                                <th>First Name</th>
-                                <th>Last Name</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {listOfDoctors}
+                            {listOfUsers}
                         </tbody>
                     </Table>
                 </Container>
@@ -230,23 +223,26 @@ const MyResident = () => {
                             </tr>
                             <tr>
                                 <td>Phone Number</td>
-                                <td>{resident.phoneNumber}</td>
+                                <td>{user.phoneNumber}</td>
                             </tr>
                         </tbody>
                     </Table>
 
                     <p>Family: </p>
-                    <FamilyList families={fakefamily} />
+                    <UserList usersAssociated={family} />
 
                     <p>Doctor:  </p>
-                    <DoctorList doctors={fakedoctor} />
+                    <UserList usersAssociated={doctor} />
+
+                    <p>Caretaker:  </p>
+                    <UserList usersAssociated={caretaker} />
 
                     <p>Current Prescription:</p>
                     <PrescriptionList prescriptions={prescriptions} />
 
 
                     <p>Location:
-                        <li>Location ID: {location.LocationID} </li>
+                        <li>Location ID: {location.locationID} </li>
                         <li>Latitude: {location.latitude} </li>
                         <li>Longitude: {location.longitude} </li>
                         <li>Timestamp: {location.timestamp}</li>
@@ -263,7 +259,7 @@ const MyResident = () => {
                         <li>Timestamp: {sensor.timestamp}</li>
                     </p>
 
-                    <div className="m-1">
+                    <div className="m-5">
                         <form onSubmit={handleSubmitFruitName}>
                             <div className="mb-3">
                                 <label className="mb-1">Get Fruit Nutrition</label>
@@ -278,7 +274,7 @@ const MyResident = () => {
                             <input type="submit" className="btn btn-primary" value="Submit" />
                         </form>
                     </div>
-                    <div>
+                    <div className="mb-3">
                         Fruit Nutrition:
                         <li>Name: {fruitNutrition.name}</li>
                         <li>Carb: {fruitNutrition.carbohydrates}</li>

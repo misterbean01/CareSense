@@ -18,7 +18,6 @@ const Login = () => {
             setAuthenticated(true)
             sessionStorage.setItem("authenticated", true);
             sessionStorage.setItem("userType", loggedUser.userType);
-            setUserType(loggedUser.userType);
             console.log("Login Successful: " + authenticated + " " + userType);
 
             const fakeresident = { userID: 1, locationID: 1, sensorID: 1 }
@@ -92,11 +91,11 @@ const Login = () => {
                     //console.log(newUser);
 
                     setLoggedUser(newUser);
-                    if (Object.keys(newUser).length !== 0)
+                    if (Object.keys(newUser).length !== 0) {
                         setLoginStatus(true);
+                        setUserType(doc.getElementsByTagName("userType")[0].childNodes[0].textContent);
+                    }
                 }
-
-
             }
 
         } catch (err) {
@@ -109,11 +108,11 @@ const Login = () => {
 
     return (
         <div>
-            <p>Login</p>
+
 
             <div className="row d-flex justify-content-center">
                 <div className="col-md-6">
-
+                    <h5>Login</h5>
                     <form onSubmit={handleSubmit}>
                         <div className="mb-3">
                             <label className="mb-1">Username</label>
@@ -140,7 +139,7 @@ const Login = () => {
                 </div>
             </div>
 
-            <div>
+            <div className="m-5">
                 <Button onClick={() => {
                     navigate("/registration");
                 }}>

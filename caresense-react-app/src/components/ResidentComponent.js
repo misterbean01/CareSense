@@ -14,24 +14,12 @@ const Resident = () => {
     const stateLoc = useLocation();
     const resident = stateLoc.state.resident;
     const user = stateLoc.state.user;
-    const [prescriptions, setPrescriptions] = useState([
-        { prescriptionID: 4, userID: 1, medicationName: "Drug A", dose: 100, frequency: "Once per day.", intendedUse: "Heart Burn", instructions: "After Meal." },
-        { prescriptionID: 5, userID: 1, medicationName: "Drub B", dose: 150, frequency: "Once per day.", intendedUse: "Lower Blood Pressure", instructions: "Before Meal." },
-    ]);
-    const [fakefamily,] = useState([
-        { userID: 2, userType: "Family", username: "aaa", password: "aaa", firstName: "Harold", lastName: "Hide", birthday: "01-01-1991", gender: "Male", phoneNumber: "253-111-1111" },
-        { userID: 3, userType: "Family", username: "aaa", password: "aaa", firstName: "Harold", lastName: "Hide", birthday: "01-01-1991", gender: "Male", phoneNumber: "253-111-1111" },
-    ]);
-    const [fakedoctor,] = useState([
-        { userID: 4, userType: "Doctor", username: "aaa", password: "aaa", firstName: "Harold", lastName: "Hide", birthday: "01-01-1991", gender: "Male", phoneNumber: "253-111-1111" },
-        { userID: 5, userType: "Doctor", username: "aaa", password: "aaa", firstName: "Harold", lastName: "Hide", birthday: "01-01-1991", gender: "Male", phoneNumber: "253-111-1111" },
-    ]);
-    const [sensor, setSensor] = useState(
-        { sensorID: 1, bloodPressure: "120/80", temperature: 98, heartrate: 75, glucose: 100, spO2: 95, timestamp: "12-5-2022 12:00" }
-    );
-    const [location, setLocation] = useState(
-        { locationID: 1, latitude: 55.555555, longitude: 75.5422111, timestamp: "12-5-2022 12:00" }
-    );
+    const [prescriptions, setPrescriptions] = useState([]);
+    const [family, setFamily] = useState([]);
+    const [doctor, setDoctor] = useState([]);
+    const [caretaker, setCaretaker] = useState([]);
+    const [sensor, setSensor] = useState({});
+    const [location, setLocation] = useState({});
 
     // Add / Edit Form for Prescription
     const [prescPrescriptionIDEdit, setPrescPrescriptionIDEdit] = useState("");
@@ -40,6 +28,7 @@ const Resident = () => {
     const [prescFrequencyEdit, setPrescFrequencyEdit] = useState("");
     const [prescIntendedUseEdit, setPrescIntendedUseEdit] = useState("");
     const [prescInstructionsEdit, setPrescInstructionsEdit] = useState("");
+    const [prescPrescriptionIDAdd, setPrescPrescriptionIDAdd] = useState("");
     const [prescMedicationNameAdd, setPrescMedicationNameAdd] = useState("");
     const [prescDoseAdd, setPrescDoseAdd] = useState("");
     const [prescFrequencyAdd, setPrescFrequencyAdd] = useState("");
@@ -54,8 +43,22 @@ const Resident = () => {
     const [fruitNutrition, setFruitNutrition] = useState("");
 
     useEffect(() => {
-
+        getResidentDetails(resident.userID);
     }, []);
+
+    function refreshPrescription() {
+        fetch("/CareSense/api/prescription/resident/" + resident.userID)
+            .then(function (response) {
+                //console.log(response)
+                return response.json();
+            })
+            .then(function (JSON) {
+                setPrescriptions(JSON)
+            }).catch(err => {
+                console.log(err);
+                setPrescriptions([]);
+            });
+    }
 
     const handleSubmitPrescEdit = (e) => {
         e.preventDefault();
@@ -75,7 +78,7 @@ const Resident = () => {
 
         let newData;
         newData = {
-            userID: resident.userID, medicationName: prescMedicationNameAdd,
+            prescriptionID: prescPrescriptionIDAdd, userID: resident.userID, medicationName: prescMedicationNameAdd,
             dose: prescDoseAdd, frequency: prescFrequencyAdd, intendedUse: prescIntendedUseAdd, instructions: prescInstructionsAdd
         };
 
@@ -87,6 +90,40 @@ const Resident = () => {
         e.preventDefault();
         getFruitNutrition(fruitName);
     };
+
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    async function getResidentDetails(id) {
+        let address = "/CareSense/api/resident/details/" + id;
+
+        try {
+            const res = await fetch(address, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Access-Control-Request-Origin": "http://localhost:8080",
+                    "Access-Control-Request-Method": "GET",
+                    "Access-Control-Allow-Headers":
+                        "Origin, X-Requested-With, Content-Type, Accept"
+                }
+            });
+
+            if (!res.ok) {
+                const message = `An error has occured: ${res.status} - ${res.statusText}`;
+                throw new Error(message);
+            }
+            const data = await res.json();
+            //console.log(data);
+            setLocation(data.location);
+            setSensor(data.sensor);
+            setFamily(data.familyMember);
+            setDoctor(data.doctor);
+            setCaretaker(data.caretaker)
+            setPrescriptions(data.prescription);
+        } catch (err) {
+            console.log(err.message);
+        }
+    }
 
     async function getFruitNutrition(fruitName) {
         let address = "/CareSense/api/fruit/";
@@ -149,6 +186,7 @@ const Resident = () => {
     function openAddPrescForm(data) {
         console.log("Prescription open add modal");
         console.log(data);
+        setPrescPrescriptionIDAdd("")
         setPrescMedicationNameAdd("");
         setPrescDoseAdd("");
         setPrescFrequencyAdd("");
@@ -186,7 +224,7 @@ const Resident = () => {
         });
         return (
             <div>
-                <Container className='p-4'>
+                <Container className='my-1'>
                     <Table striped>
                         <thead>
                             <tr>
@@ -213,30 +251,34 @@ const Resident = () => {
         )
     }
 
-    function FamilyList({ families }) {
-        const listOfFamily = families.map((family) => {
+    function UserList({ usersAssociated }) {
+        const listOfUsers = usersAssociated.map((user) => {
             return (
 
-                <tr key={family.userID}>
-                    <td>{family.userID}</td>
-                    <td>{family.firstName}</td>
-                    <td>{family.lastName}</td>
+                <tr key={user.userID}>
+                    <td>{user.userID}</td>
+                    <td>{user.firstName}</td>
+                    <td>{user.lastName}</td>
+                    <td>{user.gender}</td>
+                    <td>{user.phoneNumber}</td>
                 </tr>
             )
         });
         return (
             <div>
-                <Container className='p-4'>
+                <Container className='my-1'>
                     <Table striped>
                         <thead>
                             <tr>
-                                <th>Family's User ID</th>
+                                <th>User ID</th>
                                 <th>First Name</th>
                                 <th>Last Name</th>
+                                <th>Gender</th>
+                                <th>Phone Number</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {listOfFamily}
+                            {listOfUsers}
                         </tbody>
                     </Table>
                 </Container>
@@ -244,35 +286,133 @@ const Resident = () => {
         )
     }
 
-    function DoctorList({ doctors }) {
-        const listOfDoctors = doctors.map((doctor) => {
-            return (
 
-                <tr key={doctor.userID}>
-                    <td>{doctor.userID}</td>
-                    <td>{doctor.firstName}</td>
-                    <td>{doctor.lastName}</td>
-                </tr>
-            )
-        });
-        return (
-            <div>
-                <Container className='p-4'>
-                    <Table striped>
-                        <thead>
-                            <tr>
-                                <th>Doctor's User ID</th>
-                                <th>First Name</th>
-                                <th>Last Name</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {listOfDoctors}
-                        </tbody>
-                    </Table>
-                </Container>
-            </div >
-        )
+    // Access the API based on the button action and use POST Method
+    // Requires the API name, data
+    async function addData(api, data) {
+        let address = "/CareSense/api/" + api;
+
+        let newData = data;
+
+        try {
+            const res = await fetch(address, {
+                method: "post",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Access-Control-Request-Origin": "http://localhost:8080",
+                    "Access-Control-Request-Method": "POST",
+                    "Access-Control-Allow-Headers":
+                        "Origin, X-Requested-With, Content-Type, Accept"
+                },
+                body: JSON.stringify(newData),
+            });
+
+            if (!res.ok) {
+                const message = `An error has occured: ${res.status} - ${res.statusText}`;
+                throw new Error(message);
+            }
+            const data = await res.json();
+            const result = {
+                status: res.status + "-" + res.statusText,
+                headers: {
+                    "Content-Type": res.headers.get("Content-Type"),
+                    "Content-Length": res.headers.get("Content-Length"),
+                },
+                data: data,
+            };
+            console.log(result);
+        } catch (err) {
+            console.log(err.message);
+        }
+
+        refreshPrescription(); // Refresh
+
+    }
+
+    // Access the API based on the button action and use PUT Method
+    // Requires the API name, id, data
+    async function editData(api, id, data) {
+        let address = "/CareSense/api/" + api + "/" + id;
+
+        let currentData = data;
+
+        try {
+            const res = await fetch(address, {
+                method: "put",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Access-Control-Request-Origin": "http://localhost:8080",
+                    "Access-Control-Request-Method": "PUT",
+                    "Access-Control-Allow-Headers":
+                        "Origin, X-Requested-With, Content-Type, Accept"
+                },
+                body: JSON.stringify(currentData),
+            });
+
+            if (!res.ok) {
+                const message = `An error has occured: ${res.status} - ${res.statusText}`;
+                throw new Error(message);
+            }
+            const data = await res.json();
+            const result = {
+                status: res.status + "-" + res.statusText,
+                headers: {
+                    "Content-Type": res.headers.get("Content-Type"),
+                    "Content-Length": res.headers.get("Content-Length"),
+                },
+                data: data,
+            };
+            console.log(result);
+        } catch (err) {
+            console.log(err.message);
+        }
+
+        refreshPrescription(); // Refresh
+
+    }
+
+    // Access the API based on the button action and use DELETE Method
+    // Requires the API name, id
+    async function deleteData(api, id) {
+        console.log(api + " delete " + id)
+        let address = "/CareSense/api/" + api + "/" + id;
+
+        try {
+            const res = await fetch(address, {
+                method: "delete",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Access-Control-Request-Origin": "http://localhost:8080",
+                    "Access-Control-Request-Method": "DELETE",
+                    "Access-Control-Allow-Headers":
+                        "Origin, X-Requested-With, Content-Type, Accept"
+                }
+            });
+
+            if (!res.ok) {
+                const message = `An error has occured: ${res.status} - ${res.statusText}`;
+                throw new Error(message);
+            }
+            const data = await res.json();
+            const result = {
+                status: res.status + "-" + res.statusText,
+                headers: {
+                    "Content-Length": res.headers.get("Content-Length"),
+                    "Content-Type": "application/json",
+                    "Access-Control-Request-Origin": "http://localhost:8080",
+                    "Access-Control-Request-Method": "DELETE",
+                    "Access-Control-Allow-Headers":
+                        "Origin, X-Requested-With, Content-Type, Accept"
+                },
+                data: data,
+            };
+            console.log(result);
+        } catch (err) {
+            console.log(err.message);
+        }
+
+        refreshPrescription(); // Refresh
+
     }
 
     //console.log(user);
@@ -320,10 +460,13 @@ const Resident = () => {
                     </Table>
 
                     <p>Family: </p>
-                    <FamilyList families={fakefamily} />
+                    <UserList usersAssociated={family} />
 
                     <p>Doctor:  </p>
-                    <DoctorList doctors={fakedoctor} />
+                    <UserList usersAssociated={doctor} />
+
+                    <p>Family:  </p>
+                    <UserList usersAssociated={caretaker} />
 
                     <p>Current Prescription:</p>
                     <PrescriptionList prescriptions={prescriptions} edit={openEditPrescForm} add={openAddPrescForm} />
@@ -427,6 +570,16 @@ const Resident = () => {
                                 <h4 className="mb-3 d-flex justify-content-center">Add Prescription</h4>
                                 <form onSubmit={handleSubmitPrescAdd}>
                                     <div className="mb-3">
+                                        <label className="mb-1">Prescription ID</label>
+                                        <input
+                                            type="text"
+                                            name="Name"
+                                            className="form-control"
+                                            value={prescPrescriptionIDAdd}
+                                            onChange={(e) => setPrescPrescriptionIDAdd(e.target.value)}
+                                        />
+                                    </div>
+                                    <div className="mb-3">
                                         <label className="mb-1">Prescription Name</label>
                                         <input
                                             type="text"
@@ -482,7 +635,7 @@ const Resident = () => {
                         </div>
                     </Modal>
 
-                    <div className="m-1">
+                    <div className="m-5">
                         <form onSubmit={handleSubmitFruitName}>
                             <div className="mb-3">
                                 <label className="mb-1">Get Fruit Nutrition</label>
@@ -497,7 +650,7 @@ const Resident = () => {
                             <input type="submit" className="btn btn-primary" value="Submit" />
                         </form>
                     </div>
-                    <div>
+                    <div className="mb-3">
                         Fruit Nutrition:
                         <li>Name: {fruitNutrition.name}</li>
                         <li>Carb: {fruitNutrition.carbohydrates}</li>
@@ -523,132 +676,5 @@ const Resident = () => {
 };
 
 
-// Access the API based on the button action and use POST Method
-// Requires the API name, data
-async function addData(api, data) {
-    let address = "/CareSense/api/" + api;
-
-    let newData = data;
-
-    try {
-        const res = await fetch(address, {
-            method: "post",
-            headers: {
-                "Content-Type": "application/json",
-                "Access-Control-Request-Origin": "http://localhost:8080",
-                "Access-Control-Request-Method": "POST",
-                "Access-Control-Allow-Headers":
-                    "Origin, X-Requested-With, Content-Type, Accept"
-            },
-            body: JSON.stringify(newData),
-        });
-
-        if (!res.ok) {
-            const message = `An error has occured: ${res.status} - ${res.statusText}`;
-            throw new Error(message);
-        }
-        const data = await res.json();
-        const result = {
-            status: res.status + "-" + res.statusText,
-            headers: {
-                "Content-Type": res.headers.get("Content-Type"),
-                "Content-Length": res.headers.get("Content-Length"),
-            },
-            data: data,
-        };
-        console.log(result);
-    } catch (err) {
-        console.log(err.message);
-    }
-
-    // USE A FUNCTION TO REFRESH THE LIST
-
-}
-
-// Access the API based on the button action and use PUT Method
-// Requires the API name, id, data
-async function editData(api, id, data) {
-    let address = "/CareSense/api/" + api + "/" + id;
-
-    let currentData = data;
-
-    try {
-        const res = await fetch(address, {
-            method: "put",
-            headers: {
-                "Content-Type": "application/json",
-                "Access-Control-Request-Origin": "http://localhost:8080",
-                "Access-Control-Request-Method": "PUT",
-                "Access-Control-Allow-Headers":
-                    "Origin, X-Requested-With, Content-Type, Accept"
-            },
-            body: JSON.stringify(currentData),
-        });
-
-        if (!res.ok) {
-            const message = `An error has occured: ${res.status} - ${res.statusText}`;
-            throw new Error(message);
-        }
-        const data = await res.json();
-        const result = {
-            status: res.status + "-" + res.statusText,
-            headers: {
-                "Content-Type": res.headers.get("Content-Type"),
-                "Content-Length": res.headers.get("Content-Length"),
-            },
-            data: data,
-        };
-        console.log(result);
-    } catch (err) {
-        console.log(err.message);
-    }
-
-    // USE A FUNCTION TO REFRESH THE LIST
-
-}
-
-// Access the API based on the button action and use DELETE Method
-// Requires the API name, id
-async function deleteData(api, id) {
-    console.log(api + " delete " + id)
-    let address = "/CareSense/api/" + api + "/" + id;
-
-    try {
-        const res = await fetch(address, {
-            method: "delete",
-            headers: {
-                "Content-Type": "application/json",
-                "Access-Control-Request-Origin": "http://localhost:8080",
-                "Access-Control-Request-Method": "DELETE",
-                "Access-Control-Allow-Headers":
-                    "Origin, X-Requested-With, Content-Type, Accept"
-            }
-        });
-
-        if (!res.ok) {
-            const message = `An error has occured: ${res.status} - ${res.statusText}`;
-            throw new Error(message);
-        }
-        const data = await res.json();
-        const result = {
-            status: res.status + "-" + res.statusText,
-            headers: {
-                "Content-Length": res.headers.get("Content-Length"),
-                "Content-Type": "application/json",
-                "Access-Control-Request-Origin": "http://localhost:8080",
-                "Access-Control-Request-Method": "DELETE",
-                "Access-Control-Allow-Headers":
-                    "Origin, X-Requested-With, Content-Type, Accept"
-            },
-            data: data,
-        };
-        console.log(result);
-    } catch (err) {
-        console.log(err.message);
-    }
-
-    // USE A FUNCTION TO REFRESH THE LIST
-
-}
 
 export default Resident;
