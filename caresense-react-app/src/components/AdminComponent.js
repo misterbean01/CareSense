@@ -6,90 +6,19 @@ import Container from 'react-bootstrap/Container';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import Table from 'react-bootstrap/Table';
-import Row from 'react-bootstrap/Row';
 
 const Admin = () => {
     const [authenticated, setAuthenticated] = useState(sessionStorage.getItem("authenticated"));
     const [userType, setUserType] = useState(sessionStorage.getItem("userType"));
-    const [users, setUsers] = useState([
-        {
-            userID: 1,
-            userType: "Resident",
-            username: "aaa",
-            password: "aaa",
-            firstName: "Harold",
-            lastName: "Hide",
-            birthday: "01-01-1951",
-            gender: "Male",
-            phoneNumber: "253-111-1111",
-            sensorID: 1,
-            locationID: 1
-        },
-        {
-            userID: 2,
-            userType: "Family",
-            username: "aaa",
-            password: "aaa",
-            firstName: "Nice",
-            lastName: "Lee",
-            birthday: "01-01-1951",
-            gender: "Male",
-            phoneNumber: "253-111-1111",
-            sensorID: 2,
-            locationID: 2
-        },
-        {
-            userID: 3,
-            userType: "Caretaker",
-            username: "aaa",
-            password: "aaa",
-            firstName: "Bob",
-            lastName: "Read",
-            birthday: "01-01-1951",
-            gender: "Male",
-            phoneNumber: "253-111-1111",
-            sensorID: 1,
-            locationID: 1
-        },
-        {
-            userID: 4,
-            userType: "Doctor",
-            username: "aaa",
-            password: "aaa",
-            firstName: "Lisa",
-            lastName: "Bint",
-            birthday: "01-01-1951",
-            gender: "Female",
-            phoneNumber: "253-111-1111",
-            sensorID: 1,
-            locationID: 1
-        }
-    ]);
-    const [associatedResidents, setAssociatedResidents] = useState([
-        { userID: 1, associatedUserID: 2 },
-        { userID: 1, associatedUserID: 4 },
-        { userID: 1, associatedUserID: 3 }
-    ]);
-    const [residentUsers, setResidentUsers] = useState([
-        { userID: 1, locationID: 1, sensorID: 1 },
-        { userID: 5, locationID: 2, sensorID: 2 }
-    ]);
-    const [prescriptions, setPrescriptions] = useState([
-        { prescriptionID: 4, userID: 1, medicationName: "Drug A", dose: 100, frequency: "Once per day.", intendedUse: "Heart Burn", instructions: "After Meal." },
-        { prescriptionID: 5, userID: 1, medicationName: "Drub B", dose: 150, frequency: "Once per day.", intendedUse: "Lower Blood Pressure", instructions: "Before Meal." },
-    ]);
-    const [sensors, setSensors] = useState([
-        { sensorID: 1, bloodPressure: "120/80", temperature: 98, heartrate: 75, glucose: 100, spO2: 95, timestamp: "12-5-2022 12:00" },
-        { sensorID: 2, bloodPressure: "120/80", temperature: 98, heartrate: 75, glucose: 100, spO2: 95, timestamp: "12-5-2022 12:00" },
-        { sensorID: 3, bloodPressure: "120/80", temperature: 98, heartrate: 75, glucose: 100, spO2: 95, timestamp: "12-5-2022 12:00" }
-    ]);
-    const [locations, setLocations] = useState([
-        { locationID: 1, latitude: 55.555555, longitude: 75.5422111, timestamp: "12-5-2022 12:00" },
-        { locationID: 2, latitude: 55.555555, longitude: 75.5422111, timestamp: "12-5-2022 12:00" },
-        { locationID: 3, latitude: 55.555555, longitude: 75.5422111, timestamp: "12-5-2022 12:00" }
-    ]);
+    const [users, setUsers] = useState([]);
+    const [associatedResidents, setAssociatedResidents] = useState([]);
+    const [residentUsers, setResidentUsers] = useState([]);
+    const [prescriptions, setPrescriptions] = useState([]);
+    const [sensors, setSensors] = useState([]);
+    const [locations, setLocations] = useState([]);
 
     const [itemIDEdit, setItemIDEdit] = useState("");
+    const [itemIDAdd, setItemIDAdd] = useState("");
 
     // Edit Form for User / Resident
     const [userTypeEdit, setUserTypeEdit] = useState("");
@@ -150,6 +79,7 @@ const Admin = () => {
     const [prescFrequencyEdit, setPrescFrequencyEdit] = useState("");
     const [prescIntendedUseEdit, setPrescIntendedUseEdit] = useState("");
     const [prescInstructionsEdit, setPrescInstructionsEdit] = useState("");
+    const [prescPrescriptionIDAdd, setPrescPrescriptionIDAdd] = useState("");
     const [prescMedicationNameAdd, setPrescMedicationNameAdd] = useState("");
     const [prescDoseAdd, setPrescDoseAdd] = useState("");
     const [prescFrequencyAdd, setPrescFrequencyAdd] = useState("");
@@ -175,6 +105,99 @@ const Admin = () => {
     const stateLoc = useLocation();
     const user = stateLoc.state.user;
 
+    useEffect(() => {
+        refreshPrescription();
+        refreshUser();
+        refreshLocation();
+        refreshSensor();
+        refreshResident();
+        refreshAssociated();
+    }, []);
+
+    function refreshPrescription() {
+        fetch("/CareSense/api/prescription/")
+            .then(function (response) {
+                //console.log(response)
+                return response.json();
+            })
+            .then(function (JSON) {
+                setPrescriptions(JSON)
+            }).catch(err => {
+                console.log(err);
+                setPrescriptions([]);
+            });
+    }
+
+    function refreshUser() {
+        fetch("/CareSense/api/user/all")
+            .then(function (response) {
+                //console.log(response)
+                return response.json();
+            })
+            .then(function (JSON) {
+                setUsers(JSON)
+            }).catch(err => {
+                console.log(err);
+                setUsers([]);
+            });
+    }
+
+    function refreshLocation() {
+        fetch("/CareSense/api/location/all")
+            .then(function (response) {
+                //console.log(response)
+                return response.json();
+            })
+            .then(function (JSON) {
+                setLocations(JSON)
+            }).catch(err => {
+                console.log(err);
+                setLocations([]);
+            });
+    }
+
+    function refreshSensor() {
+        fetch("/CareSense/api/sensor/all")
+            .then(function (response) {
+                //console.log(response)
+                return response.json();
+            })
+            .then(function (JSON) {
+                setSensors(JSON)
+            }).catch(err => {
+                console.log(err);
+                setSensors([]);
+            });
+    }
+
+    function refreshResident() {
+        fetch("/CareSense/api/residentTracker/all")
+            .then(function (response) {
+                //console.log(response)
+                return response.json();
+            })
+            .then(function (JSON) {
+                setResidentUsers(JSON)
+            }).catch(err => {
+                console.log(err);
+                setResidentUsers([]);
+            });
+    }
+
+    function refreshAssociated() {
+        fetch("/CareSense/api/associated/all")
+            .then(function (response) {
+                //console.log(response)
+                return response.json();
+            })
+            .then(function (JSON) {
+                setAssociatedResidents(JSON)
+            }).catch(err => {
+                console.log(err);
+                setAssociatedResidents([]);
+            });
+    }
+
     const handleSubmitEdit = (e) => {
         e.preventDefault();
 
@@ -187,7 +210,7 @@ const Admin = () => {
             gender: genderEdit, birthday: birthdayEdit, phoneNumber: phoneNumberEdit
         };
 
-        editData(userTypeEdit.toLowerCase(), itemIDEdit, newData);
+        editData("user", itemIDEdit, newData);
         setOpenEditModal(false);
     };
 
@@ -197,13 +220,13 @@ const Admin = () => {
         // create if statement depending on account type (Family, Doctor, Caretaker, Admin)
         // ADD THE ACCOUNT TO THE DATABASE
         let newData = {
-            firstName: firstNameAdd, lastName: lastNameAdd,
+            userID: itemIDAdd, firstName: firstNameAdd, lastName: lastNameAdd,
             username: usernameAdd, password: passwordAdd, userType: userTypeAdd,
             gender: genderAdd, birthday: birthdayAdd, phoneNumber: phoneNumberAdd
         };
 
 
-        addData(userTypeAdd.toLowerCase(), newData);
+        addData("user", newData);
         setOpenAddModal(false);
     };
 
@@ -213,10 +236,10 @@ const Admin = () => {
         // create if statement depending on Residents
         // ADD THE ACCOUNT TO THE DATABASE
         let newData = {
-            sensorID: sensorIDEdit, locationID: sensorIDAdd, userID: itemIDEdit
+            sensorID: sensorIDEdit, locationID: sensorIDEdit, userID: itemIDEdit
         };
 
-        editData("", itemIDEdit, newData);
+        editData("residentTracker", itemIDEdit, newData);
         setOpenEditResModal(false);
     };
 
@@ -226,10 +249,10 @@ const Admin = () => {
         // create if statement depending on Residents
         // ADD THE ACCOUNT TO THE DATABASE
         let newData = {
-            sensorID: sensorIDAdd, locationID: locationIDAdd
+            sensorID: sensorIDAdd, locationID: locationIDAdd, userID: itemIDAdd
         };
 
-        addData("resident", newData);
+        addData("residentTracker", newData);
         setOpenAddResModal(false);
     };
 
@@ -242,7 +265,7 @@ const Admin = () => {
             timestamp: locTimestampEdit
         };
 
-        editData("", itemIDEdit, newData);
+        editData("location", itemIDEdit, newData);
         setOpenEditLocModal(false);
     };
 
@@ -251,7 +274,7 @@ const Admin = () => {
 
         // ADD THE ACCOUNT TO THE DATABASE
         let newData = {
-            longitude: locLatitudeAdd, latitude: locLatitudeAdd,
+            locationID: itemIDAdd, longitude: locLatitudeAdd, latitude: locLatitudeAdd,
             timestamp: locTimestampAdd
         };
 
@@ -268,7 +291,7 @@ const Admin = () => {
             heartrate: heartrateEdit, glucose: glucoseEdit, spO2: spO2Edit, timestamp: sensorTimestampEdit
         };
 
-        editData("", itemIDEdit, newData);
+        editData("sensor", itemIDEdit, newData);
         setOpenEditSensorModal(false);
     };
 
@@ -277,11 +300,11 @@ const Admin = () => {
 
         // ADD THE ACCOUNT TO THE DATABASE
         let newData = {
-            bloodPressure: bloodPressureAdd, temperature: temperatureAdd,
+            sensorID: itemIDAdd, bloodPressure: bloodPressureAdd, temperature: temperatureAdd,
             heartrate: heartrateAdd, glucose: glucoseAdd, spO2: spO2Add, timestamp: sensorTimestampAdd
         };
 
-        addData("location", newData);
+        addData("sensor", newData);
         setOpenAddSensorModal(false);
     };
 
@@ -290,10 +313,10 @@ const Admin = () => {
 
         let newData;
         newData = {
-            associatedUserID: associatedUserIDEdit, userId: associatedResidentIDEdit,
+            uniqueID: itemIDEdit, associatedUserID: associatedUserIDEdit, userID: associatedResidentIDEdit,
         };
 
-        editData("associated", associatedUserIDEdit, newData);
+        editData("associated", itemIDEdit, newData);
         setOpenEditAssociatedModal(false);
     };
 
@@ -301,7 +324,7 @@ const Admin = () => {
         e.preventDefault();
 
         let newData = {
-            associatedUserID: associatedUserIDAdd, userId: associatedResidentIDAdd,
+            uniqueID: itemIDAdd, associatedUserID: associatedUserIDAdd, userID: associatedResidentIDAdd,
         };
 
         addData("associated", newData);
@@ -318,6 +341,7 @@ const Admin = () => {
         };
 
         editData("prescription", prescPrescriptionIDEdit, newData);
+        refreshPrescription();
         setOpenEditPrescModal(false);
     };
 
@@ -326,11 +350,12 @@ const Admin = () => {
 
         let newData;
         newData = {
-            userID: itemIDEdit, medicationName: prescMedicationNameAdd,
+            prescriptionID: prescPrescriptionIDAdd, userID: itemIDAdd, medicationName: prescMedicationNameAdd,
             dose: prescDoseAdd, frequency: prescFrequencyAdd, intendedUse: prescIntendedUseAdd, instructions: prescInstructionsAdd
         };
 
         addData("prescription", newData);
+        refreshPrescription();
         setOpenAddPrescModal(false);
     };
 
@@ -353,6 +378,7 @@ const Admin = () => {
 
     // Open the Add Model for User
     function openAddForm() {
+        setItemIDAdd("");
         setUserTypeAdd("");
         setUsernameAdd("");
         setPasswordAdd("");
@@ -394,6 +420,7 @@ const Admin = () => {
 
     // Open the Add Model for Resident
     function openAddLocForm() {
+        setItemIDAdd("");
         setLocLatitudeAdd("");
         setLocLongitudeAdd("");
         seTLocTimestampAdd("");
@@ -416,6 +443,7 @@ const Admin = () => {
 
     // Open the Add Model for Resident
     function openAddSensorForm() {
+        setItemIDAdd("");
         setBloodPressureAdd("");
         setTemperatureAdd("");
         setHeartrateAdd("");
@@ -439,6 +467,7 @@ const Admin = () => {
     function openAddAssociatedForm(data) {
         console.log("assoicated open add modal");
         console.log(data);
+        setItemIDAdd("");
         setAssociatedResidentIDAdd("");
         setAssociatedUserIDAdd("");
         setOpenAddAssociatedModal(true);
@@ -462,12 +491,439 @@ const Admin = () => {
     function openAddPrescForm(data) {
         console.log("Prescription open add modal");
         console.log(data);
+        setItemIDAdd("")
         setPrescMedicationNameAdd("");
         setPrescDoseAdd("");
         setPrescFrequencyAdd("");
         setPrescIntendedUseAdd("");
         setPrescInstructionsAdd("");
         setOpenAddPrescModal(true);
+    }
+
+    function PrescriptionList({ prescriptions, edit, add }) {
+        // RETRIVE THIS FROM DATABASE THAT IS FILTERED
+        let listCount = 0;
+        const listOfPrescription = prescriptions.map((prescription) => {
+            listCount++;
+            return (
+
+                <tr key={listCount}>
+                    <td>{prescription.prescriptionID}</td>
+                    <td>{prescription.userID}</td>
+                    <td>{prescription.medicationName}</td>
+                    <td>{prescription.dose}</td>
+                    <td>{prescription.frequency}</td>
+                    <td>{prescription.intendedUse}</td>
+                    <td>{prescription.instructions}</td>
+
+                    <td>
+                        <Button onClick={() => edit(prescription.prescriptionID, prescription)}>
+                            Edit
+                        </Button>
+                        <Button onClick={() => deleteData("prescription", prescription.prescriptionID)} className="ms-1">
+                            Delete
+                        </Button>
+                    </td>
+
+                </tr>
+            )
+        });
+        return (
+            <div>
+                <Container className='my-1'>
+                    <Table striped>
+                        <thead>
+                            <tr>
+                                <th>Prescription ID</th>
+                                <th>User ID</th>
+                                <th>Prescription Name</th>
+                                <th>Dose</th>
+                                <th>Frequency</th>
+                                <th>Intended Use</th>
+                                <th>Instructions</th>
+                                <th>OPTIONS</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {listOfPrescription}
+                        </tbody>
+                    </Table>
+
+                    <Button onClick={() => add()}>
+                        Add Prescription
+                    </Button>
+                </Container>
+            </div >
+        )
+    }
+
+    // Table Component inside a Map For Each Resident
+    function ResidentList({ residentUsers, edit, add }) {
+        const listOfResidents = residentUsers.map((resident) => {
+            return (
+
+                <tr key={resident.userID}>
+                    <td>{resident.userID}</td>
+                    <td>{resident.sensorID}</td>
+                    <td>{resident.locationID}</td>
+                    <td>
+                        <Button onClick={() => edit(resident.userID, resident)}>
+                            Edit
+                        </Button>
+                        <Button onClick={() => deleteData("residentTracker", resident.userID)} className="ms-1">
+                            Delete
+                        </Button>
+                    </td>
+                </tr>
+            )
+        });
+        return (
+            <div>
+                <Container className='p-4'>
+                    <p>Resident List</p>
+                    <Table striped>
+                        <thead>
+                            <tr>
+                                <th>User ID</th>
+                                <th>Sensor ID</th>
+                                <th>Location ID</th>
+                                <th>OPTIONS</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {listOfResidents}
+                        </tbody>
+                    </Table>
+                    <Button onClick={() => add()}>
+                        Add Resident
+                    </Button>
+                </Container>
+            </div >
+        )
+    }
+
+    // Table Component inside a Map For Each Users
+    function UserList({ users, edit, add }) {
+        const listOfUsers = users.map((user) => {
+            return (
+
+                <tr key={user.userID}>
+                    <td>{user.userID}</td>
+                    <td>{user.userType}</td>
+                    <td>{user.firstName}</td>
+                    <td>{user.lastName}</td>
+                    <td>{user.username}</td>
+                    <td>{user.password}</td>
+                    <td>{user.birthday}</td>
+                    <td>{user.gender}</td>
+                    <td>{user.phoneNumber}</td>
+                    <td>
+                        <Button onClick={() => edit(user)}>
+                            Edit
+                        </Button>
+                        <Button onClick={() => deleteData("user", user.userID)} className="ms-1">
+                            Delete
+                        </Button>
+                    </td>
+                </tr>
+            )
+        });
+        return (
+            <div>
+                <Container className='p-4'>
+                    <p>User List</p>
+                    <Table striped>
+                        <thead>
+                            <tr>
+                                <th>User ID</th>
+                                <th>User Type</th>
+                                <th>First Name</th>
+                                <th>Last name</th>
+                                <th>Username</th>
+                                <th>Password</th>
+                                <th>Birthday</th>
+                                <th>Gender</th>
+                                <th>Phone Number</th>
+                                <th>OPTIONS</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {listOfUsers}
+                        </tbody>
+                    </Table>
+                    <Button onClick={() => add()}>
+                        Add User
+                    </Button>
+                </Container>
+            </div >
+        )
+    }
+
+    // Table Component inside a Map For Each Association
+    function AssociatedResidentList({ associatedResidents, edit, add }) {
+        const listOfAssociatedResidents = associatedResidents.map((associated) => {
+            return (
+                <tr key={associated.uniqueID}>
+                    <td>{associated.uniqueID}</td>
+                    <td>{associated.userID}</td>
+                    <td>{associated.associatedUserID}</td>
+                    <td>
+                        <Button onClick={() => edit(associated.uniqueID, associated)}>
+                            Edit
+                        </Button>
+                        <Button onClick={() => deleteData("associated", associated.uniqueID)} className="ms-1">
+                            Delete
+                        </Button>
+                    </td>
+                </tr>
+            )
+        });
+        return (
+            <div>
+                <Container className='p-4'>
+                    <p>Assocaition List</p>
+                    <Table striped>
+                        <thead>
+                            <tr>
+                                <th>Unique ID</th>
+                                <th>Resident ID</th>
+                                <th>User ID</th>
+                                <th>OPTIONS</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {listOfAssociatedResidents}
+                        </tbody>
+                    </Table>
+                    <Button onClick={() => add()}>
+                        Add Associated Residents
+                    </Button>
+                </Container>
+            </div >
+        )
+    }
+
+    // Table Component inside a Map For Each Location
+    function LocationList({ locations, edit, add }) {
+        const listOfLocation = locations.map((location) => {
+            return (
+                <tr key={location.locationID}>
+                    <td>{location.locationID}</td>
+                    <td>{location.latitude}</td>
+                    <td>{location.longitude}</td>
+                    <td>{location.timestamp}</td>
+                    <td>
+                        <Button onClick={() => edit(location.locationID, location)}>
+                            Edit
+                        </Button>
+                        <Button onClick={() => deleteData("location", location.locationID)} className="ms-1">
+                            Delete
+                        </Button>
+                    </td>
+                </tr>
+            )
+        });
+        return (
+            <div>
+                <Container className='p-4'>
+                    <p>Location List</p>
+                    <Table striped>
+                        <thead>
+                            <tr>
+                                <th>Location ID</th>
+                                <th>Latitude</th>
+                                <th>Longitude</th>
+                                <th>Timestamp</th>
+                                <th>OPTIONS</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {listOfLocation}
+                        </tbody>
+                    </Table>
+                    <Button onClick={() => add()}>
+                        Add Location
+                    </Button>
+                </Container>
+            </div >
+        )
+    }
+
+    // Table Component inside a Map For Each Sensors
+    function SensorList({ sensors, edit, add }) {
+        const listOfSensors = sensors.map((sensor) => {
+            return (
+                <tr key={sensor.sensorID}>
+                    <td>{sensor.sensorID}</td>
+                    <td>{sensor.bloodPressure}</td>
+                    <td>{sensor.temperature}</td>
+                    <td>{sensor.heartrate}</td>
+                    <td>{sensor.glucose}</td>
+                    <td>{sensor.spO2}</td>
+                    <td>{sensor.timestamp}</td>
+                    <td>
+                        <Button onClick={() => edit(sensor.sensorID, sensor)}>
+                            Edit
+                        </Button>
+                        <Button onClick={() => deleteData("sensor", sensor.sensorID)} className="ms-1">
+                            Delete
+                        </Button>
+                    </td>
+                </tr>
+            )
+        });
+        return (
+            <div>
+                <Container className='p-4'>
+                    <p>Sensor List</p>
+                    <Table striped>
+                        <thead>
+                            <tr>
+                                <th>Sensor ID</th>
+                                <th>Blood Pressure</th>
+                                <th>Temperature</th>
+                                <th>Heart rate</th>
+                                <th>Glucose</th>
+                                <th>Oxygen Level</th>
+                                <th>Timestamp</th>
+                                <th>OPTIONS</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {listOfSensors}
+                        </tbody>
+                    </Table>
+                    <Button onClick={() => add()}>
+                        Add Sensor
+                    </Button>
+                </Container>
+            </div >
+        )
+    }
+
+
+    // Access the API based on the button action and use POST Method
+    // Requires the API name, data
+    async function addData(api, data) {
+        let address = "/CareSense/api/" + api;
+
+        let newData = data;
+
+        try {
+            const res = await fetch(address, {
+                method: "post",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Access-Control-Request-Origin": "http://localhost:8080",
+                    "Access-Control-Request-Method": "POST",
+                    "Access-Control-Allow-Headers":
+                        "Origin, X-Requested-With, Content-Type, Accept"
+                },
+                body: JSON.stringify(newData),
+            });
+
+            if (!res.ok) {
+                const message = `An error has occured: ${res.status} - ${res.statusText}`;
+                throw new Error(message);
+            }
+            const data = await res.json();
+            const result = {
+                status: res.status + "-" + res.statusText,
+                headers: {
+                    "Content-Type": res.headers.get("Content-Type"),
+                    "Content-Length": res.headers.get("Content-Length"),
+                },
+                data: data
+            };
+            if (api === "prescription") refreshPrescription();
+            if (api === "user") refreshUser();
+            if (api === "location") refreshLocation();
+            if (api === "sensor") refreshSensor();
+            if (api === "residentTracker") refreshResident();
+            if (api === "associated") refreshAssociated();
+            console.log(result);
+        } catch (err) {
+            console.log(err.message);
+        }
+    }
+
+    // Access the API based on the button action and use PUT Method
+    // Requires the API name, id, data
+    async function editData(api, id, data) {
+        let address = "/CareSense/api/" + api + "/" + id;
+
+        let currentData = data;
+
+        try {
+            const res = await fetch(address, {
+                method: "put",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Access-Control-Request-Origin": "http://localhost:8080",
+                    "Access-Control-Request-Method": "PUT",
+                    "Access-Control-Allow-Headers":
+                        "Origin, X-Requested-With, Content-Type, Accept"
+                },
+                body: JSON.stringify(currentData),
+            });
+
+            if (!res.ok) {
+                const message = `An error has occured: ${res.status} - ${res.statusText}`;
+                throw new Error(message);
+            }
+            const data = await res.json();
+            const result = {
+                status: res.status + "-" + res.statusText,
+                headers: {
+                    "Content-Type": res.headers.get("Content-Type"),
+                    "Content-Length": res.headers.get("Content-Length"),
+                },
+                data: data
+            };
+            if (api === "prescription") refreshPrescription();
+            if (api === "user") refreshUser();
+            if (api === "location") refreshLocation();
+            if (api === "sensor") refreshSensor();
+            if (api === "residentTracker") refreshResident();
+            if (api === "associated") refreshAssociated();
+            console.log(result);
+        } catch (err) {
+            console.log(err.message);
+        }
+    }
+
+    // Access the API based on the button action and use DELETE Method
+    // Requires the API name, id
+    async function deleteData(api, id) {
+        console.log(api + " delete " + id)
+        let address = "/CareSense/api/" + api + "/" + id;
+
+        try {
+            const res = await fetch(address, {
+                method: "delete",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Access-Control-Request-Origin": "http://localhost:8080",
+                    "Access-Control-Request-Method": "DELETE",
+                    "Access-Control-Allow-Headers":
+                        "Origin, X-Requested-With, Content-Type, Accept"
+                }
+            });
+
+            if (!res.ok) {
+                const message = `An error has occured: ${res.status} - ${res.statusText}`;
+                throw new Error(message);
+            }
+            if (api === "prescription") refreshPrescription();
+            if (api === "user") refreshUser();
+            if (api === "location") refreshLocation();
+            if (api === "sensor") refreshSensor();
+            if (api === "residentTracker") refreshResident();
+            if (api === "associated") refreshAssociated();
+            console.log(res);
+        } catch (err) {
+            console.log(err.message);
+        }
     }
 
     if (!authenticated && userType !== "admin") {
@@ -589,6 +1045,16 @@ const Admin = () => {
                         <div className="mt-5 justify-content-center">
                             <form onSubmit={handleSubmitAdd}>
                                 <div className="mb-3">
+                                    <label className="mb-1">User ID</label>
+                                    <input
+                                        type="text"
+                                        name="userID"
+                                        className="form-control"
+                                        value={itemIDAdd}
+                                        onChange={(e) => setItemIDAdd(e.target.value)}
+                                    />
+                                </div>
+                                <div className="mb-3">
                                     <label className="mb-1">Username</label>
                                     <input
                                         type="text"
@@ -645,7 +1111,7 @@ const Admin = () => {
                                         name="Gender"
                                         className="form-control"
                                         value={genderAdd}
-                                        onChange={(e) => setPhoneNumberAdd(e.target.value)}
+                                        onChange={(e) => setGenderAdd(e.target.value)}
                                     />
                                 </div>
                                 <div className="mb-3">
@@ -662,9 +1128,10 @@ const Admin = () => {
                                     <label className="label">Select Account Type</label>
                                     <select onChange={(e) => setUserTypeAdd(e.target.value)} defaultValue="" className="form-control">
                                         <option>Select User Type</option>
-                                        <option value="Caretaker">Caretaker</option>
-                                        <option value="Doctor">Doctor</option>
-                                        <option value="Family">Family</option>
+                                        <option value="caretaker">Caretaker</option>
+                                        <option value="doctor">Doctor</option>
+                                        <option value="familyMember">Family</option>
+                                        <option value="resident">Resident</option>
                                     </select>
                                 </div>
                                 <input type="submit" className="btn btn-primary" value="Submit" />
@@ -679,6 +1146,17 @@ const Admin = () => {
                     <div className="d-flex justify-content-center">
                         <div className="mt-5 justify-content-center">
                             <form onSubmit={handleSubmitResEdit}>
+                                <div className="mb-3">
+                                    <label className="mb-1">User ID</label>
+                                    <input
+                                        type="text"
+                                        name="userID"
+                                        className="form-control"
+                                        value={itemIDEdit}
+                                        onChange={(e) => setItemIDEdit(e.target.value)}
+                                        disabled
+                                    />
+                                </div>
                                 <div className="mb-3">
                                     <label className="mb-1">Sensor ID</label>
                                     <input
@@ -712,6 +1190,16 @@ const Admin = () => {
                         <div className="mt-5 justify-content-center">
                             <form onSubmit={handleSubmitResAdd}>
                                 <div className="mb-3">
+                                    <label className="mb-1">User ID</label>
+                                    <input
+                                        type="text"
+                                        name="userID"
+                                        className="form-control"
+                                        value={itemIDAdd}
+                                        onChange={(e) => setItemIDAdd(e.target.value)}
+                                    />
+                                </div>
+                                <div className="mb-3">
                                     <label className="mb-1">Sensor ID</label>
                                     <input
                                         type="text"
@@ -743,6 +1231,17 @@ const Admin = () => {
                     <div className="d-flex justify-content-center">
                         <div className="mt-5 justify-content-center">
                             <form onSubmit={handleSubmitLocEdit}>
+                                <div className="mb-3">
+                                    <label className="mb-1">Location ID</label>
+                                    <input
+                                        type="text"
+                                        name="locationID"
+                                        className="form-control"
+                                        value={itemIDEdit}
+                                        onChange={(e) => setItemIDEdit(e.target.value)}
+                                        disabled
+                                    />
+                                </div>
                                 <div className="mb-3">
                                     <label className="mb-1">Latitude</label>
                                     <input
@@ -786,6 +1285,16 @@ const Admin = () => {
                         <div className="mt-5 justify-content-center">
                             <form onSubmit={handleSubmitLocAdd}>
                                 <div className="mb-3">
+                                    <label className="mb-1">Location ID</label>
+                                    <input
+                                        type="text"
+                                        name="locationID"
+                                        className="form-control"
+                                        value={itemIDAdd}
+                                        onChange={(e) => setItemIDAdd(e.target.value)}
+                                    />
+                                </div>
+                                <div className="mb-3">
                                     <label className="mb-1">Latitude</label>
                                     <input
                                         type="text"
@@ -827,6 +1336,17 @@ const Admin = () => {
                     <div className="d-flex justify-content-center">
                         <div className="mt-5 justify-content-center">
                             <form onSubmit={handleSubmitSensorEdit}>
+                                <div className="mb-3">
+                                    <label className="mb-1">Sensor ID</label>
+                                    <input
+                                        type="text"
+                                        name="sensorID"
+                                        className="form-control"
+                                        value={itemIDEdit}
+                                        onChange={(e) => setItemIDEdit(e.target.value)}
+                                        disabled
+                                    />
+                                </div>
                                 <div className="mb-3">
                                     <label className="mb-1">Blood Pressure</label>
                                     <input
@@ -900,6 +1420,16 @@ const Admin = () => {
                         <div className="mt-5 justify-content-center">
                             <form onSubmit={handleSubmitSensorAdd}>
                                 <div className="mb-3">
+                                    <label className="mb-1">Sensor ID</label>
+                                    <input
+                                        type="text"
+                                        name="sensorID"
+                                        className="form-control"
+                                        value={itemIDAdd}
+                                        onChange={(e) => setItemIDAdd(e.target.value)}
+                                    />
+                                </div>
+                                <div className="mb-3">
                                     <label className="mb-1">Blood Pressure</label>
                                     <input
                                         type="text"
@@ -972,6 +1502,17 @@ const Admin = () => {
                         <div className="mt-5 justify-content-center">
                             <form onSubmit={handleSubmitAssociatedEdit}>
                                 <div className="mb-3">
+                                    <label className="mb-1">Unique ID</label>
+                                    <input
+                                        type="text"
+                                        name="uniqueID"
+                                        className="form-control"
+                                        value={itemIDEdit}
+                                        onChange={(e) => setItemIDEdit(e.target.value)}
+                                        disabled
+                                    />
+                                </div>
+                                <div className="mb-3">
                                     <label className="mb-1">Resident ID</label>
                                     <input
                                         type="text"
@@ -979,7 +1520,6 @@ const Admin = () => {
                                         className="form-control"
                                         value={associatedResidentIDEdit}
                                         onChange={(e) => setAssociatedResidentIDEdit(e.target.value)}
-                                        disabled
                                     />
                                 </div>
                                 <div className="mb-3">
@@ -1000,10 +1540,20 @@ const Admin = () => {
 
                 <Modal show={openAddAssociatedModal} onHide={() => setOpenAddAssociatedModal(false)} animation={false}
                     style={{ overlay: { backgroundColor: 'grey' } }}>
-                    <h4 className="d-flex justify-content-center">User Edit</h4>
+                    <h4 className="d-flex justify-content-center">Associated Add</h4>
                     <div className="d-flex justify-content-center">
                         <div className="mt-5 justify-content-center">
                             <form onSubmit={handleSubmitAssociatedAdd}>
+                                <div className="mb-3">
+                                    <label className="mb-1">Unique ID</label>
+                                    <input
+                                        type="text"
+                                        name="ResidentID"
+                                        className="form-control"
+                                        value={itemIDAdd}
+                                        onChange={(e) => setItemIDAdd(e.target.value)}
+                                    />
+                                </div>
                                 <div className="mb-3">
                                     <label className="mb-1">Resident ID</label>
                                     <input
@@ -1045,6 +1595,16 @@ const Admin = () => {
                                         value={prescPrescriptionIDEdit}
                                         onChange={(e) => setPrescPrescriptionIDEdit(e.target.value)}
                                         disabled
+                                    />
+                                </div>
+                                <div className="mb-3">
+                                    <label className="mb-1">User ID</label>
+                                    <input
+                                        type="text"
+                                        name="Name"
+                                        className="form-control"
+                                        value={itemIDEdit}
+                                        onChange={(e) => setItemIDEdit(e.target.value)}
                                     />
                                 </div>
                                 <div className="mb-3">
@@ -1110,6 +1670,26 @@ const Admin = () => {
                             <h4 className="mb-3 d-flex justify-content-center">Add Prescription</h4>
                             <form onSubmit={handleSubmitPrescAdd}>
                                 <div className="mb-3">
+                                    <label className="mb-1">Prescription ID</label>
+                                    <input
+                                        type="text"
+                                        name="Name"
+                                        className="form-control"
+                                        value={prescPrescriptionIDAdd}
+                                        onChange={(e) => setPrescPrescriptionIDAdd(e.target.value)}
+                                    />
+                                </div>
+                                <div className="mb-3">
+                                    <label className="mb-1">User ID</label>
+                                    <input
+                                        type="text"
+                                        name="userID"
+                                        className="form-control"
+                                        value={itemIDAdd}
+                                        onChange={(e) => setItemIDAdd(e.target.value)}
+                                    />
+                                </div>
+                                <div className="mb-3">
                                     <label className="mb-1">Prescription Name</label>
                                     <input
                                         type="text"
@@ -1168,475 +1748,6 @@ const Admin = () => {
             </div>
         );
     }
-}
-
-// Access the API based on the button action and use POST Method
-// Requires the API name, data
-async function addData(api, data) {
-    let address = "CareSense/api/" + api;
-
-    let newData = data;
-
-    try {
-        const res = await fetch(address, {
-            method: "post",
-            headers: {
-                "Content-Type": "application/json",
-                "Access-Control-Request-Origin": "http://localhost:8080",
-                "Access-Control-Request-Method": "POST",
-                "Access-Control-Allow-Headers":
-                    "Origin, X-Requested-With, Content-Type, Accept"
-            },
-            body: JSON.stringify(newData),
-        });
-
-        if (!res.ok) {
-            const message = `An error has occured: ${res.status} - ${res.statusText}`;
-            throw new Error(message);
-        }
-        const data = await res.json();
-        const result = {
-            status: res.status + "-" + res.statusText,
-            headers: {
-                "Content-Type": res.headers.get("Content-Type"),
-                "Content-Length": res.headers.get("Content-Length"),
-            },
-            data: data,
-        };
-        console.log(result);
-    } catch (err) {
-        console.log(err.message);
-    }
-
-    // USE A FUNCTION TO REFRESH THE LIST
-
-}
-
-// Access the API based on the button action and use PUT Method
-// Requires the API name, id, data
-async function editData(api, id, data) {
-    let address = "CareSense/api/" + api + "/" + id;
-
-    let currentData = data;
-
-    try {
-        const res = await fetch(address, {
-            method: "put",
-            headers: {
-                "Content-Type": "application/json",
-                "Access-Control-Request-Origin": "http://localhost:8080",
-                "Access-Control-Request-Method": "PUT",
-                "Access-Control-Allow-Headers":
-                    "Origin, X-Requested-With, Content-Type, Accept"
-            },
-            body: JSON.stringify(currentData),
-        });
-
-        if (!res.ok) {
-            const message = `An error has occured: ${res.status} - ${res.statusText}`;
-            throw new Error(message);
-        }
-        const data = await res.json();
-        const result = {
-            status: res.status + "-" + res.statusText,
-            headers: {
-                "Content-Type": res.headers.get("Content-Type"),
-                "Content-Length": res.headers.get("Content-Length"),
-            },
-            data: data,
-        };
-        console.log(result);
-    } catch (err) {
-        console.log(err.message);
-    }
-
-    // USE A FUNCTION TO REFRESH THE LIST
-
-}
-
-// Access the API based on the button action and use DELETE Method
-// Requires the API name, id
-async function deleteData(api, id) {
-    console.log(api + " delete " + id)
-    let address = "CareSense/api/" + api + "/" + id;
-
-    try {
-        const res = await fetch(address, {
-            method: "delete",
-            headers: {
-                "Content-Type": "application/json",
-                "Access-Control-Request-Origin": "http://localhost:8080",
-                "Access-Control-Request-Method": "DELETE",
-                "Access-Control-Allow-Headers":
-                    "Origin, X-Requested-With, Content-Type, Accept"
-            }
-        });
-
-        if (!res.ok) {
-            const message = `An error has occured: ${res.status} - ${res.statusText}`;
-            throw new Error(message);
-        }
-        const data = await res.json();
-        const result = {
-            status: res.status + "-" + res.statusText,
-            headers: {
-                "Content-Length": res.headers.get("Content-Length"),
-                "Content-Type": "application/json",
-                "Access-Control-Request-Origin": "http://localhost:8080",
-                "Access-Control-Request-Method": "DELETE",
-                "Access-Control-Allow-Headers":
-                    "Origin, X-Requested-With, Content-Type, Accept"
-            },
-            data: data,
-        };
-        console.log(result);
-    } catch (err) {
-        console.log(err.message);
-    }
-
-    // USE A FUNCTION TO REFRESH THE LIST
-
-}
-
-// Access the API based on the button action and use DELETE Method
-// Requires the API name, id
-async function deleteDataAssociated(api, residentID, associatedUserID) {
-    console.log(api + " delete " + residentID + " " + associatedUserID)
-    let address = "CareSense/api/" + api + "/" + residentID + "/" + associatedUserID;
-
-    try {
-        const res = await fetch(address, {
-            method: "delete",
-            headers: {
-                "Content-Type": "application/json",
-                "Access-Control-Request-Origin": "http://localhost:8080",
-                "Access-Control-Request-Method": "DELETE",
-                "Access-Control-Allow-Headers":
-                    "Origin, X-Requested-With, Content-Type, Accept"
-            }
-        });
-
-        if (!res.ok) {
-            const message = `An error has occured: ${res.status} - ${res.statusText}`;
-            throw new Error(message);
-        }
-        const data = await res.json();
-        const result = {
-            status: res.status + "-" + res.statusText,
-            headers: {
-                "Content-Length": res.headers.get("Content-Length"),
-                "Content-Type": "application/json",
-                "Access-Control-Request-Origin": "http://localhost:8080",
-                "Access-Control-Request-Method": "DELETE",
-                "Access-Control-Allow-Headers":
-                    "Origin, X-Requested-With, Content-Type, Accept"
-            },
-            data: data,
-        };
-        console.log(result);
-    } catch (err) {
-        console.log(err.message);
-    }
-
-    // USE A FUNCTION TO REFRESH THE LIST
-
-}
-
-// Table Component inside a Map For Each Resident
-function ResidentList({ residentUsers, edit, add }) {
-    const listOfResidents = residentUsers.map((resident) => {
-        return (
-
-            <tr key={resident.userID}>
-                <td>{resident.userID}</td>
-                <td>{resident.sensorID}</td>
-                <td>{resident.locationID}</td>
-                <td>
-                    <Button onClick={() => edit(resident.userID, resident)}>
-                        Edit
-                    </Button>
-                    <Button onClick={() => deleteData("resident", resident.userID)} className="ms-1">
-                        Delete
-                    </Button>
-                </td>
-            </tr>
-        )
-    });
-    return (
-        <div>
-            <Container className='p-4'>
-                <p>Resident List</p>
-                <Table striped>
-                    <thead>
-                        <tr>
-                            <th>User ID</th>
-                            <th>Sensor ID</th>
-                            <th>Location ID</th>
-                            <th>OPTIONS</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {listOfResidents}
-                    </tbody>
-                </Table>
-                <Button onClick={() => add()}>
-                    Add Resident
-                </Button>
-            </Container>
-        </div >
-    )
-}
-
-// Table Component inside a Map For Each Users
-function UserList({ users, edit, add }) {
-    const listOfUsers = users.map((user) => {
-        return (
-
-            <tr key={user.userID}>
-                <td>{user.userID}</td>
-                <td>{user.userType}</td>
-                <td>{user.firstName}</td>
-                <td>{user.lastName}</td>
-                <td>{user.username}</td>
-                <td>{user.password}</td>
-                <td>{user.birthday}</td>
-                <td>{user.gender}</td>
-                <td>{user.phoneNumber}</td>
-                <td>
-                    <Button onClick={() => edit(user)}>
-                        Edit
-                    </Button>
-                    <Button onClick={() => deleteData(user.userType.toLowerCase(), user.UserID)} className="ms-1">
-                        Delete
-                    </Button>
-                </td>
-            </tr>
-        )
-    });
-    return (
-        <div>
-            <Container className='p-4'>
-                <p>User List</p>
-                <Table striped>
-                    <thead>
-                        <tr>
-                            <th>User ID</th>
-                            <th>User Type</th>
-                            <th>First Name</th>
-                            <th>Last name</th>
-                            <th>Username</th>
-                            <th>Password</th>
-                            <th>Birthday</th>
-                            <th>Gender</th>
-                            <th>Phone Number</th>
-                            <th>OPTIONS</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {listOfUsers}
-                    </tbody>
-                </Table>
-                <Button onClick={() => add()}>
-                    Add User
-                </Button>
-            </Container>
-        </div >
-    )
-}
-
-// Table Component inside a Map For Each Association
-function AssociatedResidentList({ associatedResidents, edit, add }) {
-    let listCount = 0;
-    const listOfAssociatedResidents = associatedResidents.map((associated) => {
-        listCount++;
-        return (
-            <tr key={listCount}>
-                <td>{associated.userID}</td>
-                <td>{associated.associatedUserID}</td>
-                <td>
-                    <Button onClick={() => edit(associated.associatedUserID, associated)}>
-                        Edit
-                    </Button>
-                    <Button onClick={() => deleteDataAssociated("associated", associated.userID, associated.associatedUserID)} className="ms-1">
-                        Delete
-                    </Button>
-                </td>
-            </tr>
-        )
-    });
-    return (
-        <div>
-            <Container className='p-4'>
-                <p>Assocaition List</p>
-                <Table striped>
-                    <thead>
-                        <tr>
-                            <th>Resident ID</th>
-                            <th>User ID</th>
-                            <th>OPTIONS</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {listOfAssociatedResidents}
-                    </tbody>
-                </Table>
-                <Button onClick={() => add()}>
-                    Add Associated Residents
-                </Button>
-            </Container>
-        </div >
-    )
-}
-
-// Table Component inside a Map For Each Location
-function LocationList({ locations, edit, add }) {
-    const listOfLocation = locations.map((location) => {
-        return (
-            <tr key={location.locationID}>
-                <td>{location.locationID}</td>
-                <td>{location.latitude}</td>
-                <td>{location.longitude}</td>
-                <td>{location.timestamp}</td>
-                <td>
-                    <Button onClick={() => edit(location.locationID, location)}>
-                        Edit
-                    </Button>
-                    <Button onClick={() => deleteDataAssociated("location", location.locationID)} className="ms-1">
-                        Delete
-                    </Button>
-                </td>
-            </tr>
-        )
-    });
-    return (
-        <div>
-            <Container className='p-4'>
-                <p>Location List</p>
-                <Table striped>
-                    <thead>
-                        <tr>
-                            <th>Location ID</th>
-                            <th>Latitude</th>
-                            <th>Longitude</th>
-                            <th>Timestamp</th>
-                            <th>OPTIONS</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {listOfLocation}
-                    </tbody>
-                </Table>
-                <Button onClick={() => add()}>
-                    Add Location
-                </Button>
-            </Container>
-        </div >
-    )
-}
-
-// Table Component inside a Map For Each Sensors
-function SensorList({ sensors, edit, add }) {
-    const listOfSensors = sensors.map((sensor) => {
-        return (
-            <tr key={sensor.sensorID}>
-                <td>{sensor.sensorID}</td>
-                <td>{sensor.bloodPressure}</td>
-                <td>{sensor.temperature}</td>
-                <td>{sensor.heartrate}</td>
-                <td>{sensor.glucose}</td>
-                <td>{sensor.spO2}</td>
-                <td>{sensor.timestamp}</td>
-                <td>
-                    <Button onClick={() => edit(sensor.sensorID, sensor)}>
-                        Edit
-                    </Button>
-                    <Button onClick={() => deleteDataAssociated("location", sensor.sensorID)} className="ms-1">
-                        Delete
-                    </Button>
-                </td>
-            </tr>
-        )
-    });
-    return (
-        <div>
-            <Container className='p-4'>
-                <p>Sensor List</p>
-                <Table striped>
-                    <thead>
-                        <tr>
-                            <th>Sensor ID</th>
-                            <th>Blood Pressure</th>
-                            <th>Temperature</th>
-                            <th>Heart rate</th>
-                            <th>Glucose</th>
-                            <th>Oxygen Level</th>
-                            <th>Timestamp</th>
-                            <th>OPTIONS</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {listOfSensors}
-                    </tbody>
-                </Table>
-                <Button onClick={() => add()}>
-                    Add Sensor
-                </Button>
-            </Container>
-        </div >
-    )
-}
-
-function PrescriptionList({ prescriptions, edit, add }) {
-    // RETRIVE THIS FROM DATABASE THAT IS FILTERED
-    let listCount = 0;
-    const listOfPrescription = prescriptions.map((prescription) => {
-        listCount++;
-        return (
-
-            <tr key={listCount}>
-                <td>{prescription.prescriptionID}</td>
-                <td>{prescription.medicationName}</td>
-                <td>{prescription.dose}</td>
-                <td>{prescription.frequency}</td>
-                <td>{prescription.intendedUse}</td>
-                <td>{prescription.instructions}</td>
-                <td>
-                    <Button onClick={() => edit(prescription.prescriptionID, prescription)}>
-                        Edit
-                    </Button>
-                    <Button onClick={() => deleteData("prescription", prescription.prescriptionID)} className="ms-1">
-                        Delete
-                    </Button>
-                </td>
-            </tr>
-        )
-    });
-    return (
-        <div>
-            <Container className='p-4'>
-                <p>Prescription List</p>
-                <Table striped>
-                    <thead>
-                        <tr>
-                            <th>Prescription ID</th>
-                            <th>Prescription Name</th>
-                            <th>Dose</th>
-                            <th>Frequency</th>
-                            <th>Intended Use</th>
-                            <th>Instructions</th>
-                            <th>OPTIONS</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {listOfPrescription}
-                    </tbody>
-                </Table>
-                <Button onClick={() => add()}>
-                    Add Prescription
-                </Button>
-            </Container>
-        </div >
-    )
 }
 
 export default Admin;

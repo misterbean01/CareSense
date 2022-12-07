@@ -237,6 +237,7 @@ public class resident {
 
 		return Response
 				.status(Response.Status.OK)
+				.header("userCount", listOfRecord.length()) // custom header
 				.header("Access-Control-Allow-Origin", "*")
 				.header("Access-Control-Allow-Headers",
 						"Origin, X-Requested-With, Content-Type, Accept")
@@ -325,16 +326,20 @@ public class resident {
 		con1.setRequestMethod("GET");
 		con1.setRequestProperty("User-Agent", "Mozilla/5.0");
 		int responseCode = con1.getResponseCode();
-		System.out.println("\nSending 'GET' request to URL : " + link);
-		System.out.println("Response Code : " + responseCode);
-		BufferedReader in = new BufferedReader(
-				new InputStreamReader(con1.getInputStream()));
-		String inputLine;
-		StringBuffer responseURL1 = new StringBuffer();
-		while ((inputLine = in.readLine()) != null) {
-			responseURL1.append(inputLine);
+		if (responseCode != 404) {
+			System.out.println("\nSending 'GET' request to URL : " + link);
+			System.out.println("Response Code : " + responseCode);
+			BufferedReader in = new BufferedReader(
+					new InputStreamReader(con1.getInputStream()));
+			String inputLine;
+			StringBuffer responseURL1 = new StringBuffer();
+			while ((inputLine = in.readLine()) != null) {
+				responseURL1.append(inputLine);
+			}
+			in.close();
+			return responseURL1.toString();	
+		} else {
+			return "{}";	
 		}
-		in.close();
-		return responseURL1.toString();	
 	}
 }

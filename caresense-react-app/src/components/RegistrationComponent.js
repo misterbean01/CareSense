@@ -4,13 +4,19 @@ import Button from 'react-bootstrap/Button';
 
 const Registration = () => {
     const navigate = useNavigate();
+    const [userID, setUserID] = useState("");
+    const [userType, setUserType] = useState("");
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
-    const [fname, setFirstName] = useState("");
-    const [lname, setLastName] = useState("");
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
+    const [gender, setGender] = useState("");
+    const [birthday, setBirthday] = useState("");
+    const [phoneNumber, setPhoneNumber] = useState("");
+
     const [hasErrors, setHasErrors] = useState(true);
-    const [accountType, setAccountType] = useState("");
+
 
 
     useEffect(() => {
@@ -30,6 +36,15 @@ const Registration = () => {
 
     const handleValidation = (e) => {
         let valid = true;
+
+        if (userID == null || userID === "") {
+            valid = false;
+            setHasErrors(valid);
+            console.log("username error")
+            return false;
+        } else {
+            valid = true;
+        }
 
         if (username == null || username === "") {
             valid = false;
@@ -58,7 +73,7 @@ const Registration = () => {
             valid = true;
         }
 
-        if (fname == null || fname === "") {
+        if (firstName == null || firstName === "") {
             valid = false;
             setHasErrors(valid);
             console.log("fname error")
@@ -67,7 +82,7 @@ const Registration = () => {
             valid = true;
         }
 
-        if (lname == null || lname === "") {
+        if (lastName == null || lastName === "") {
             valid = false;
             setHasErrors(valid);
             console.log("lname error")
@@ -76,7 +91,7 @@ const Registration = () => {
             valid = true;
         }
 
-        if (accountType == null || accountType === "") {
+        if (userType == null || userType === "") {
             valid = false;
             setHasErrors(valid);
             console.log("acc type error")
@@ -84,6 +99,34 @@ const Registration = () => {
         } else {
             valid = true;
         }
+
+        if (birthday == null || birthday === "") {
+            valid = false;
+            setHasErrors(valid);
+            console.log("lname error")
+            return false;
+        } else {
+            valid = true;
+        }
+
+        if (gender == null || gender === "") {
+            valid = false;
+            setHasErrors(valid);
+            console.log("lname error")
+            return false;
+        } else {
+            valid = true;
+        }
+
+        if (phoneNumber == null || phoneNumber === "") {
+            valid = false;
+            setHasErrors(valid);
+            console.log("lname error")
+            return false;
+        } else {
+            valid = true;
+        }
+
         return valid;
     };
 
@@ -93,10 +136,13 @@ const Registration = () => {
         if (handleValidation()) {
             // create if statement depending on account type (Family, Doctor, Caretaker, Admin)
             // ADD THE ACCOUNT TO THE DATABASE
-            let newData = { Fname: fname, Lname: lname, Username: username, Password: password };
+            let newData = {
+                firstName: firstName, lastName: lastName, username: username, password: password,
+                phoneNumber: phoneNumber, gender: gender, birthday: birthday, userID: userID, userType: userType
+            };
 
             console.log(newData)
-            addData(accountType, newData);
+            addData(newData);
             navigate("/login");
         }
     };
@@ -112,6 +158,16 @@ const Registration = () => {
                     <Warning check={hasErrors} />
 
                     <form onSubmit={handleSubmit}>
+                        <div className="mb-3">
+                            <label className="mb-1">User ID</label>
+                            <input
+                                type="text"
+                                name="userID"
+                                className="form-control"
+                                value={userID}
+                                onChange={(e) => setUserID(e.target.value)}
+                            />
+                        </div>
                         <div className="mb-3">
                             <label className="mb-1">Username</label>
                             <input
@@ -146,7 +202,7 @@ const Registration = () => {
                                 type="text"
                                 name="FirstName"
                                 className="form-control"
-                                value={fname}
+                                value={firstName}
                                 onChange={(e) => setFirstName(e.target.value)}
                             />
                         </div>
@@ -156,14 +212,44 @@ const Registration = () => {
                                 type="text"
                                 name="LastName"
                                 className="form-control"
-                                value={lname}
+                                value={lastName}
                                 onChange={(e) => setLastName(e.target.value)}
                             />
                         </div>
                         <div className="mb-3">
-                            <label className="label">Select Account Type</label>
-                            <select onChange={(e) => setAccountType(e.target.value)} defaultValue="" className="form-control">
-                                <option>Select Account Type</option>
+                            <label className="mb-1">Gender</label>
+                            <input
+                                type="text"
+                                name="Gender"
+                                className="form-control"
+                                value={gender}
+                                onChange={(e) => setGender(e.target.value)}
+                            />
+                        </div>
+                        <div className="mb-3">
+                            <label className="mb-1">Birthday</label>
+                            <input
+                                type="text"
+                                name="Birthday"
+                                className="form-control"
+                                value={birthday}
+                                onChange={(e) => setBirthday(e.target.value)}
+                            />
+                        </div>
+                        <div className="mb-3">
+                            <label className="mb-1">Phone Number</label>
+                            <input
+                                type="text"
+                                name="LastName"
+                                className="form-control"
+                                value={phoneNumber}
+                                onChange={(e) => setPhoneNumber(e.target.value)}
+                            />
+                        </div>
+                        <div className="mb-3">
+                            <label className="label">Select User Type</label>
+                            <select onChange={(e) => setUserType(e.target.value)} defaultValue="" className="form-control">
+                                <option>Select User Type</option>
                                 <option value="caretaker">Caretaker</option>
                                 <option value="doctor">Doctor</option>
                                 <option value="family">Family</option>
@@ -173,7 +259,7 @@ const Registration = () => {
                         <input type="submit" className="btn btn-primary" value="Submit" />
                     </form>
 
-                    <div>
+                    <div className="m-5">
                         <Button onClick={() => {
                             navigate("/login");
                         }}>
@@ -190,9 +276,9 @@ const Registration = () => {
 };
 
 // Access the API based on the button action and use POST Method
-// Requires the API name, data
-async function addData(api, data) {
-    let address = "http://localhost:8080/CareSense/api/" + api;
+// Requires the data
+async function addData(data) {
+    let address = "/CareSense/api/user";
 
     let newData = data;
 
@@ -225,9 +311,6 @@ async function addData(api, data) {
     } catch (err) {
         console.log(err.message);
     }
-
-    // USE A FUNCTION TO REFRESH THE LIST
-
 }
 
 export default Registration;

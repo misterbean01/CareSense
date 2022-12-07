@@ -14,6 +14,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 @Path("/user")
@@ -25,18 +26,19 @@ public class user {
 	// get user via userID
 	@Path("{userID}")
 	@GET
-	public Response getUser (@PathParam("userID") String userID) throws Exception {
-		
+	public Response getUser(@PathParam("userID") String userID) throws Exception {
 		JSONObject newRecord = new JSONObject ();
 		
 		Class.forName("com.mysql.cj.jdbc.Driver");
     	Connection connection = DriverManager.getConnection(connectStr); 
 		Statement sqlStatement = connection.createStatement();
-		String query = "SELECT userID, userType, username, password, firstName, lastName, birthday, gender, phoneNumber FROM user WHERE userID = \"" + userID +"\"";
+		String query = "SELECT userID, userType, username, password, firstName, "
+				+ "lastName, birthday, gender, phoneNumber FROM user WHERE userID = \"" + userID + "\"";
 		ResultSet rs = sqlStatement.executeQuery(query);
 		while (rs.next())
 		{
-			newRecord.put("userID", userID);
+
+			newRecord.put("userID", rs.getString("userID"));
 			newRecord.put("userType", rs.getString("userType"));
 			newRecord.put("username", rs.getString("username"));
 			newRecord.put("password", rs.getString("password"));
@@ -58,20 +60,63 @@ public class user {
       	    .build();
 	}
 	
+	// get all users
+	@Path("all")
+	@GET
+	public Response getUserAll() throws Exception {
+		JSONArray listOfRecords = new JSONArray ();
+		
+		Class.forName("com.mysql.cj.jdbc.Driver");
+    	Connection connection = DriverManager.getConnection(connectStr); 
+		Statement sqlStatement = connection.createStatement();
+		String query = "SELECT userID, userType, username, password, firstName, "
+				+ "lastName, birthday, gender, phoneNumber FROM user";
+		ResultSet rs = sqlStatement.executeQuery(query);
+		while (rs.next())
+		{
+			JSONObject newRecord = new JSONObject ();
+			newRecord.put("userID", rs.getString("userID"));
+			newRecord.put("userType", rs.getString("userType"));
+			newRecord.put("username", rs.getString("username"));
+			newRecord.put("password", rs.getString("password"));
+			newRecord.put("firstName", rs.getString("firstName"));
+			newRecord.put("lastName", rs.getString("lastName"));
+			newRecord.put("birthday", rs.getString("birthday"));
+			newRecord.put("gender", rs.getString("gender"));
+			newRecord.put("phoneNumber", rs.getString("phoneNumber"));
+			listOfRecords.put(newRecord);
+		}
+		
+		return Response
+			.status(Response.Status.OK)
+      	    .header("Access-Control-Allow-Origin", "*")
+      	    .header("Access-Control-Allow-Headers",
+					"Origin, X-Requested-With, Content-Type, Accept")
+      	    .header("Access-Control-Allow-Methods",
+					"Origin, X-Requested-With, GET,POST,OPTIONS,DELETE,PUT")
+      	    .entity(listOfRecords.toString())
+      	    .build();
+	}
+	
 	// Delete a user
 	@Path("{userID}")
 	@DELETE
 	public Response deleteUser (@PathParam("userID") String userID) throws SQLException, Exception  {
-		
+		System.out.println(userID);
 	   	Class.forName("com.mysql.cj.jdbc.Driver");
     	Connection connection = DriverManager.getConnection(connectStr); 
 		Statement sqlStatement = connection.createStatement();	 
 
 		sqlStatement.executeUpdate("DELETE FROM user WHERE userID = \"" + userID + "\"");
-		
-		
-        connection.close();
-        
+		connection.close();
+        System.out.println(Response
+				.status(Response.Status.OK)
+				.header("Access-Control-Allow-Origin", "*")
+				.header("Access-Control-Allow-Headers",
+						"Origin, X-Requested-With, Content-Type, Accept")
+				.header("Access-Control-Allow-Methods",
+						"Origin, X-Requested-With, GET,POST,OPTIONS,DELETE,PUT")
+				.build());
         return Response
 				.status(Response.Status.OK)
 				.header("Access-Control-Allow-Origin", "*")
@@ -86,7 +131,7 @@ public class user {
 	@Path("")
 	@POST
 	public Response addUser (String userInfo) throws Exception {
-		
+		//System.out.println(userInfo);
 		JSONObject userJSON = new JSONObject (userInfo);
 		JSONObject newRecord = new JSONObject ();
 					
@@ -139,14 +184,14 @@ public class user {
 	}	
 	
 	// update user
-	@Path("")
+	@Path("{userID}")
 	@PUT
-	public Response updateUser (String userInfo) throws Exception {
+	public Response updateUser (@PathParam("userID") String userID, String userInfo) throws Exception {
 		
 		JSONObject userJSON = new JSONObject (userInfo);
 		JSONObject newRecord = new JSONObject ();
 					
-		String userID = "userID = \"" 		+ userJSON.getString("userID") 		+ "\"";
+		String userID1 = "userID = \"" 		+ userJSON.getString("userID") 		+ "\"";
 		String userType = "userType = \"" 	+ userJSON.getString("userType") 	+ "\"";
 		String username = "username = \"" 	+ userJSON.getString("username") 	+ "\"";
 		String password = "password = \"" 	+ userJSON.getString("password") 	+ "\"";
@@ -167,7 +212,7 @@ public class user {
 		newRecord.put("phoneNumber", userJSON.getString("phoneNumber"));
 					
         String SQL = "UPDATE user SET " 
-        		+ userID 		+ ", " 
+        		+ userID1 		+ ", " 
         		+ userType 		+ ", " 
         		+ username		+ ", " 
         		+ password		+ ", " 

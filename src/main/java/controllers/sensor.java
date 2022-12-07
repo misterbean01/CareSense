@@ -14,6 +14,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 @Path("/sensor")
@@ -35,8 +36,11 @@ public class sensor {
 		String query = "SELECT sensorID, bloodPressure, temperature, heartrate, "
 				+ "glucose, spO2, timestamp FROM sensor WHERE sensorID = \"" + sensorID + "\"";
 		ResultSet rs = sqlStatement.executeQuery(query);
+		String timestamp = "", heartrate = "";
 		while (rs.next())
 		{
+			timestamp =rs.getString("timestamp");
+					heartrate = rs.getString("heartrate");
 			viewRecord.put("sensorID", sensorID);
 			viewRecord.put("bloodPressure", rs.getString("bloodPressure"));
 			viewRecord.put("temperature", rs.getString("temperature"));
@@ -48,6 +52,8 @@ public class sensor {
 		
 		return Response
 			.status(Response.Status.OK)
+			.header("heartrate", timestamp)
+			.header("timestamp", heartrate)
       	    .header("Access-Control-Allow-Origin", "*")
       	    .header("Access-Control-Allow-Headers",
 					"Origin, X-Requested-With, Content-Type, Accept")
@@ -57,8 +63,45 @@ public class sensor {
       	    .build();
 	}
 	
+	// get sensor data via sensorID
+		@Path("all")
+		@GET
+		public Response getSensorAll() throws Exception {
+			JSONArray listOfRecords = new JSONArray ();
+			
+			
+			Class.forName("com.mysql.cj.jdbc.Driver");
+	    	Connection connection = DriverManager.getConnection(connectStr); 
+			Statement sqlStatement = connection.createStatement();
+			String query = "SELECT sensorID, bloodPressure, temperature, heartrate, "
+					+ "glucose, spO2, timestamp FROM sensor";
+			ResultSet rs = sqlStatement.executeQuery(query);
+			while (rs.next())
+			{
+				JSONObject viewRecord = new JSONObject ();
+				viewRecord.put("sensorID", rs.getString("sensorID"));
+				viewRecord.put("bloodPressure", rs.getString("bloodPressure"));
+				viewRecord.put("temperature", rs.getString("temperature"));
+				viewRecord.put("heartrate", rs.getString("heartrate"));
+				viewRecord.put("glucose", rs.getString("glucose"));
+				viewRecord.put("spO2", rs.getString("spO2"));
+				viewRecord.put("timestamp",  rs.getString("timestamp"));
+				listOfRecords.put(viewRecord);
+			}
+			
+			return Response
+				.status(Response.Status.OK)
+	      	    .header("Access-Control-Allow-Origin", "*")
+	      	    .header("Access-Control-Allow-Headers",
+						"Origin, X-Requested-With, Content-Type, Accept")
+	      	    .header("Access-Control-Allow-Methods",
+						"Origin, X-Requested-With, GET,POST,OPTIONS,DELETE,PUT")
+	      	    .entity(listOfRecords.toString())
+	      	    .build();
+		}
+	
 	// Delete a sensor
-	@Path("/{sensorID}")
+	@Path("{sensorID}")
 	@DELETE
 	public Response deleteSensor (@PathParam("sensorID") String sensorID) throws SQLException, Exception  {
 		
@@ -80,11 +123,11 @@ public class sensor {
 	}
 	
 	// add sensor
-	@Path("/{userInfo}")
+	@Path("")
 	@POST
-	public Response addSensor (@PathParam("userInfo") String userInfo) throws Exception {
+	public Response addSensor (String JSON) throws Exception {
 		
-		JSONObject userJSON = new JSONObject (userInfo);
+		JSONObject userJSON = new JSONObject (JSON);
 		JSONObject newRecord = new JSONObject ();
 					
 		String sensorID = userJSON.getString("sensorID");
@@ -130,11 +173,11 @@ public class sensor {
 	}	
 	
 	// update sensor
-	@Path("/{userInfo}")
+	@Path("{userInfo}")
 	@PUT
-	public Response updateSensor (@PathParam("userInfo") String userInfo) throws Exception {
+	public Response updateSensor (@PathParam("userInfo") String userInfo, String JSON) throws Exception {
 		
-		JSONObject userJSON = new JSONObject (userInfo);
+		JSONObject userJSON = new JSONObject (JSON);
 		JSONObject newRecord = new JSONObject ();
 					
 		String sensorID = "sensorID = \"" 			+ userJSON.getString("sensorID") 		+ "\"";

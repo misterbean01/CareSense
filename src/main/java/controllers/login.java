@@ -57,6 +57,34 @@ public class login {
         String username = eNodeItem.getElementsByTagName("username").item(0).getTextContent();
         String password = eNodeItem.getElementsByTagName("password").item(0).getTextContent();
         
+        // Check if they are an admin via username
+        String adminUserID = checkAdminUser(username, password);
+        System.out.println(adminUserID);
+        if (adminUserID != null && adminUserID != "") {
+        	
+        	String XMLoutput = "<?xml version='1.0'?><loggedUser>" + 
+					"<userID>" + adminUserID + "</userID>" +
+					"<firstName>" + "Admin" + "</firstName>" +
+					"<lastName>" + "Admin" + "</lastName>" +
+					"<userType>" + "admin" + "</userType>" +
+					"<gender>" + "Admin" + "</gender>" +
+					"<birthday>" + "Admin" + "</birthday>" +
+					"<phoneNumber>" + "Admin" + "</phoneNumber>" +
+					"</loggedUser>";
+        	
+        	 return Response
+ 					.status(Response.Status.OK)
+ 					.header("loginStatus", "User found")
+ 					.header("Access-Control-Allow-Origin", "*") // always include this 2 header to access the JSON
+ 					.header("Access-Control-Allow-Headers", 
+ 							"Origin, X-Requested-With, Content-Type, Accept") // always include this 2 header to access the JSON
+ 					.header("Access-Control-Allow-Methods", 
+ 							"Origin, X-Requested-With, GET,POST,OPTIONS,DELETE,PUT")
+ 					.entity(XMLoutput)
+ 					.build();
+        }
+        
+        
 		Class.forName("com.mysql.cj.jdbc.Driver");
     	Connection connection = DriverManager.getConnection(connectStr); 
 		Statement sqlStatement = connection.createStatement();
@@ -112,6 +140,23 @@ public class login {
 							"Origin, X-Requested-With, GET,POST,OPTIONS,DELETE,PUT")
 					.build();
 		}    
+	}
+	
+	public String checkAdminUser(String username, String password) throws SQLException, ClassNotFoundException {
+		Class.forName("com.mysql.cj.jdbc.Driver");
+    	Connection connection = DriverManager.getConnection(connectStr); 
+		Statement sqlStatement = connection.createStatement();
+		String query = "SELECT * "
+				+ "FROM admin WHERE username = '" + username + "' AND password = '" + password + "'";
+		//System.out.println(query);
+		ResultSet rs = sqlStatement.executeQuery(query);
+		String userID = "";
+		while (rs.next())
+		{
+			userID = rs.getString("userID");
+		}
+		
+		return userID;
 	}
 
 }

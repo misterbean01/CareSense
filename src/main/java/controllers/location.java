@@ -14,6 +14,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 @Path("/location")
@@ -34,8 +35,12 @@ public class location {
 		Statement sqlStatement = connection.createStatement();
 		String query = "SELECT locationID, latitude, longitude, timestamp FROM location WHERE locationID = \"" + locationID + "\"";
 		ResultSet rs = sqlStatement.executeQuery(query);
+		String timestamp = "", latitude = "", longitude = "";
 		while (rs.next())
 		{
+			timestamp = rs.getString("timestamp");
+					latitude = rs.getString("latitude"); 
+					longitude = rs.getString("longitude");
 			viewRecord.put("locationID", locationID);
 			viewRecord.put("latitude", rs.getString("latitude"));
 			viewRecord.put("longitude", rs.getString("longitude"));
@@ -44,6 +49,9 @@ public class location {
 		
 		return Response
 			.status(Response.Status.OK)
+			.header("timestamp", timestamp)
+			.header("latitude", latitude)
+			.header("longitude", longitude)
       	    .header("Access-Control-Allow-Origin", "*")
       	    .header("Access-Control-Allow-Headers",
 					"Origin, X-Requested-With, Content-Type, Accept")
@@ -53,8 +61,40 @@ public class location {
       	    .build();
 	}
 	
+	// get location data via locationID
+		@Path("all")
+		@GET
+		public Response getLocationAll() throws Exception {
+			JSONArray listOfRecords = new JSONArray ();
+			
+			Class.forName("com.mysql.cj.jdbc.Driver");
+	    	Connection connection = DriverManager.getConnection(connectStr); 
+			Statement sqlStatement = connection.createStatement();
+			String query = "SELECT locationID, latitude, longitude, timestamp FROM location";
+			ResultSet rs = sqlStatement.executeQuery(query);
+			while (rs.next())
+			{
+				JSONObject viewRecord = new JSONObject ();
+				viewRecord.put("locationID", rs.getString("locationID"));
+				viewRecord.put("latitude", rs.getString("latitude"));
+				viewRecord.put("longitude", rs.getString("longitude"));
+				viewRecord.put("timestamp", rs.getString("timestamp"));
+				listOfRecords.put(viewRecord);
+			}
+			
+			return Response
+				.status(Response.Status.OK)
+	      	    .header("Access-Control-Allow-Origin", "*")
+	      	    .header("Access-Control-Allow-Headers",
+						"Origin, X-Requested-With, Content-Type, Accept")
+	      	    .header("Access-Control-Allow-Methods",
+						"Origin, X-Requested-With, GET,POST,OPTIONS,DELETE,PUT")
+	      	    .entity(listOfRecords.toString())
+	      	    .build();
+		}
+	
 	// Delete a location
-	@Path("/{locationID}")
+	@Path("{locationID}")
 	@DELETE
 	public Response deleteLocation (@PathParam("locationID") String locationID) throws SQLException, Exception  {
 		
@@ -76,9 +116,9 @@ public class location {
 	}
 	
 	// add location
-	@Path("/{userInfo}")
+	@Path("")
 	@POST
-	public Response addLocation (@PathParam("userInfo") String userInfo) throws Exception {
+	public Response addLocation (String userInfo) throws Exception {
 		
 		JSONObject userJSON = new JSONObject (userInfo);
 		JSONObject newRecord = new JSONObject ();
@@ -117,16 +157,17 @@ public class location {
 	}	
 	
 	// update location
-	@Path("/{userInfo}")
+	@Path("{userInfo}")
 	@PUT
-	public Response updateLocation (@PathParam("userInfo") String userInfo) throws Exception {
-		
-		JSONObject userJSON = new JSONObject (userInfo);
+	public Response updateLocation (@PathParam("userInfo") String userInfo, String JSON) throws Exception {
+		System.out.println(JSON);
+		System.out.println(userInfo);
+		JSONObject userJSON = new JSONObject (JSON);
 		JSONObject newRecord = new JSONObject ();
 					
 		String locationID = "locationID = \"" 	+ userJSON.getString("locationID") 	+ "\"";
 		String latitude = "latitude = \"" 		+ userJSON.getString("latitude") 	+ "\"";
-		String longitude = "temperature = \"" 	+ userJSON.getString("longitude") 	+ "\"";
+		String longitude = "longitude = \"" 	+ userJSON.getString("longitude") 	+ "\"";
 		String timestamp = "timestamp = \"" 	+ userJSON.getString("timestamp") 	+ "\"";
 			
 		newRecord.put("locationID", userJSON.getString("locationID"));

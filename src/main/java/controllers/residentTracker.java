@@ -17,28 +17,29 @@ import javax.ws.rs.core.Response;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-@Path("/associated")
-public class associated {
+@Path("/residentTracker")
+public class residentTracker {
 	// connect to database
 	main careSense = new main();
 	String connectStr = careSense.serverConnect();
 	
-	// get residentAssociations
-	@Path("{userID}")
+	// get all resident data
+	@Path("all")
 	@GET
-	public Response getAssociation (@PathParam("userID") String userID) throws Exception {
-		JSONArray listOfRecords = new JSONArray();
+	public Response getResidentTrackerAll() throws Exception {
+		JSONArray listOfRecords = new JSONArray ();
 		
 		Class.forName("com.mysql.cj.jdbc.Driver");
     	Connection connection = DriverManager.getConnection(connectStr); 
 		Statement sqlStatement = connection.createStatement();
-		String query = "SELECT uniqueID, userID, associatedUserID FROM associatedResident WHERE userID = \"" + userID + "\"";
+		String query = "SELECT userID, locationID, sensorID FROM resident";
 		ResultSet rs = sqlStatement.executeQuery(query);
 		while (rs.next())
-		{	
+		{
 			JSONObject viewRecord = new JSONObject ();
-			viewRecord.put("userID", userID);
-			viewRecord.put("associatedUserID", rs.getString("associatedUserID"));
+			viewRecord.put("userID", rs.getString("userID"));
+			viewRecord.put("locationID", rs.getString("locationID"));
+			viewRecord.put("sensorID", rs.getString("sensorID"));
 			listOfRecords.put(viewRecord);
 		}
 		
@@ -53,49 +54,18 @@ public class associated {
       	    .build();
 	}
 	
-	// get residentAssociations
-		@Path("all")
-		@GET
-		public Response getAssociationAll () throws Exception {
-			JSONArray listOfRecords = new JSONArray();
-			
-			Class.forName("com.mysql.cj.jdbc.Driver");
-	    	Connection connection = DriverManager.getConnection(connectStr); 
-			Statement sqlStatement = connection.createStatement();
-			String query = "SELECT uniqueID, userID, associatedUserID FROM associatedResident";
-			ResultSet rs = sqlStatement.executeQuery(query);
-			while (rs.next())
-			{	
-				JSONObject viewRecord = new JSONObject ();
-				viewRecord.put("uniqueID", rs.getString("uniqueID"));
-				viewRecord.put("userID", rs.getString("userID"));
-				viewRecord.put("associatedUserID", rs.getString("associatedUserID"));
-				listOfRecords.put(viewRecord);
-			}
-			
-			return Response
-				.status(Response.Status.OK)
-	      	    .header("Access-Control-Allow-Origin", "*")
-	      	    .header("Access-Control-Allow-Headers",
-						"Origin, X-Requested-With, Content-Type, Accept")
-	      	    .header("Access-Control-Allow-Methods",
-						"Origin, X-Requested-With, GET,POST,OPTIONS,DELETE,PUT")
-	      	    .entity(listOfRecords.toString())
-	      	    .build();
-		}
-	
-	// Delete an association
-	@Path("{uniqueID}")
+	// Delete a resident
+	@Path("{userID}")
 	@DELETE
-	public Response deleteAssociation (@PathParam("uniqueID") String uniqueID) throws SQLException, Exception  {
+	public Response deleteResidentTracker (@PathParam("userID") String userID) throws SQLException, Exception  {
 		
 	   	Class.forName("com.mysql.cj.jdbc.Driver");
     	Connection connection = DriverManager.getConnection(connectStr); 
 		Statement sqlStatement = connection.createStatement();	 
 
-		sqlStatement.executeUpdate("DELETE FROM associatedResident WHERE uniqueID = \"" + uniqueID + "\"");
+		sqlStatement.executeUpdate("DELETE FROM resident WHERE userID = \"" + userID + "\"");
         connection.close();
-
+        
         return Response
 				.status(Response.Status.OK)
 				.header("Access-Control-Allow-Origin", "*")
@@ -106,25 +76,26 @@ public class associated {
 				.build();
 	}
 	
-	// add association
+	// add resident
 	@Path("")
 	@POST
-	public Response addAssociation (String userInfo) throws Exception {
+	public Response addResidentTracker (String userInfo) throws Exception {
+		
 		JSONObject userJSON = new JSONObject (userInfo);
 		JSONObject newRecord = new JSONObject ();
 					
-		String uniqueID = userJSON.getString("uniqueID");
 		String userID = userJSON.getString("userID");
-		String associatedUserID = userJSON.getString("associatedUserID");
-
-		newRecord.put("uniqueID", uniqueID);
-		newRecord.put("userID", userID);
-		newRecord.put("associatedUserID", associatedUserID);
+		String locationID = userJSON.getString("locationID");
+		String sensorID = userJSON.getString("sensorID");
 		
-        String SQL = "INSERT INTO associatedResident VALUES ("
-        		+ "\"" + uniqueID 			+ "\","
-        		+ "\"" + userID 			+ "\","
-        		+ "\"" + associatedUserID 	+ "\")";
+		newRecord.put("userID", userID);
+		newRecord.put("locationID", locationID);
+		newRecord.put("sensorID", sensorID);
+		
+        String SQL = "INSERT INTO resident VALUES ("
+        		+ "\"" + userID 	+ "\","
+        		+ "\"" + locationID 	+ "\","
+        		+ "\"" + sensorID 		+ "\")";
         
         Class.forName("com.mysql.cj.jdbc.Driver");
     	Connection connection = DriverManager.getConnection(connectStr); 
@@ -143,27 +114,27 @@ public class associated {
 				.build();
 	}	
 	
-	// update association
+	// update resident
 	@Path("{userInfo}")
 	@PUT
-	public Response updateAssociation (@PathParam("userInfo") String userInfo, String JSON) throws Exception {
+	public Response updateResidentTracker (@PathParam("userInfo") String userInfo, String JSONrequest) throws Exception {
 		
-		JSONObject userJSON = new JSONObject (JSON);
+		JSONObject userJSON = new JSONObject (JSONrequest);
 		JSONObject newRecord = new JSONObject ();
 					
-		String uniqueID = "uniqueID = \"" 					+ userJSON.getString("uniqueID") 			+ "\"";
-		String userID = "userID = \"" 						+ userJSON.getString("userID") 				+ "\"";
-		String associatedUserID = "associatedUserID = \"" 	+ userJSON.getString("associatedUserID") 	+ "\"";
+		String userID = "userID = \"" 	+ userJSON.getString("userID") 	+ "\"";
+		String locationID = "locationID = \"" 		+ userJSON.getString("locationID") 	+ "\"";
+		String sensorID = "sensorID = \"" 	+ userJSON.getString("sensorID") 	+ "\"";
 			
-		newRecord.put("uniqueID", 			userJSON.getString("uniqueID"));
-		newRecord.put("userID", 			userJSON.getString("userID"));
-		newRecord.put("associatedUserID", 	userJSON.getString("associatedUserID"));
+		newRecord.put("userID", userJSON.getString("userID"));
+		newRecord.put("locationID", 	userJSON.getString("locationID"));
+		newRecord.put("sensorID", 	userJSON.getString("sensorID"));
 					
-        String SQL = "UPDATE associatedResident SET " 
-        		+ uniqueID 					+ ", " 
-        		+ userID 					+ ", " 
-        		+ associatedUserID   
-        		+ " WHERE uniqueID = \"" 	+ userJSON.getString("uniqueID") + "\"";
+        String SQL = "UPDATE resident SET " 
+        		+ userID 	+ ", " 
+        		+ locationID 		+ ", " 
+        		+ sensorID		 
+        		+ " WHERE userID = \"" + userJSON.getString("userID") + "\"";
 	        
         Class.forName("com.mysql.cj.jdbc.Driver");
     	Connection connection = DriverManager.getConnection(connectStr); 

@@ -23,21 +23,21 @@ public class prescription {
 	main careSense = new main();
 	String connectStr = careSense.serverConnect();
 	
-	// get prescription data via prescriptionID
-	@Path("{prescriptionID}")
+	// get all prescription data
+	@Path("")
 	@GET
-	public Response getPrescription(@PathParam("prescriptionID") String prescriptionID) throws Exception {
-
-		JSONObject viewRecord = new JSONObject ();
-		
+	public Response getPrescription() throws Exception {
+		JSONArray listOfRecords = new JSONArray ();
+				
 		Class.forName("com.mysql.cj.jdbc.Driver");
     	Connection connection = DriverManager.getConnection(connectStr); 
 		Statement sqlStatement = connection.createStatement();
 		String query = "SELECT prescriptionID, userID, medicationName, dose, frequency, "
-				+ "intendedUse, instructions FROM prescription WHERE prescriptionID = \"" + prescriptionID + "\"";
+				+ "intendedUse, instructions FROM prescription";
 		ResultSet rs = sqlStatement.executeQuery(query);
 		while (rs.next())
 		{
+			JSONObject viewRecord = new JSONObject ();
 			viewRecord.put("prescriptionID", rs.getString("prescriptionID"));
 			viewRecord.put("userID", rs.getString("userID"));
 			viewRecord.put("medicationName", rs.getString("medicationName"));
@@ -45,6 +45,7 @@ public class prescription {
 			viewRecord.put("frequency", rs.getString("frequency"));
 			viewRecord.put("intendedUse", rs.getString("intendedUse"));
 			viewRecord.put("instructions",  rs.getString("instructions"));
+			listOfRecords.put(viewRecord);
 		}
 		
 		return Response
@@ -54,7 +55,7 @@ public class prescription {
 					"Origin, X-Requested-With, Content-Type, Accept")
       	    .header("Access-Control-Allow-Methods",
 					"Origin, X-Requested-With, GET,POST,OPTIONS,DELETE,PUT")
-      	    .entity(viewRecord.toString())
+      	    .entity(listOfRecords.toString())
       	    .build();
 	}
 	

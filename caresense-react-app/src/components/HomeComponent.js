@@ -29,9 +29,7 @@ const Home = () => {
 
     useEffect(() => {
         getAllResident();
-        getWeatherToday();
-        getClockToday();
-        getHoliday();
+        getDisplay();
     }, []);
 
     function getAllResident() {
@@ -49,50 +47,24 @@ const Home = () => {
             });
     }
 
-    function getWeatherToday() {
-        fetch("CareSense/api/weather")
+    function getDisplay() {
+        fetch("CareSense/api/display")
             .then(function (response) {
                 //console.log(response)
                 return response.json();
             })
-            .then(function (weatherJSON) {
-                //console.log(weatherJSON);
-                setWeather(weatherJSON)
-            }).catch(err => {
-                //console.log(err);
-                setWeather({ todayTempMin: "NA", todayTempMax: "NA", todayWeather: "Unknown" });
-            });
-    }
-
-    function getClockToday() {
-        fetch("CareSense/api/clock")
-            .then(function (response) {
-                //console.log(response)
-                return response.json();
-            })
-            .then(function (clockJSON) {
-                //console.log(clockJSON);
-                setClock(clockJSON)
+            .then(function (JSON) {
+                const data = JSON;
+                setWeather(data.weather)
+                setClock(data.clock)
+                setHolidays(data.holiday)
             }).catch(err => {
                 console.log(err);
+                setWeather({ todayTempMin: "NA", todayTempMax: "NA", todayWeather: "Unknown" });
                 setClock({
                     datetime: "NA", Month: "NA", Day: "NA", Year: "NA",
                     Hours: "NA", Minutes: "NA", Seconds: "NA",
                 });
-            });
-    }
-
-    function getHoliday() {
-        fetch("CareSense/api/holiday")
-            .then(function (response) {
-                //console.log(response)
-                return response.json();
-            })
-            .then(function (holidayJSON) {
-                //console.log(holidayJSON);
-                setHolidays(holidayJSON)
-            }).catch(err => {
-                console.log(err);
                 setHolidays([{}]);
             });
     }

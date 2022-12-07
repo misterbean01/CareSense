@@ -68,7 +68,7 @@ const Login = () => {
                 throw new Error(message);
             } else {
                 const xmlBody = await res.text();
-                console.log(xmlBody);
+                //console.log(xmlBody);
 
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(xmlBody, "application/xml");
