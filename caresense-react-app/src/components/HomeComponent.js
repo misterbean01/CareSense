@@ -16,6 +16,7 @@ const Home = () => {
     const [clock, setClock] = useState({});
     const [holidays, setHolidays] = useState([]);
     const [residents, setResidents] = useState([]);
+    const [title, setTitle] = useState([]);
 
     // Get the User state from Login Component
     const userLoc = useLocation();
@@ -33,7 +34,7 @@ const Home = () => {
     }, []);
 
     function getAllResident() {
-        fetch("/CareSense/api/resident/all")
+        fetch("/CareSense/api/resident/all/" + userLoc.state.user.userID)
             .then(function (response) {
                 //console.log(response)
                 return response.json();
@@ -69,12 +70,24 @@ const Home = () => {
             });
     }
 
+    function TitleName() {
+        let title = "";
+        if (userLoc.state.user.userType === "familyMember") {
+            title = "Family Member";
+        } else if (userLoc.state.user.userType === "doctor") {
+            title = "Doctor";
+        } else if (userLoc.state.user.userType === "caretaker") {
+            title = "Caretaker";
+        }
+        return (<span>{title}</span >);
+    }
+
     try {
         if (!authenticated) {
             return <Navigate replace to="/login" />; // redirect to the login page if not authenticated
         } else {
             const user = userLoc.state.user;
-            //console.log(user);
+
             return (
                 <div>
 
@@ -87,6 +100,10 @@ const Home = () => {
                         Logout
                     </Button>
                     </p>
+
+                    <div className="text-center">
+                        <h3><TitleName /> {user.firstName} {user.lastName}'s Dashboard </h3>
+                    </div>
 
                     <div>
                         <p>Date: {clock.Month}/{clock.Day}/{clock.Year} </p>
@@ -110,7 +127,6 @@ const Home = () => {
         return <Navigate replace to="/login" />;
     }
 };
-
 
 // Card Component inside a Map For Each Resident
 function ResidentList({ residents, user }) {

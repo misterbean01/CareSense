@@ -1142,7 +1142,7 @@ const Admin = () => {
 
                 <Modal show={openEditResModal} onHide={() => setOpenEditResModal(false)} animation={false}
                     style={{ overlay: { backgroundColor: 'grey' } }}>
-                    <h4 className="d-flex justify-content-center">User Edit</h4>
+                    <h4 className="d-flex justify-content-center">Resident Detail Edit</h4>
                     <div className="d-flex justify-content-center">
                         <div className="mt-5 justify-content-center">
                             <form onSubmit={handleSubmitResEdit}>
@@ -1185,7 +1185,7 @@ const Admin = () => {
 
                 <Modal show={openAddResModal} onHide={() => setOpenAddResModal(false)} animation={false}
                     style={{ overlay: { backgroundColor: 'grey' } }}>
-                    <h4 className="d-flex justify-content-center">User Add</h4>
+                    <h4 className="d-flex justify-content-center">Resident Detail Add</h4>
                     <div className="d-flex justify-content-center">
                         <div className="mt-5 justify-content-center">
                             <form onSubmit={handleSubmitResAdd}>
@@ -1497,7 +1497,7 @@ const Admin = () => {
 
                 <Modal show={openEditAssociatedModal} onHide={() => setOpenEditAssociatedModal(false)} animation={false}
                     style={{ overlay: { backgroundColor: 'grey' } }}>
-                    <h4 className="d-flex justify-content-center">User Edit</h4>
+                    <h4 className="d-flex justify-content-center">Associated Edit</h4>
                     <div className="d-flex justify-content-center">
                         <div className="mt-5 justify-content-center">
                             <form onSubmit={handleSubmitAssociatedEdit}>

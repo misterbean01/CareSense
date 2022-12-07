@@ -465,7 +465,7 @@ const Resident = () => {
                     <p>Doctor:  </p>
                     <UserList usersAssociated={doctor} />
 
-                    <p>Family:  </p>
+                    <p>Caretaker:  </p>
                     <UserList usersAssociated={caretaker} />
 
                     <p>Current Prescription:</p>
@@ -635,31 +635,34 @@ const Resident = () => {
                         </div>
                     </Modal>
 
-                    <div className="m-5">
-                        <form onSubmit={handleSubmitFruitName}>
-                            <div className="mb-3">
-                                <label className="mb-1">Get Fruit Nutrition</label>
-                                <input
-                                    type="text"
-                                    name="FruitNutrition"
-                                    className="form-control"
-                                    value={fruitName}
-                                    onChange={(e) => setFruitName(e.target.value)}
-                                />
+                    {userType === "doctor" && ( // Only For Care Takers
+                        <div>
+                            <div className="m-5">
+                                <form onSubmit={handleSubmitFruitName}>
+                                    <div className="mb-3">
+                                        <label className="mb-1">Get Fruit Nutrition</label>
+                                        <input
+                                            type="text"
+                                            name="FruitNutrition"
+                                            className="form-control"
+                                            value={fruitName}
+                                            onChange={(e) => setFruitName(e.target.value)}
+                                        />
+                                    </div>
+                                    <input type="submit" className="btn btn-primary" value="Submit" />
+                                </form>
                             </div>
-                            <input type="submit" className="btn btn-primary" value="Submit" />
-                        </form>
-                    </div>
-                    <div className="mb-3">
-                        Fruit Nutrition:
-                        <li>Name: {fruitNutrition.name}</li>
-                        <li>Carb: {fruitNutrition.carbohydrates}</li>
-                        <li>Calories: {fruitNutrition.calories}</li>
-                        <li>Fat: {fruitNutrition.fat}</li>
-                        <li>Protein: {fruitNutrition.protein}</li>
-                        <li>Sugar: {fruitNutrition.sugar}</li>
-                    </div>
-
+                            <div className="mb-3">
+                                Fruit Nutrition:
+                                <li>Name: {fruitNutrition.name}</li>
+                                <li>Carb: {fruitNutrition.carbohydrates}</li>
+                                <li>Calories: {fruitNutrition.calories}</li>
+                                <li>Fat: {fruitNutrition.fat}</li>
+                                <li>Protein: {fruitNutrition.protein}</li>
+                                <li>Sugar: {fruitNutrition.sugar}</li>
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 <div>
