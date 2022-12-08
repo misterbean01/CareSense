@@ -11,7 +11,418 @@
 A Web Service combined with RFID Technology and IoT Sensors for a better Assisted Living Care.
 </p>
 
+<div>
+	<h2>Restful Web Service</h2>
+	
+	<div> 
 
+		<h3>Associated Resident (associated.java)</h3>
+		<p>This Web Service is for finding all the Users associated to a Resident.</p>
+		 
+		<h4>getAssociation</h4>
+		<li>
+		<b>GET method | http://localhost:8080/CareSense/api/associated/{userID} </b>
+		</li>
+		<li>
+		Using the userID of a Resident, it gets all the Users associated with the Resident. The User's information is pulled from the User Web Service.
+		</li>
+		<li>
+		Returns a JSON Array of Users alongside their information.
+		</li>
+		
+		<h4>getAssociationAll</h4>
+		<li>
+		<b>GET method | http://localhost:8080/CareSense/api/associated/{userID} </b>
+		</li>
+		<li>
+		Gets all the userID and associatedUserID from the associatedResident database.
+		</li>
+		<li>
+		Returns a JSON Array of items in the associatedResident database.
+		</li>
+		
+		<h4>deleteAssociation</h4>
+		<li>
+		<b>DELETE method | http://localhost:8080/CareSense/api/associated/{uniqueID} </b>
+		</li>
+		<li>
+		Deletes an entry in the associatedResident database using their row's uniqueID.
+		</li>
+
+		<h4>addAssociation</h4>
+		<li>
+		<b>POST method | http://localhost:8080/CareSense/api/associated/ </b>
+		</li>
+		<li>
+		Adds an entry in the associatedResident database using a JSON entry.
+		</li>
+		
+		<h4>updateAssociation</h4>
+		<li>
+		<b>PUT method | http://localhost:8080/CareSense/api/associated/{userInfo} </b>
+		</li>
+		<li>
+		Finds the database entry using their userInfo which a string ID then updates their database entry using JSON input.
+		</li>
+	
+	</div>
+	
+	<div> 
+
+		<h3>Display Web Service (display.java)</h3>
+		<p>This Composite Web Service is composing all the information from 3 Web Services (externalClock, externalWeather, externalHoliday) that will be displayed in Web Page's Dashboard.</p>
+		 
+		<h4>getDisplayAll</h4>
+		<li>
+		<b>GET method | http://localhost:8080/CareSense/api/display </b>
+		</li>
+		<li>
+		Gets the 3 JSON Responses from the 3 Web Services and compile them into one JSON Output.
+		</li>
+		<li>
+		Returns a JSON Output from the 3 Web Services.
+		</li>
+	
+	</div>	
+	
+	<div> 
+
+		<h3>Location Web Service (location.java)</h3>
+		<p>This Web Service is for applying CRUD in the location database.</p>
+		 
+		<h4>getLocation</h4>
+		<li>
+		<b>GET method | http://localhost:8080/CareSense/api/location/{locationID} </b>
+		</li>
+		<li>
+		Get the location information using its locationID.
+		</li>
+		<li>
+		Returns a JSON Object of location and its information.
+		</li>
+		
+		<h4>getLocationAll</h4>
+		<li>
+		<b>GET method | http://localhost:8080/CareSense/api/location/all </b>
+		</li>
+		<li>
+		Gets all the location from the location database.
+		</li>
+		<li>
+		Returns a JSON Array of items in the associatedResident database.
+		</li>
+		
+		<h4>deleteLocation</h4>
+		<li>
+		<b>DELETE method | http://localhost:8080/CareSense/api/location/{locationID} </b>
+		</li>
+		<li>
+		Deletes an entry in the location database using their row's locationID.
+		</li>
+
+		<h4>addLocation</h4>
+		<li>
+		<b>POST method | http://localhost:8080/CareSense/api/location/ </b>
+		</li>
+		<li>
+		Adds an entry in the location database using a JSON entry.
+		</li>
+		
+		<h4>updateLocation</h4>
+		<li>
+		<b>PUT method | http://localhost:8080/CareSense/api/location/{userInfo} </b>
+		</li>
+		<li>
+		Finds the database entry using their userInfo which a string ID then updates their database entry using JSON input.
+		</li>
+	
+	</div>
+	
+	<div> 
+
+		<h3>Login Web Service (login.java)</h3>
+		<p>This Web Service is for authenticating the client's thats trying to login.</p>
+		 
+		<h4>PostRecord</h4>
+		<li>
+		<b>POST method | http://localhost:8080/CareSense/api/login </b>
+		</li>
+		<li>
+		Post an XML Request that contains the username and password. It is used to check if they are a valid Admin account then checks if they are a valid User account.
+		</li>
+		<li>
+		Returns an XML response that contains the User's information.
+		</li>
+	
+	</div>
+	
+		<div> 
+
+		<h3>Prescription Web Service (prescription.java)</h3>
+		<p>This Web Service is for applying CRUD in the prescription database.</p>
+		 
+		<h4>getPrescription</h4>
+		<li>
+		<b>GET method | http://localhost:8080/CareSense/api/prescription/</b>
+		</li>
+		<li>
+		Get all the prescription information from the prescription database.
+		</li>
+		<li>
+		Returns a JSON Array of prescription and its information.
+		</li>
+		
+		<h4>getPrescriptionUserID</h4>
+		<li>
+		<b>GET method | http://localhost:8080/CareSense/api/prescription/{prescriptionID} </b>
+		</li>
+		<li>
+		Gets all the prescription using userID that is only specific for a Resident from the prescription database.
+		</li>
+		<li>
+		Returns a JSON Array of Resident's prescription in the prescription database.
+		</li>
+		
+		<h4>deletePrescription</h4>
+		<li>
+		<b>DELETE method | http://localhost:8080/CareSense/api/prescription/{prescriptionID} </b>
+		</li>
+		<li>
+		Deletes an entry in the prescription database using their row's prescriptionID.
+		</li>
+
+		<h4>addPrescription</h4>
+		<li>
+		<b>POST method | http://localhost:8080/CareSense/api/prescription/ </b>
+		</li>
+		<li>
+		Adds an entry in the prescription database using a JSON entry.
+		</li>
+		
+		<h4>updatePrescription</h4>
+		<li>
+		<b>PUT method | http://localhost:8080/CareSense/api/prescription/{userInfo} </b>
+		</li>
+		<li>
+		Finds the database entry using their userInfo which a string ID then updates their database entry using JSON input.
+		</li>
+	
+	</div>
+		
+	<div> 
+
+		<h3>Resident Web Service (resident.java)</h3>
+		<p>This Composite Web Service is composing all the information from 4 Web Services (associated, sensor, location, prescription) that will be displayed on the Resident's View Page.</p>
+		 
+		<h4>getResident</h4>
+		<li>
+		<b>GET method | http://localhost:8080/CareSense/api/resident/{userID}</b>
+		</li>
+		<li>
+		Get the information of specific Resident based on their userID from the user database.
+		</li>
+		<li>
+		Returns a JSON Array of a Resident and its information.
+		</li>
+				
+		<h4>deleteResident</h4>
+		<li>
+		<b>DELETE method | http://localhost:8080/CareSense/api/resident/{userInfo} </b>
+		</li>
+		<li>
+		Deletes an Resident entry in the user database using their row's userInfo which is their userID.
+		</li>
+
+		<h4>addResident</h4>
+		<li>
+		<b>POST method | http://localhost:8080/CareSense/api/resident </b>
+		</li>
+		<li>
+		Adds a Resident entry in the user database using a JSON entry.
+		</li>
+		
+		<h4>updateResident</h4>
+		<li>
+		<b>PUT method | http://localhost:8080/CareSense/api/resident </b>
+		</li>
+		<li>
+		Finds the database entry using the Residents userID in the JSON then updates their database entry using JSON input.
+		</li>
+		
+		<h4>getResidentByAssociatedUser</h4>
+		<li>
+		<b>GET method | http://localhost:8080/CareSense/api/resident/all/{userID}</b>
+		</li>
+		<li>
+		Get the list of Residents associated to the User's userID in the associatedResident database. The information of the list associated Resident's userID is compiled into a JSON Array.
+		</li>
+		<li>
+		Returns a JSON Array of the Resident(s) and their information that is associated with User's userID.
+		</li>
+		
+		<h4>getResidentDetails</h4>
+		<li>
+		<b>GET method | http://localhost:8080/CareSense/api/resident/details/{userID}</b>
+		</li>
+		<li>
+		Gets the locationID and sensorID of the Resident from the resident database then those IDs are used to extract their information from the location and sensor databases. It also gets the information of the Users associated to the Resident using the userID. They are then separated based on the userType and is compiled on a separate JSON Array.
+		</li>
+		<li>
+		Returns a JSON Object that is related to the Resident's userID that contains a JSON Object of their Location and Sensor, and JSON Array of Users for Family Members, Doctors, and Caretakers.
+		</li>
+	
+	</div>
+	
+	<div> 
+
+		<h3>Resident Tracker Web Service (residentTracker.java)</h3>
+		<p>This Web Service is for keeping track of the User's Location and Sensor IDs.</p>
+		 
+		<h4>getResidentTrackerAll</h4>
+		<li>
+		<b>GET method | http://localhost:8080/CareSense/api/residentTracker/all</b>
+		</li>
+		<li>
+		Gets all the residentTracker entries from the resident database.
+		</li>
+		<li>
+		Returns a JSON Array of residentTracker which contains the location and sensor IDs.
+		</li>
+				
+		<h4>deleteResidentTracker</h4>
+		<li>
+		<b>DELETE method | http://localhost:8080/CareSense/api/residentTracker/{userID} </b>
+		</li>
+		<li>
+		Deletes an entry in the resident database using their row's userID.
+		</li>
+
+		<h4>addResidentTracker</h4>
+		<li>
+		<b>POST method | http://localhost:8080/CareSense/api/residentTracker/ </b>
+		</li>
+		<li>
+		Adds an entry in the resident database using a JSON entry.
+		</li>
+		
+		<h4>updateResidentTracker</h4>
+		<li>
+		<b>PUT method | http://localhost:8080/CareSense/api/residentTracker/{userInfo} </b>
+		</li>
+		<li>
+		Finds the database entry using their userInfo which a string ID then updates their database entry using JSON input.
+		</li>
+	
+	</div>
+	
+	
+	<div> 
+
+		<h3>Sensor Web Service (sensor.java)</h3>
+		<p>This Web Service is for applying CRUD in the sensor database.</p>
+		 
+		<h4>getSensor</h4>
+		<li>
+		<b>GET method | http://localhost:8080/CareSense/api/sensor/{sensorID} </b>
+		</li>
+		<li>
+		Get the sensor information using its sensorID.
+		</li>
+		<li>
+		Returns a JSON Object of sensor and its information.
+		</li>
+		
+		<h4>getSensorAll</h4>
+		<li>
+		<b>GET method | http://localhost:8080/CareSense/api/sensor/all </b>
+		</li>
+		<li>
+		Gets all the sensor from the sensor database.
+		</li>
+		<li>
+		Returns a JSON Array of items in the sensor database.
+		</li>
+		
+		<h4>deleteSensor</h4>
+		<li>
+		<b>DELETE method | http://localhost:8080/CareSense/api/sensor/{sensorID} </b>
+		</li>
+		<li>
+		Deletes an entry in the sensor database using their row's sensorID.
+		</li>
+
+		<h4>addSensor</h4>
+		<li>
+		<b>POST method | http://localhost:8080/CareSense/api/sensor/ </b>
+		</li>
+		<li>
+		Adds an entry in the sensor database using a JSON entry.
+		</li>
+		
+		<h4>updateSensor</h4>
+		<li>
+		<b>PUT method | http://localhost:8080/CareSense/api/sensor/{userInfo} </b>
+		</li>
+		<li>
+		Finds the database entry using their userInfo which a string ID then updates their database entry using JSON input.
+		</li>
+	
+	</div>
+	
+	<div> 
+
+		<h3>User Web Service (user.java)</h3>
+		<p>This Web Service is for applying CRUD in the user database.</p>
+		 
+		<h4>getUser</h4>
+		<li>
+		<b>GET method | http://localhost:8080/CareSense/api/user/{userID} </b>
+		</li>
+		<li>
+		Get the User information using its userID.
+		</li>
+		<li>
+		Returns a JSON Object of User and its information.
+		</li>
+		
+		<h4>getUserAll</h4>
+		<li>
+		<b>GET method | http://localhost:8080/CareSense/api/user/all </b>
+		</li>
+		<li>
+		Gets all the Users from the user database.
+		</li>
+		<li>
+		Returns a JSON Array of items in the user database.
+		</li>
+		
+		<h4>deleteUser</h4>
+		<li>
+		<b>DELETE method | http://localhost:8080/CareSense/api/user/{userID} </b>
+		</li>
+		<li>
+		Deletes an entry in the user database using their row's userID.
+		</li>
+
+		<h4>addSensor</h4>
+		<li>
+		<b>POST method | http://localhost:8080/CareSense/api/user/ </b>
+		</li>
+		<li>
+		Adds an entry in the user database using a JSON entry.
+		</li>
+		
+		<h4>updateSensor</h4>
+		<li>
+		<b>PUT method | http://localhost:8080/CareSense/api/user/{userInfo} </b>
+		</li>
+		<li>
+		Finds the database entry using their userInfo which a string ID then updates their database entry using JSON input.
+		</li>
+	
+	</div>
+	
+</div>
 
 
 <div>
@@ -91,7 +502,90 @@ A Web Service combined with RFID Technology and IoT Sensors for a better Assiste
 	</li>
 </div>
 
+<div>
+	<h2>Database Web Service</h2>
 
+	<h3>Build the Database (build.java)</h3>
+	
+	<p>This Web Service is used to create the tables, drop the tables, and fill up the tables with sample data.</p>
+	 
+	<h4>createTables</h4>
+	<li>
+	<b>POST method | http://localhost:8080/CareSense/api/build/createTables </b>
+	</li>
+	<li>
+	Creates the tables required in running the Web Service.
+	</li>
+	
+	<h4>deleteDatabases</h4>
+	<li>
+	<b>DELETE method | http://localhost:8080/CareSense/api/build/createTables </b>
+	</li>
+	<li>
+	Drops the current tables.
+	</li>
+	
+	<h4>fillTables</h4>
+	<li>
+	<b>POST method | http://localhost:8080/CareSense/api/build/fillTables </b>
+	</li>
+	<li>
+	Inserts sample data to all of the tables.
+	</li>
+	
+	<h3>CRUD Methods for the Database (crud.java)</h3>
+	
+	<p>Contains methods for manipulating the database.</p>
+	 
+	<h4>newRecord</h4>
+	<li>
+	<b>POST method | http://localhost:8080/CareSense/api/newRecord </b>
+	</li>
+	<li>
+	Insert an entry using a JSON input.
+	</li>
+	
+	<h4>deleteRecord</h4>
+	<li>
+	<b>DELETE method | http://localhost:8080/CareSense/api/deleteRecord </b>
+	</li>
+	<li>
+	Delets an entry on the database.
+	</li>
+	
+	<h4>residentViewResident</h4>
+	<li>
+	<b>GET method | http://localhost:8080/CareSense/api/residentViewResident </b>
+	</li>
+	<li>
+	Gets an information in the resident database.
+	</li>
+	
+	<h4>residentViewSensor</h4>
+	<li>
+	<b>GET method | http://localhost:8080/CareSense/api/residentViewSensor </b>
+	</li>
+	<li>
+	Gets an information in the sensor database.
+	</li>
+
+	<h4>residentViewprescription</h4>
+	<li>
+	<b>GET method | http://localhost:8080/CareSense/api/residentViewprescription </b>
+	</li>
+	<li>
+	Gets an information in the prescription database.
+	</li>
+	
+	<h4>residentViewLocation</h4>
+	<li>
+	<b>GET method | http://localhost:8080/CareSense/api/residentViewLocation </b>
+	</li>
+	<li>
+	Gets an information in the location database.
+	</li>
+
+</div>
 
 </body>
 </html>
